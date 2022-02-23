@@ -10740,6 +10740,12 @@ namespace {
          */
         public $delimiter;
         /**
+         * Error message for import.
+         *
+         * @var string
+         */
+        public $import_error_message;
+        /**
          * Constructor.
          */
         public function __construct()
@@ -10781,6 +10787,14 @@ namespace {
          * Performs post-import cleanup of files and the cache.
          */
         public function import_end()
+        {
+        }
+        /**
+         * Set the import error message.
+         *
+         * @param string $message Error message.
+         */
+        protected function set_import_error_message($message)
         {
         }
         /**
@@ -33112,7 +33126,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '6.2.0';
+        public $version = '6.2.1';
         /**
          * WooCommerce Schema version.
          *
