@@ -25,6 +25,8 @@ return \StubsGenerator\Finder::create()
     ->append(
         \StubsGenerator\Finder::create()
             ->in(['source/woocommerce/packages/woocommerce-admin/includes'])
+            ->in(['source/woocommerce/packages/woocommerce-admin/src'])
+            ->in(['source/woocommerce/packages/woocommerce-admin/src-internal'])
             // Email templates.
             ->notPath('emails')
             // Update functions.
