@@ -5254,6 +5254,2570 @@ namespace WooCommerce\Admin {
         }
     }
 }
+namespace Automattic\WooCommerce\Internal\Admin {
+    /**
+     * Contains backend logic for the activity panel feature.
+     */
+    class ActivityPanels
+    {
+        /**
+         * Class instance.
+         *
+         * @var ActivityPanels instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Adds fields so that we can store activity panel last read and open times.
+         *
+         * @param array $user_data_fields User data fields.
+         * @return array
+         */
+        public function add_user_data_fields($user_data_fields)
+        {
+        }
+        /**
+         * Add alert count to the component settings.
+         *
+         * @param array $settings Component settings.
+         */
+        public function component_settings($settings)
+        {
+        }
+    }
+    /**
+     * Contains backend logic for the Analytics feature.
+     */
+    class Analytics
+    {
+        /**
+         * Option name used to toggle this feature.
+         */
+        const TOGGLE_OPTION_NAME = 'woocommerce_analytics_enabled';
+        /**
+         * Clear cache tool identifier.
+         */
+        const CACHE_TOOL_ID = 'clear_woocommerce_analytics_cache';
+        /**
+         * Class instance.
+         *
+         * @var Analytics instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Add the feature toggle to the features settings.
+         *
+         * @param array $features Feature sections.
+         * @return array
+         */
+        public static function add_feature_toggle($features)
+        {
+        }
+        /**
+         * Reloads the page when the option is toggled to make sure all Analytics features are loaded.
+         *
+         * @param string $old_value Old value.
+         * @param string $value     New value.
+         */
+        public static function reload_page_on_toggle($old_value, $value)
+        {
+        }
+        /**
+         * Preload data from the countries endpoint.
+         *
+         * @param array $endpoints Array of preloaded endpoints.
+         * @return array
+         */
+        public function add_preload_endpoints($endpoints)
+        {
+        }
+        /**
+         * Adds fields so that we can store user preferences for the columns to display on a report.
+         *
+         * @param array $user_data_fields User data fields.
+         * @return array
+         */
+        public function add_user_data_fields($user_data_fields)
+        {
+        }
+        /**
+         * Register the cache clearing tool on the WooCommerce > Status > Tools page.
+         *
+         * @param array $debug_tools Available debug tool registrations.
+         * @return array Filtered debug tool registrations.
+         */
+        public function register_cache_clear_tool($debug_tools)
+        {
+        }
+        /**
+         * Registers report pages.
+         */
+        public function register_pages()
+        {
+        }
+        /**
+         * Get report pages.
+         */
+        public static function get_report_pages()
+        {
+        }
+        /**
+         * "Clear" analytics cache by invalidating it.
+         */
+        public function run_clear_cache_tool()
+        {
+        }
+    }
+    /**
+     * \Automattic\WooCommerce\Internal\Admin\CategoryLookup class.
+     */
+    class CategoryLookup
+    {
+        /**
+         * Stores changes to categories we need to sync.
+         *
+         * @var array
+         */
+        protected $edited_product_cats = array();
+        /**
+         * The single instance of the class.
+         *
+         * @var object
+         */
+        protected static $instance = null;
+        /**
+         * Constructor
+         *
+         * @return void
+         */
+        protected function __construct()
+        {
+        }
+        /**
+         * Get class instance.
+         *
+         * @return object Instance.
+         */
+        public static final function instance()
+        {
+        }
+        /**
+         * Init hooks.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Regenerate all lookup table data.
+         */
+        public function regenerate()
+        {
+        }
+        /**
+         * Store edits so we know when the parent ID changes.
+         *
+         * @param int $category_id Term ID being edited.
+         */
+        public function before_edit($category_id)
+        {
+        }
+        /**
+         * When a product category gets edited, see if we need to sync the table.
+         *
+         * @param int $category_id Term ID being edited.
+         */
+        public function on_edit($category_id)
+        {
+        }
+        /**
+         * When a product category gets created, add a new lookup row.
+         *
+         * @param int $category_id Term ID being created.
+         */
+        public function on_create($category_id)
+        {
+        }
+        /**
+         * Delete lookup table data from a tree.
+         *
+         * @param int $category_id Category ID to delete.
+         * @param int $category_tree_id Tree to delete from.
+         * @return void
+         */
+        protected function delete($category_id, $category_tree_id)
+        {
+        }
+        /**
+         * Updates lookup table data for a category by ID.
+         *
+         * @param int $category_id Category ID to update.
+         */
+        protected function update($category_id)
+        {
+        }
+        /**
+         * Get category lookup table values to insert.
+         *
+         * @param int $category_id Category ID to insert.
+         * @param int $category_tree_id Tree to insert into.
+         * @return string
+         */
+        protected function get_insert_sql($category_id, $category_tree_id)
+        {
+        }
+        /**
+         * Used to construct insert query recursively.
+         *
+         * @param  array $inserts Array of data to insert.
+         * @param  array $terms   Terms to insert.
+         * @param  array $parents Parent IDs the terms belong to.
+         */
+        protected function get_term_insert_values(&$inserts, $terms, $parents = array())
+        {
+        }
+        /**
+         * Convert flat terms array into nested array.
+         *
+         * @param array   $hierarchy Array to put terms into.
+         * @param array   $terms Array of terms (id=>parent).
+         * @param integer $parent Parent ID.
+         */
+        protected function unflatten_terms(&$hierarchy, &$terms, $parent = 0)
+        {
+        }
+        /**
+         * Get category descendants.
+         *
+         * @param int $category_id The category ID to lookup.
+         * @return array
+         */
+        protected function get_descendants($category_id)
+        {
+        }
+        /**
+         * Return all ancestor category ids for a category.
+         *
+         * @param int $category_id The category ID to lookup.
+         * @return array
+         */
+        protected function get_ancestors($category_id)
+        {
+        }
+    }
+    /**
+     * CouponsMovedTrait trait.
+     */
+    trait CouponsMovedTrait
+    {
+        /**
+         * The GET query key for the legacy menu.
+         *
+         * @var string
+         */
+        protected static $query_key = 'legacy_coupon_menu';
+        /**
+         * The key for storing an option in the DB.
+         *
+         * @var string
+         */
+        protected static $option_key = 'wc_admin_show_legacy_coupon_menu';
+        /**
+         * Get the URL for the legacy coupon management.
+         *
+         * @return string The unescaped URL for the legacy coupon management page.
+         */
+        protected static function get_legacy_coupon_url()
+        {
+        }
+        /**
+         * Get the URL for the coupon management page.
+         *
+         * @param array $args Additional URL query arguments.
+         *
+         * @return string
+         */
+        protected static function get_coupon_url($args = [])
+        {
+        }
+        /**
+         * Get the new URL for managing coupons.
+         *
+         * @param string $page The management page.
+         *
+         * @return string
+         */
+        protected static function get_management_url($page)
+        {
+        }
+        /**
+         * Get the WC Admin path for the marking page.
+         *
+         * @return string
+         */
+        protected static function get_marketing_path()
+        {
+        }
+        /**
+         * Whether we should display the legacy coupon menu item.
+         *
+         * @return bool
+         */
+        protected static function should_display_legacy_menu()
+        {
+        }
+        /**
+         * Set whether we should display the legacy coupon menu item.
+         *
+         * @param bool $display Whether the menu should be displayed or not.
+         */
+        protected static function display_legacy_menu($display = false)
+        {
+        }
+    }
+    /**
+     * Contains backend logic for the Coupons feature.
+     */
+    class Coupons
+    {
+        use \Automattic\WooCommerce\Internal\Admin\CouponsMovedTrait;
+        /**
+         * Class instance.
+         *
+         * @var Coupons instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Maybe add menu item back in original spot to help people transition
+         */
+        public function maybe_add_coupon_menu_redirect()
+        {
+        }
+        /**
+         * Call back for transition menu item
+         */
+        public function coupon_menu_moved()
+        {
+        }
+        /**
+         * Modify registered post type shop_coupon
+         *
+         * @param array $args Array of post type parameters.
+         *
+         * @return array the filtered parameters.
+         */
+        public function move_coupons($args)
+        {
+        }
+        /**
+         * Undo WC modifications to $parent_file for 'shop_coupon'
+         */
+        public function fix_coupon_menu_highlight()
+        {
+        }
+        /**
+         * Maybe add our wc-admin coupon scripts if viewing coupon pages
+         */
+        public function maybe_add_marketing_coupon_script()
+        {
+        }
+    }
+    /**
+     * Triggers customer effort score on several different actions.
+     */
+    class CustomerEffortScoreTracks
+    {
+        /**
+         * Option name for the CES Tracks queue.
+         */
+        const CES_TRACKS_QUEUE_OPTION_NAME = 'woocommerce_ces_tracks_queue';
+        /**
+         * Option name for the clear CES Tracks queue for page.
+         */
+        const CLEAR_CES_TRACKS_QUEUE_FOR_PAGE_OPTION_NAME = 'woocommerce_clear_ces_tracks_queue_for_page';
+        /**
+         * Option name for the set of actions that have been shown.
+         */
+        const SHOWN_FOR_ACTIONS_OPTION_NAME = 'woocommerce_ces_shown_for_actions';
+        /**
+         * Action name for product add/publish.
+         */
+        const PRODUCT_ADD_PUBLISH_ACTION_NAME = 'product_add_publish';
+        /**
+         * Action name for product update.
+         */
+        const PRODUCT_UPDATE_ACTION_NAME = 'product_update';
+        /**
+         * Action name for shop order update.
+         */
+        const SHOP_ORDER_UPDATE_ACTION_NAME = 'shop_order_update';
+        /**
+         * Action name for settings change.
+         */
+        const SETTINGS_CHANGE_ACTION_NAME = 'settings_change';
+        /**
+         * Action name for add product categories.
+         */
+        const ADD_PRODUCT_CATEGORIES_ACTION_NAME = 'add_product_categories';
+        /**
+         * Action name for add product tags.
+         */
+        const ADD_PRODUCT_TAGS_ACTION_NAME = 'add_product_tags';
+        /*
+         * Action name for add product attributes.
+         */
+        const ADD_PRODUCT_ATTRIBUTES_ACTION_NAME = 'add_product_attributes';
+        /**
+         * Action name for import products.
+         */
+        const IMPORT_PRODUCTS_ACTION_NAME = 'import_products';
+        /**
+         * Action name for search.
+         */
+        const SEARCH_ACTION_NAME = 'ces_search';
+        /**
+         * Label for the snackbar that appears when a user submits the survey.
+         *
+         * @var string
+         */
+        private $onsubmit_label;
+        /**
+         * Constructor. Sets up filters to hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Add actions that require woocommerce_allow_tracking.
+         */
+        private function enable_survey_enqueing_if_tracking_is_enabled()
+        {
+        }
+        /**
+         * Returns a generated script for tracking tags added on edit-tags.php page.
+         * CES survey is triggered via direct access to wc/customer-effort-score store
+         * via wp.data.dispatch method.
+         *
+         * Due to lack of options to directly hook ourselves into the ajax post request
+         * initiated by edit-tags.php page, we infer a successful request by observing
+         * an increase of the number of rows in tags table
+         *
+         * @param string $action Action name for the survey.
+         * @param string $label Label for the snackbar.
+         *
+         * @return string Generated JavaScript to append to page.
+         */
+        private function get_script_track_edit_php($action, $label)
+        {
+        }
+        /**
+         * Get the current published product count.
+         *
+         * @return integer The current published product count.
+         */
+        private function get_product_count()
+        {
+        }
+        /**
+         * Get the current shop order count.
+         *
+         * @return integer The current shop order count.
+         */
+        private function get_shop_order_count()
+        {
+        }
+        /**
+         * Return whether the action has already been shown.
+         *
+         * @param string $action The action to check.
+         *
+         * @return bool Whether the action has already been shown.
+         */
+        private function has_been_shown($action)
+        {
+        }
+        /**
+         * Enqueue the item to the CES tracks queue.
+         *
+         * @param array $item The item to enqueue.
+         */
+        private function enqueue_to_ces_tracks($item)
+        {
+        }
+        /**
+         * Enqueue the CES survey on using search dynamically.
+         *
+         * @param string $search_area Search area such as "product" or "shop_order".
+         * @param string $page_now Value of window.pagenow.
+         * @param string $admin_page Value of window.adminpage.
+         */
+        public function enqueue_ces_survey_for_search($search_area, $page_now, $admin_page)
+        {
+        }
+        /**
+         * Hook into the post status lifecycle, to detect relevant user actions
+         * that we want to survey about.
+         *
+         * @param string $new_status The new status.
+         * @param string $old_status The old status.
+         * @param Post   $post The post.
+         */
+        public function run_on_transition_post_status($new_status, $old_status, $post)
+        {
+        }
+        /**
+         * Maybe enqueue the CES survey, if product is being added or edited.
+         *
+         * @param string $new_status The new status.
+         * @param string $old_status The old status.
+         */
+        private function maybe_enqueue_ces_survey_for_product($new_status, $old_status)
+        {
+        }
+        /**
+         * Enqueue the CES survey trigger for a new product.
+         */
+        private function enqueue_ces_survey_for_new_product()
+        {
+        }
+        /**
+         * Enqueue the CES survey trigger for an existing product.
+         */
+        private function enqueue_ces_survey_for_edited_product()
+        {
+        }
+        /**
+         * Enqueue the CES survey trigger for an existing shop order.
+         */
+        private function enqueue_ces_survey_for_edited_shop_order()
+        {
+        }
+        /**
+         * Maybe clear the CES tracks queue, executed on every page load. If the
+         * clear option is set it clears the queue. In practice, this executes a
+         * page load after the queued CES tracks are displayed on the client, which
+         * sets the clear option.
+         */
+        public function maybe_clear_ces_tracks_queue()
+        {
+        }
+        /**
+         * Appends a script to footer to trigger CES on adding product categories.
+         */
+        public function add_script_track_product_categories()
+        {
+        }
+        /**
+         * Appends a script to footer to trigger CES on adding product tags.
+         */
+        public function add_script_track_product_tags()
+        {
+        }
+        /**
+         * Maybe enqueue the CES survey on product import, if step is done.
+         */
+        public function run_on_product_import()
+        {
+        }
+        /**
+         * Enqueue the CES survey trigger for setting changes.
+         */
+        public function run_on_update_options()
+        {
+        }
+        /**
+         * Enqueue the CES survey on adding new product attributes.
+         */
+        public function run_on_add_product_attributes()
+        {
+        }
+        /**
+         * Determine on initiating CES survey on searching for product or orders.
+         */
+        public function run_on_load_edit_php()
+        {
+        }
+    }
+    /**
+     * Events Class.
+     */
+    class Events
+    {
+        /**
+         * The single instance of the class.
+         *
+         * @var object
+         */
+        protected static $instance = null;
+        /**
+         * Constructor
+         *
+         * @return void
+         */
+        protected function __construct()
+        {
+        }
+        /**
+         * Get class instance.
+         *
+         * @return object Instance.
+         */
+        public static final function instance()
+        {
+        }
+        /**
+         * Cron event handlers.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Daily events to run.
+         *
+         * Note: Order_Milestones::other_milestones is hooked to this as well.
+         */
+        public function do_wc_admin_daily()
+        {
+        }
+        /**
+         * Adds notes that should be added.
+         */
+        protected function possibly_add_notes()
+        {
+        }
+        /**
+         * Deletes notes that should be deleted.
+         */
+        protected function possibly_delete_notes()
+        {
+        }
+        /**
+         * Checks if remote inbox notifications are enabled.
+         *
+         * @return bool Whether remote inbox notifications are enabled.
+         */
+        protected function is_remote_inbox_notifications_enabled()
+        {
+        }
+        /**
+         * Checks if merchant email notifications are enabled.
+         *
+         * @return bool Whether merchant email notifications are enabled.
+         */
+        protected function is_merchant_email_notifications_enabled()
+        {
+        }
+    }
+    /**
+     * Feature plugin main class.
+     *
+     * @internal This file will not be bundled with woo core, only the feature plugin.
+     * @internal Note this is not called WC_Admin due to a class already existing in core with that name.
+     */
+    class FeaturePlugin
+    {
+        /**
+         * The single instance of the class.
+         *
+         * @var object
+         */
+        protected static $instance = null;
+        /**
+         * Constructor
+         *
+         * @return void
+         */
+        protected function __construct()
+        {
+        }
+        /**
+         * Get class instance.
+         *
+         * @return object Instance.
+         */
+        public static final function instance()
+        {
+        }
+        /**
+         * Init the feature plugin, only if we can detect both Gutenberg and WooCommerce.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Install DB and create cron events when activated.
+         *
+         * @return void
+         */
+        public function on_activation()
+        {
+        }
+        /**
+         * Remove WooCommerce Admin scheduled actions on deactivate.
+         *
+         * @return void
+         */
+        public function on_deactivation()
+        {
+        }
+        /**
+         * Setup plugin once all other plugins are loaded.
+         *
+         * @return void
+         */
+        public function on_plugins_loaded()
+        {
+        }
+        /**
+         * Define Constants.
+         */
+        protected function define_constants()
+        {
+        }
+        /**
+         * Load Localisation files.
+         */
+        protected function load_plugin_textdomain()
+        {
+        }
+        /**
+         * Include WC Admin classes.
+         */
+        public function includes()
+        {
+        }
+        /**
+         * Set up our admin hooks and plugin loader.
+         */
+        protected function hooks()
+        {
+        }
+        /**
+         * Get an array of dependency error messages.
+         *
+         * @return array
+         */
+        protected function get_dependency_errors()
+        {
+        }
+        /**
+         * Returns true if all dependencies for the wc-admin plugin are loaded.
+         *
+         * @return bool
+         */
+        public function has_satisfied_dependencies()
+        {
+        }
+        /**
+         * Deactivates this plugin.
+         */
+        public function deactivate_self()
+        {
+        }
+        /**
+         * Notify users of the plugin requirements.
+         */
+        public function render_dependencies_notice()
+        {
+        }
+        /**
+         * Overwrites the allowed features array using a local `feature-config.php` file.
+         *
+         * @param array $features Array of feature slugs.
+         */
+        public function replace_supported_features($features)
+        {
+        }
+        /**
+         * Define constant if not already set.
+         *
+         * @param string      $name  Constant name.
+         * @param string|bool $value Constant value.
+         */
+        protected function define($name, $value)
+        {
+        }
+        /**
+         * Prevent cloning.
+         */
+        private function __clone()
+        {
+        }
+        /**
+         * Prevent unserializing.
+         */
+        public function __wakeup()
+        {
+        }
+    }
+    /**
+     * Contains backend logic for the homescreen feature.
+     */
+    class Homescreen
+    {
+        /**
+         * Menu slug.
+         */
+        const MENU_SLUG = 'wc-admin';
+        /**
+         * Class instance.
+         *
+         * @var Homescreen instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Adds fields so that we can store performance indicators, row settings, and chart type settings for users.
+         *
+         * @param array $user_data_fields User data fields.
+         * @return array
+         */
+        public function add_user_data_fields($user_data_fields)
+        {
+        }
+        /**
+         * Registers home page.
+         */
+        public function register_page()
+        {
+        }
+        /**
+         * Check if the user can access the top-level WooCommerce item.
+         *
+         * @return bool
+         */
+        public static function is_admin_user()
+        {
+        }
+        /**
+         * Possibly remove the WooCommerce menu item if it was purely used to access wc-admin pages.
+         */
+        public function possibly_remove_woocommerce_menu()
+        {
+        }
+        /**
+         * Update the WooCommerce menu structure to make our main dashboard/handler
+         * the top level link for 'WooCommerce'.
+         */
+        public function update_link_structure()
+        {
+        }
+        /**
+         * Preload options to prime state of the application.
+         *
+         * @param array $options Array of options to preload.
+         * @return array
+         */
+        public function preload_options($options)
+        {
+        }
+        /**
+         * Add data to the shared component settings.
+         *
+         * @param array $settings Shared component settings.
+         */
+        public function component_settings($settings)
+        {
+        }
+    }
+    /**
+     * Install Class.
+     */
+    class Install
+    {
+        /**
+         * Plugin version option name.
+         */
+        const VERSION_OPTION = 'woocommerce_admin_version';
+        /**
+         * DB updates and callbacks that need to be run per version.
+         *
+         * @var array
+         */
+        protected static $db_updates = array('0.20.1' => array('wc_admin_update_0201_order_status_index', 'wc_admin_update_0201_db_version'), '0.23.0' => array('wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0230_db_version'), '0.25.1' => array('wc_admin_update_0251_remove_unsnooze_action', 'wc_admin_update_0251_db_version'), '1.1.0' => array('wc_admin_update_110_remove_facebook_note', 'wc_admin_update_110_db_version'), '1.3.0' => array('wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_admin_update_130_db_version'), '1.4.0' => array('wc_admin_update_140_change_deactivate_plugin_note_type', 'wc_admin_update_140_db_version'), '1.6.0' => array('wc_admin_update_160_remove_facebook_note', 'wc_admin_update_160_db_version'), '1.7.0' => array('wc_admin_update_170_homescreen_layout', 'wc_admin_update_170_db_version'), '2.7.0' => array('wc_admin_update_270_delete_report_downloads', 'wc_admin_update_270_db_version'), '2.7.1' => array('wc_admin_update_271_update_task_list_options', 'wc_admin_update_271_db_version'), '2.8.0' => array('wc_admin_update_280_order_status', 'wc_admin_update_280_db_version'), '2.9.0' => array('wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_admin_update_290_db_version'), '3.0.0' => array('wc_admin_update_300_update_is_read_from_last_read', 'wc_admin_update_300_db_version'));
+        /**
+         * Migrated option names mapping. New => old.
+         *
+         * @var array
+         */
+        protected static $migrated_options = array('woocommerce_onboarding_profile' => 'wc_onboarding_profile', 'woocommerce_admin_install_timestamp' => 'wc_admin_install_timestamp', 'woocommerce_onboarding_opt_in' => 'wc_onboarding_opt_in', 'woocommerce_admin_import_stats' => 'wc_admin_import_stats', 'woocommerce_admin_version' => 'wc_admin_version', 'woocommerce_admin_last_orders_milestone' => 'wc_admin_last_orders_milestone', 'woocommerce_admin-wc-helper-last-refresh' => 'wc-admin-wc-helper-last-refresh', 'woocommerce_admin_report_export_status' => 'wc_admin_report_export_status', 'woocommerce_task_list_complete' => 'woocommerce_task_list_complete', 'woocommerce_task_list_hidden' => 'woocommerce_task_list_hidden', 'woocommerce_extended_task_list_complete' => 'woocommerce_extended_task_list_complete', 'woocommerce_extended_task_list_hidden' => 'woocommerce_extended_task_list_hidden');
+        /**
+         * Hook in tabs.
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Migrate option values to their new keys/names.
+         */
+        public static function migrate_options()
+        {
+        }
+        /**
+         * Check WC Admin version and run the updater is required.
+         *
+         * This check is done on all requests and runs if the versions do not match.
+         */
+        public static function check_version()
+        {
+        }
+        /**
+         * Install WC Admin.
+         */
+        public static function install()
+        {
+        }
+        /**
+         * Check if the installer is installing.
+         *
+         * @return bool
+         */
+        public static function is_installing()
+        {
+        }
+        /**
+         * Get database schema.
+         *
+         * @return string
+         */
+        protected static function get_schema()
+        {
+        }
+        /**
+         * Create database tables.
+         */
+        public static function create_tables()
+        {
+        }
+        /**
+         * Return a list of tables. Used to make sure all WC Admin tables are dropped
+         * when uninstalling the plugin in a single site or multi site environment.
+         *
+         * @return array WC tables.
+         */
+        public static function get_tables()
+        {
+        }
+        /**
+         * Adds new tables.
+         *
+         * @param array $wc_tables List of WooCommerce tables.
+         * @return array
+         */
+        public static function add_tables($wc_tables)
+        {
+        }
+        /**
+         * Uninstall tables when MU blog is deleted.
+         *
+         * @param array $tables List of tables that will be deleted by WP.
+         *
+         * @return string[]
+         */
+        public static function wpmu_drop_tables($tables)
+        {
+        }
+        /**
+         * Get list of DB update callbacks.
+         *
+         * @return array
+         */
+        public static function get_db_update_callbacks()
+        {
+        }
+        /**
+         * Is a DB update needed?
+         *
+         * @return boolean
+         */
+        public static function needs_db_update()
+        {
+        }
+        /**
+         * See if we need to show or run database updates during install.
+         */
+        private static function maybe_update_db_version()
+        {
+        }
+        /**
+         * Push all needed DB updates to the queue for processing.
+         */
+        private static function update()
+        {
+        }
+        /**
+         * Update WC Admin version to current.
+         *
+         * @param string|null $version New WooCommerce Admin DB version or null.
+         */
+        public static function update_db_version($version = null)
+        {
+        }
+        /**
+         * Schedule cron events.
+         */
+        public static function create_events()
+        {
+        }
+        /**
+         * Delete obsolete notes.
+         */
+        protected static function delete_obsolete_notes()
+        {
+        }
+        /**
+         * Drop WooCommerce Admin tables.
+         *
+         * @return void
+         */
+        public static function drop_tables()
+        {
+        }
+    }
+    /**
+     * Contains backend logic for the Marketing feature.
+     */
+    class Marketing
+    {
+        use \Automattic\WooCommerce\Internal\Admin\CouponsMovedTrait;
+        /**
+         * Name of recommended plugins transient.
+         *
+         * @var string
+         */
+        const RECOMMENDED_PLUGINS_TRANSIENT = 'wc_marketing_recommended_plugins';
+        /**
+         * Name of knowledge base post transient.
+         *
+         * @var string
+         */
+        const KNOWLEDGE_BASE_TRANSIENT = 'wc_marketing_knowledge_base';
+        /**
+         * Class instance.
+         *
+         * @var Marketing instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Add main marketing menu item.
+         *
+         * Uses priority of 9 so other items can easily be added at the default priority (10).
+         */
+        public function add_parent_menu_item()
+        {
+        }
+        /**
+         * Registers report pages.
+         */
+        public function register_pages()
+        {
+        }
+        /**
+         * Register the main Marketing page, which is Marketing > Overview.
+         *
+         * This is done separately because we need to ensure the page is registered properly and
+         * that the link is done properly. For some reason the normal page registration process
+         * gives us the wrong menu link.
+         */
+        protected function register_overview_page()
+        {
+        }
+        /**
+         * Preload options to prime state of the application.
+         *
+         * @param array $options Array of options to preload.
+         * @return array
+         */
+        public function preload_options($options)
+        {
+        }
+        /**
+         * Add settings for marketing feature.
+         *
+         * @param array $settings Component settings.
+         * @return array
+         */
+        public function component_settings($settings)
+        {
+        }
+        /**
+         * Load recommended plugins from WooCommerce.com
+         *
+         * @return array
+         */
+        public function get_recommended_plugins()
+        {
+        }
+        /**
+         * Load knowledge base posts from WooCommerce.com
+         *
+         * @param string $category Category of posts to retrieve.
+         * @return array
+         */
+        public function get_knowledge_base_posts($category)
+        {
+        }
+    }
+    /**
+     * Determine if the mobile app banner shows on Android devices
+     */
+    class MobileAppBanner
+    {
+        /**
+         * Class instance.
+         *
+         * @var Analytics instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Adds fields so that we can store user preferences for the mobile app banner
+         *
+         * @param array $user_data_fields User data fields.
+         * @return array
+         */
+        public function add_user_data_fields($user_data_fields)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\Notes {
+    /**
+     * Merchant email notifications.
+     * This gets all non-sent notes type `email` and sends them.
+     */
+    class MerchantEmailNotifications
+    {
+        /**
+         * Initialize the merchant email notifications.
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Trigger the note action.
+         */
+        public static function trigger_notification_action()
+        {
+        }
+        /**
+         * Send all the notifications type `email`.
+         */
+        public static function run()
+        {
+        }
+        /**
+         * Send the notification to the merchant.
+         *
+         * @param object $note The note to send.
+         */
+        public static function send_merchant_notification($note)
+        {
+        }
+        /**
+         * Get the preferred name for user. First choice is
+         * the user's first name, and then display_name.
+         *
+         * @param WP_User $user Recipient to send the note to.
+         * @return string User's name.
+         */
+        public static function get_merchant_preferred_name($user)
+        {
+        }
+        /**
+         * Get users by role to notify.
+         *
+         * @param object $note The note to send.
+         * @return array Users to notify
+         */
+        public static function get_notification_recipients($note)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions {
+    /**
+     * Default Free Extensions
+     */
+    class DefaultFreeExtensions
+    {
+        /**
+         * Get default specs.
+         *
+         * @return array Default specs.
+         */
+        public static function get_all()
+        {
+        }
+        /**
+         * Get the plugin arguments by slug.
+         *
+         * @param string $slug Slug.
+         * @return array
+         */
+        public static function get_plugin($slug)
+        {
+        }
+    }
+    /**
+     * Evaluates the extension and returns it.
+     */
+    class EvaluateExtension
+    {
+        /**
+         * Evaluates the extension and returns it.
+         *
+         * @param object $extension The extension to evaluate.
+         * @return object The evaluated extension.
+         */
+        public static function evaluate($extension)
+        {
+        }
+    }
+    /**
+     * Remote Payment Methods engine.
+     * This goes through the specs and gets eligible payment methods.
+     */
+    class Init
+    {
+        /**
+         * Constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Go through the specs and run them.
+         *
+         * @param array $allowed_bundles Optional array of allowed bundles to be returned.
+         * @return array
+         */
+        public static function get_extensions($allowed_bundles = array())
+        {
+        }
+        /**
+         * Delete the specs transient.
+         */
+        public static function delete_specs_transient()
+        {
+        }
+        /**
+         * Get specs or fetch remotely if they don't exist.
+         */
+        public static function get_specs()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Admin {
+    /**
+     * Specs data source poller class.
+     * This handles polling specs from JSON endpoints, and
+     * stores the specs in to the database as an option.
+     */
+    abstract class DataSourcePoller
+    {
+        /**
+         * Get class instance.
+         */
+        public static abstract function get_instance();
+        /**
+         * Name of data sources filter.
+         */
+        const FILTER_NAME = 'data_source_poller_data_sources';
+        /**
+         * Name of data source specs filter.
+         */
+        const FILTER_NAME_SPECS = 'data_source_poller_specs';
+        /**
+         * Id of DataSourcePoller.
+         *
+         * @var string
+         */
+        protected $id = array();
+        /**
+         * Default data sources array.
+         *
+         * @var array
+         */
+        protected $data_sources = array();
+        /**
+         * Default args.
+         *
+         * @var array
+         */
+        protected $args = array();
+        /**
+         * The logger instance.
+         *
+         * @var WC_Logger|null
+         */
+        protected static $logger = null;
+        /**
+         * Constructor.
+         *
+         * @param string $id id of DataSourcePoller.
+         * @param array  $data_sources urls for data sources.
+         * @param array  $args Options for DataSourcePoller.
+         */
+        public function __construct($id, $data_sources = array(), $args = array())
+        {
+        }
+        /**
+         * Get the logger instance.
+         *
+         * @return WC_Logger
+         */
+        protected static function get_logger()
+        {
+        }
+        /**
+         * Returns the key identifier of spec, this can easily be overwritten. Defaults to id.
+         *
+         * @param mixed $spec a JSON parsed spec coming from the JSON feed.
+         * @return string|boolean
+         */
+        protected function get_spec_key($spec)
+        {
+        }
+        /**
+         * Reads the data sources for specs and persists those specs.
+         *
+         * @return array list of specs.
+         */
+        public function get_specs_from_data_sources()
+        {
+        }
+        /**
+         * Reads the data sources for specs and persists those specs.
+         *
+         * @return bool Whether any specs were read.
+         */
+        public function read_specs_from_data_sources()
+        {
+        }
+        /**
+         * Delete the specs transient.
+         *
+         * @return bool success of failure of transient deletion.
+         */
+        public function delete_specs_transient()
+        {
+        }
+        /**
+         * Read a single data source and return the read specs
+         *
+         * @param string $url The URL to read the specs from.
+         *
+         * @return array The specs that have been read from the data source.
+         */
+        protected static function read_data_source($url)
+        {
+        }
+        /**
+         * Merge the specs.
+         *
+         * @param Array  $specs_to_merge_in The specs to merge in to $specs.
+         * @param Array  $specs             The list of specs being merged into.
+         * @param string $url               The url of the feed being merged in (for error reporting).
+         */
+        protected function merge_specs($specs_to_merge_in, &$specs, $url)
+        {
+        }
+        /**
+         * Validate the spec.
+         *
+         * @param object $spec The spec to validate.
+         * @param string $url  The url of the feed that provided the spec.
+         *
+         * @return bool The result of the validation.
+         */
+        protected function validate_spec($spec, $url)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions {
+    /**
+     * Specs data source poller class for remote free extensions.
+     */
+    class RemoteFreeExtensionsDataSourcePoller extends \Automattic\WooCommerce\Admin\DataSourcePoller
+    {
+        const ID = 'remote_free_extensions';
+        const DATA_SOURCES = array('https://woocommerce.com/wp-json/wccom/obw-free-extensions/3.0/extensions.json');
+        /**
+         * Class instance.
+         *
+         * @var Analytics instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin {
+    /**
+     * Remote Inbox Notifications feature logic.
+     */
+    class RemoteInboxNotifications
+    {
+        /**
+         * Option name used to toggle this feature.
+         */
+        const TOGGLE_OPTION_NAME = 'woocommerce_show_marketplace_suggestions';
+        /**
+         * Class instance.
+         *
+         * @var RemoteInboxNotifications instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\Schedulers {
+    interface ImportInterface
+    {
+        /**
+         * Get items based on query and return IDs along with total available.
+         *
+         * @internal
+         * @param int      $limit Number of records to retrieve.
+         * @param int      $page  Page number.
+         * @param int|bool $days Number of days prior to current date to limit search results.
+         * @param bool     $skip_existing Skip already imported items.
+         */
+        public static function get_items($limit, $page, $days, $skip_existing);
+        /**
+         * Get total number of items already imported.
+         *
+         * @internal
+         * @return null
+         */
+        public static function get_total_imported();
+    }
+}
+namespace Automattic\WooCommerce\Admin\Schedulers {
+    /**
+     * SchedulerTraits class.
+     */
+    trait SchedulerTraits
+    {
+        /**
+         * Action scheduler group.
+         *
+         * @var string|null
+         */
+        public static $group = 'wc-admin-data';
+        /**
+         * Queue instance.
+         *
+         * @var WC_Queue_Interface
+         */
+        protected static $queue = null;
+        /**
+         * Add all actions as hooks.
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Get queue instance.
+         *
+         * @return WC_Queue_Interface
+         */
+        public static function queue()
+        {
+        }
+        /**
+         * Set queue instance.
+         *
+         * @param WC_Queue_Interface $queue Queue instance.
+         */
+        public static function set_queue($queue)
+        {
+        }
+        /**
+         * Gets the default scheduler actions for batching and scheduling actions.
+         */
+        public static function get_default_scheduler_actions()
+        {
+        }
+        /**
+         * Gets the actions for this specific scheduler.
+         *
+         * @return array
+         */
+        public static function get_scheduler_actions()
+        {
+        }
+        /**
+         * Get all available scheduling actions.
+         * Used to determine action hook names and clear events.
+         */
+        public static function get_actions()
+        {
+        }
+        /**
+         * Get an action tag name from the action name.
+         *
+         * @param string $action_name The action name.
+         * @return string|null
+         */
+        public static function get_action($action_name)
+        {
+        }
+        /**
+         * Returns an array of actions and dependencies as key => value pairs.
+         *
+         * @return array
+         */
+        public static function get_dependencies()
+        {
+        }
+        /**
+         * Get dependencies associated with an action.
+         *
+         * @param string $action_name The action slug.
+         * @return string|null
+         */
+        public static function get_dependency($action_name)
+        {
+        }
+        /**
+         * Batch action size.
+         */
+        public static function get_batch_sizes()
+        {
+        }
+        /**
+         * Returns the batch size for an action.
+         *
+         * @param string $action Single batch action name.
+         * @return int Batch size.
+         */
+        public static function get_batch_size($action)
+        {
+        }
+        /**
+         * Flatten multidimensional arrays to store for scheduling.
+         *
+         * @param array $args Argument array.
+         * @return string
+         */
+        public static function flatten_args($args)
+        {
+        }
+        /**
+         * Check if existing jobs exist for an action and arguments.
+         *
+         * @param string $action_name Action name.
+         * @param array  $args Array of arguments to pass to action.
+         * @return bool
+         */
+        public static function has_existing_jobs($action_name, $args)
+        {
+        }
+        /**
+         * Get the next blocking job for an action.
+         *
+         * @param string $action_name Action name.
+         * @return false|ActionScheduler_Action
+         */
+        public static function get_next_blocking_job($action_name)
+        {
+        }
+        /**
+         * Check for blocking jobs and reschedule if any exist.
+         */
+        public static function do_action_or_reschedule()
+        {
+        }
+        /**
+         * Get the DateTime for the next scheduled time an action should run.
+         * This function allows backwards compatibility with Action Scheduler < v3.0.
+         *
+         * @param \ActionScheduler_Action $action Action.
+         * @return DateTime|null
+         */
+        public static function get_next_action_time($action)
+        {
+        }
+        /**
+         * Schedule an action to run and check for dependencies.
+         *
+         * @param string $action_name Action name.
+         * @param array  $args Array of arguments to pass to action.
+         */
+        public static function schedule_action($action_name, $args = array())
+        {
+        }
+        /**
+         * Queue a large number of batch jobs, respecting the batch size limit.
+         * Reduces a range of batches down to "single batch" jobs.
+         *
+         * @param int    $range_start Starting batch number.
+         * @param int    $range_end Ending batch number.
+         * @param string $single_batch_action Action to schedule for a single batch.
+         * @param array  $action_args Action arguments.
+         * @return void
+         */
+        public static function queue_batches($range_start, $range_end, $single_batch_action, $action_args = array())
+        {
+        }
+        /**
+         * Clears all queued actions.
+         */
+        public static function clear_queued_actions()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\Schedulers {
+    /**
+     * ImportScheduler class.
+     */
+    abstract class ImportScheduler implements \Automattic\WooCommerce\Internal\Admin\Schedulers\ImportInterface
+    {
+        /**
+         * Import stats option name.
+         */
+        const IMPORT_STATS_OPTION = 'woocommerce_admin_import_stats';
+        /**
+         * Scheduler traits.
+         */
+        use \Automattic\WooCommerce\Admin\Schedulers\SchedulerTraits {
+            get_batch_sizes as get_scheduler_batch_sizes;
+        }
+        /**
+         * Returns true if an import is in progress.
+         *
+         * @internal
+         * @return bool
+         */
+        public static function is_importing()
+        {
+        }
+        /**
+         * Get batch sizes.
+         *
+         * @internal
+         * @retun array
+         */
+        public static function get_batch_sizes()
+        {
+        }
+        /**
+         * Get all available scheduling actions.
+         * Used to determine action hook names and clear events.
+         *
+         * @internal
+         * @return array
+         */
+        public static function get_scheduler_actions()
+        {
+        }
+        /**
+         * Queue the imports into multiple batches.
+         *
+         * @internal
+         * @param integer|boolean $days Number of days to import.
+         * @param boolean         $skip_existing Skip exisiting records.
+         */
+        public static function import_batch_init($days, $skip_existing)
+        {
+        }
+        /**
+         * Imports a batch of items to update.
+         *
+         * @internal
+         * @param int      $batch_number Batch number to import (essentially a query page number).
+         * @param int|bool $days Number of days to import.
+         * @param bool     $skip_existing Skip exisiting records.
+         * @return void
+         */
+        public static function import_batch($batch_number, $days, $skip_existing)
+        {
+        }
+        /**
+         * Queue item deletion in batches.
+         *
+         * @internal
+         */
+        public static function delete_batch_init()
+        {
+        }
+        /**
+         * Delete a batch by passing the count to be deleted to the child delete method.
+         *
+         * @internal
+         * @return void
+         */
+        public static function delete_batch()
+        {
+        }
+    }
+    /**
+     * CustomersScheduler Class.
+     */
+    class CustomersScheduler extends \Automattic\WooCommerce\Internal\Admin\Schedulers\ImportScheduler
+    {
+        /**
+         * Slug to identify the scheduler.
+         *
+         * @var string
+         */
+        public static $name = 'customers';
+        /**
+         * Attach customer lookup update hooks.
+         *
+         * @internal
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Add customer dependencies.
+         *
+         * @internal
+         * @return array
+         */
+        public static function get_dependencies()
+        {
+        }
+        /**
+         * Get the customer IDs and total count that need to be synced.
+         *
+         * @internal
+         * @param int      $limit Number of records to retrieve.
+         * @param int      $page  Page number.
+         * @param int|bool $days Number of days prior to current date to limit search results.
+         * @param bool     $skip_existing Skip already imported customers.
+         */
+        public static function get_items($limit = 10, $page = 1, $days = false, $skip_existing = false)
+        {
+        }
+        /**
+         * Exclude users that already exist in our customer lookup table.
+         *
+         * Meant to be hooked into 'pre_user_query' action.
+         *
+         * @internal
+         * @param WP_User_Query $wp_user_query WP_User_Query to modify.
+         */
+        public static function exclude_existing_customers_from_query($wp_user_query)
+        {
+        }
+        /**
+         * Get total number of rows imported.
+         *
+         * @internal
+         * @return int
+         */
+        public static function get_total_imported()
+        {
+        }
+        /**
+         * Get all available scheduling actions.
+         * Used to determine action hook names and clear events.
+         *
+         * @internal
+         * @return array
+         */
+        public static function get_scheduler_actions()
+        {
+        }
+        /**
+         * Schedule import.
+         *
+         * @internal
+         * @param int $user_id User ID.
+         * @return void
+         */
+        public static function schedule_import($user_id)
+        {
+        }
+        /**
+         * Schedule an import if the "last active" meta value was changed.
+         * Function expects to be hooked into the `updated_user_meta` action.
+         *
+         * @internal
+         * @param int    $meta_id ID of updated metadata entry.
+         * @param int    $user_id ID of the user being updated.
+         * @param string $meta_key Meta key being updated.
+         */
+        public static function schedule_import_via_last_active($meta_id, $user_id, $meta_key)
+        {
+        }
+        /**
+         * Schedule an action to anonymize a single Order.
+         *
+         * @internal
+         * @param WC_Order $order Order object.
+         * @return void
+         */
+        public static function schedule_anonymize($order)
+        {
+        }
+        /**
+         * Schedule an action to delete a single User.
+         *
+         * @internal
+         * @param int $user_id User ID.
+         * @return void
+         */
+        public static function schedule_user_delete($user_id)
+        {
+        }
+        /**
+         * Imports a single customer.
+         *
+         * @internal
+         * @param int $user_id User ID.
+         * @return void
+         */
+        public static function import($user_id)
+        {
+        }
+        /**
+         * Delete a batch of customers.
+         *
+         * @internal
+         * @param int $batch_size Number of items to delete.
+         * @return void
+         */
+        public static function delete($batch_size)
+        {
+        }
+        /**
+         * Anonymize the customer data for a single order.
+         *
+         * @internal
+         * @param int $order_id Order id.
+         * @return void
+         */
+        public static function anonymize($order_id)
+        {
+        }
+        /**
+         * Delete the customer data for a single user.
+         *
+         * @internal
+         * @param int $user_id User ID.
+         * @return void
+         */
+        public static function delete_user($user_id)
+        {
+        }
+    }
+    /**
+     * Class MailchimpScheduler
+     *
+     * @package Automattic\WooCommerce\Admin\Schedulers
+     */
+    class MailchimpScheduler
+    {
+        const SUBSCRIBE_ENDPOINT = 'https://woocommerce.com/wp-json/wccom/v1/subscribe';
+        const SUBSCRIBE_ENDPOINT_DEV = 'http://woocommerce.test/wp-json/wccom/v1/subscribe';
+        const SUBSCRIBED_OPTION_NAME = 'woocommerce_onboarding_subscribed_to_mailchimp';
+        const SUBSCRIBED_ERROR_COUNT_OPTION_NAME = 'woocommerce_onboarding_subscribed_to_mailchimp_error_count';
+        const MAX_ERROR_THRESHOLD = 3;
+        const LOGGER_CONTEXT = 'mailchimp_scheduler';
+        /**
+         * The logger instance.
+         *
+         * @var \WC_Logger_Interface|null
+         */
+        private $logger;
+        /**
+         * MailchimpScheduler constructor.
+         *
+         * @internal
+         * @param \WC_Logger_Interface|null $logger Logger instance.
+         */
+        public function __construct(\WC_Logger_Interface $logger = null)
+        {
+        }
+        /**
+         * Attempt to subscribe store_email to MailChimp.
+         *
+         * @internal
+         */
+        public function run()
+        {
+        }
+        /**
+         * Make an HTTP request to the API.
+         *
+         * @internal
+         * @param string $store_email Email address to subscribe.
+         *
+         * @return mixed
+         */
+        public function make_request($store_email)
+        {
+        }
+        /**
+         * Reset options.
+         *
+         * @internal
+         */
+        public static function reset()
+        {
+        }
+        /**
+         * Handle subscribe API error.
+         *
+         * @internal
+         * @param string $extra_msg  Extra message to log.
+         */
+        private function handle_request_error($extra_msg = null)
+        {
+        }
+    }
+    /**
+     * OrdersScheduler Class.
+     */
+    class OrdersScheduler extends \Automattic\WooCommerce\Internal\Admin\Schedulers\ImportScheduler
+    {
+        /**
+         * Slug to identify the scheduler.
+         *
+         * @var string
+         */
+        public static $name = 'orders';
+        /**
+         * Attach order lookup update hooks.
+         *
+         * @internal
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Add customer dependencies.
+         *
+         * @internal
+         * @return array
+         */
+        public static function get_dependencies()
+        {
+        }
+        /**
+         * Get the order/refund IDs and total count that need to be synced.
+         *
+         * @internal
+         * @param int      $limit Number of records to retrieve.
+         * @param int      $page  Page number.
+         * @param int|bool $days Number of days prior to current date to limit search results.
+         * @param bool     $skip_existing Skip already imported orders.
+         */
+        public static function get_items($limit = 10, $page = 1, $days = false, $skip_existing = false)
+        {
+        }
+        /**
+         * Get total number of rows imported.
+         *
+         * @internal
+         */
+        public static function get_total_imported()
+        {
+        }
+        /**
+         * Schedule this import if the post is an order or refund.
+         *
+         * @internal
+         * @param int $post_id Post ID.
+         */
+        public static function possibly_schedule_import($post_id)
+        {
+        }
+        /**
+         * Imports a single order or refund to update lookup tables for.
+         * If an error is encountered in one of the updates, a retry action is scheduled.
+         *
+         * @internal
+         * @param int $order_id Order or refund ID.
+         * @return void
+         */
+        public static function import($order_id)
+        {
+        }
+        /**
+         * Delete a batch of orders.
+         *
+         * @internal
+         * @param int $batch_size Number of items to delete.
+         * @return void
+         */
+        public static function delete($batch_size)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin {
+    /**
+     * Contains backend logic for the Settings feature.
+     */
+    class Settings
+    {
+        /**
+         * Option name used to toggle this feature.
+         */
+        const TOGGLE_OPTION_NAME = 'woocommerce_settings_enabled';
+        /**
+         * Class instance.
+         *
+         * @var Settings instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Add the necessary data to initially load the WooCommerce Settings pages.
+         *
+         * @param array $settings Array of component settings.
+         * @return array Array of component settings.
+         */
+        public static function add_component_settings($settings)
+        {
+        }
+        /**
+         * Add the feature toggle to the features settings.
+         *
+         * @param array $features Feature sections.
+         * @return array
+         */
+        public static function add_feature_toggle($features)
+        {
+        }
+        /**
+         * Registers settings pages.
+         */
+        public function register_pages()
+        {
+        }
+        /**
+         * Replace the Settings page in the original WooCommerce menu.
+         *
+         * @param array $page Page used to replace the original.
+         */
+        protected function replace_settings_page($page)
+        {
+        }
+        /**
+         * Redirect the old settings page URLs to the new ones.
+         */
+        public function redirect_core_settings_pages()
+        {
+        }
+    }
+    /**
+     * Shows print shipping label banner on edit order page.
+     */
+    class ShippingLabelBanner
+    {
+        /**
+         * Singleton for the display rules class
+         *
+         * @var ShippingLabelBannerDisplayRules
+         */
+        private $shipping_label_banner_display_rules;
+        /**
+         * Constructor
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Check if WooCommerce Shipping makes sense for this merchant.
+         *
+         * @return bool
+         */
+        private function should_show_meta_box()
+        {
+        }
+        /**
+         * Add metabox to order page.
+         *
+         * @param string   $post_type current post type.
+         * @param \WP_Post $post Current post object.
+         */
+        public function add_meta_boxes($post_type, $post)
+        {
+        }
+        /**
+         * Count shippable items
+         *
+         * @param \WC_Order $order Current order.
+         * @return int
+         */
+        private function count_shippable_items(\WC_Order $order)
+        {
+        }
+        /**
+         * Adds JS to order page to render shipping banner.
+         *
+         * @param string $hook current page hook.
+         */
+        public function add_print_shipping_label_script($hook)
+        {
+        }
+        /**
+         * Render placeholder metabox.
+         *
+         * @param \WP_Post $post current post.
+         * @param array    $args empty args.
+         */
+        public function meta_box($post, $args)
+        {
+        }
+    }
+    /**
+     * Determines whether or not the Shipping Label Banner should be displayed
+     */
+    class ShippingLabelBannerDisplayRules
+    {
+        /**
+         * Holds the installed Jetpack version.
+         *
+         * @var string
+         */
+        private $jetpack_version;
+        /**
+         * Whether or not the installed Jetpack is connected.
+         *
+         * @var bool
+         */
+        private $jetpack_connected;
+        /**
+         * Holds the installed WooCommerce Shipping & Tax version.
+         *
+         * @var string
+         */
+        private $wcs_version;
+        /**
+         * Whether or not there're plugins installed incompatible with the banner.
+         *
+         * @var bool
+         */
+        private $no_incompatible_plugins_installed;
+        /**
+         * Whether or not the WooCommerce Shipping & Tax ToS has been accepted.
+         *
+         * @var bool
+         */
+        private $wcs_tos_accepted;
+        /**
+         * Minimum supported Jetpack version.
+         *
+         * @var string
+         */
+        private $min_jetpack_version = '4.4';
+        /**
+         * Minimum supported WooCommerce Shipping & Tax version.
+         *
+         * @var string
+         */
+        private $min_wcs_version = '1.22.5';
+        /**
+         * Supported countries by USPS, see: https://webpmt.usps.gov/pmt010.cfm
+         *
+         * @var array
+         */
+        private $supported_countries = array('US', 'AS', 'PR', 'VI', 'GU', 'MP', 'UM', 'FM', 'MH');
+        /**
+         * Array of supported currency codes.
+         *
+         * @var array
+         */
+        private $supported_currencies = array('USD');
+        /**
+         * Constructor.
+         *
+         * @param string $jetpack_version Installed Jetpack version to check.
+         * @param bool   $jetpack_connected Is Jetpack connected?.
+         * @param string $wcs_version Installed WooCommerce Shipping & Tax version to check.
+         * @param bool   $wcs_tos_accepted WooCommerce Shipping & Tax Terms of Service accepted?.
+         * @param bool   $incompatible_plugins_installed Are there any incompatible plugins installed?.
+         */
+        public function __construct($jetpack_version, $jetpack_connected, $wcs_version, $wcs_tos_accepted, $incompatible_plugins_installed)
+        {
+        }
+        /**
+         * Determines whether banner is eligible for display (does not include a/b logic).
+         */
+        public function should_display_banner()
+        {
+        }
+        /**
+         * Checks if the banner was not dismissed by the user.
+         *
+         * @return bool
+         */
+        private function banner_not_dismissed()
+        {
+        }
+        /**
+         * Checks if jetpack is installed and active.
+         *
+         * @return bool
+         */
+        private function jetpack_installed_and_active()
+        {
+        }
+        /**
+         * Checks if Jetpack version is supported.
+         *
+         * @return bool
+         */
+        private function jetpack_up_to_date()
+        {
+        }
+        /**
+         * Checks if there's a shippable product in the current order.
+         *
+         * @return bool
+         */
+        private function order_has_shippable_products()
+        {
+        }
+        /**
+         * Checks if the store is in the US and has its default currency set to USD.
+         *
+         * @return bool
+         */
+        private function store_in_us_and_usd()
+        {
+        }
+        /**
+         * Checks if WooCommerce Shipping & Tax is not installed.
+         *
+         * @return bool
+         */
+        private function wcs_not_installed()
+        {
+        }
+        /**
+         * Checks if WooCommerce Shipping & Tax is up to date.
+         */
+        private function wcs_up_to_date()
+        {
+        }
+    }
+    /**
+     * Survey Class.
+     */
+    class Survey
+    {
+        /**
+         * Survey URL.
+         */
+        const SURVEY_URL = 'https://automattic.survey.fm';
+        /**
+         * Get a survey's URL from a path.
+         *
+         * @param  string $path Path of the survey.
+         * @param  array  $query Query arguments as key value pairs.
+         * @return string Full URL to survey.
+         */
+        public static function get_url($path, $query = array())
+        {
+        }
+    }
+    /**
+     * \Automattic\WooCommerce\Internal\Admin\WCAdminSharedSettings class.
+     */
+    class WCAdminSharedSettings
+    {
+        /**
+         * Settings prefix used for the window.wcSettings object.
+         *
+         * @var string
+         */
+        private $settings_prefix = 'admin';
+        /**
+         * Class instance.
+         *
+         * @var WCAdminSharedSettings instance
+         */
+        protected static $instance = null;
+        /**
+         * Hook into WooCommerce Blocks.
+         */
+        protected function __construct()
+        {
+        }
+        /**
+         * Get class instance.
+         *
+         * @return object Instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Adds settings to the Blocks AssetDataRegistry when woocommerce_blocks is loaded.
+         *
+         * @return void
+         */
+        public function on_woocommerce_blocks_loaded()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\WCPayPromotion {
+    /**
+     * WC Pay Promotion engine.
+     */
+    class Init
+    {
+        const EXPLAT_VARIATION_PREFIX = 'woocommerce_wc_pay_promotion_payment_methods_table_';
+        /**
+         * Constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Possibly registers the pre install wc pay promoted gateway.
+         *
+         * @param array $gateways list of gateway classes.
+         * @return array list of gateway classes.
+         */
+        public static function possibly_register_pre_install_wc_pay_promotion_gateway($gateways)
+        {
+        }
+        /**
+         * Possibly filters out woocommerce-payments from recommended payment methods.
+         *
+         * @param array  $specs list of payment methods.
+         * @param string $datasource_poller_id id of data source poller.
+         * @return array list of payment method.
+         */
+        public static function possibly_filter_recommended_payment_gateways($specs, $datasource_poller_id)
+        {
+        }
+        /**
+         * Checks if promoted gateway can be registered.
+         *
+         * @return boolean if promoted gateway should be registered.
+         */
+        public static function can_show_promotion()
+        {
+        }
+        /**
+         * By default, new payment gateways are put at the bottom of the list on the admin "Payments" settings screen.
+         * For visibility, we want WooCommerce Payments to be at the top of the list.
+         *
+         * @param array $ordering Existing ordering of the payment gateways.
+         *
+         * @return array Modified ordering.
+         */
+        public static function set_gateway_top_of_list($ordering)
+        {
+        }
+        /**
+         * Get WC Pay promotion spec.
+         */
+        public static function get_wc_pay_promotion_spec()
+        {
+        }
+        /**
+         * Go through the specs and run them.
+         */
+        public static function get_promotions()
+        {
+        }
+        /**
+         * Delete the specs transient.
+         */
+        public static function delete_specs_transient()
+        {
+        }
+        /**
+         * Get specs or fetch remotely if they don't exist.
+         */
+        public static function get_specs()
+        {
+        }
+    }
+    /**
+     * Specs data source poller class for WooCommerce Payment Promotion.
+     */
+    class WCPayPromotionDataSourcePoller extends \Automattic\WooCommerce\Admin\DataSourcePoller
+    {
+        const ID = 'payment_method_promotion';
+        /**
+         * Default data sources array.
+         */
+        const DATA_SOURCES = array('https://woocommerce.com/wp-json/wccom/payment-gateway-suggestions/1.0/payment-method/promotions.json');
+        /**
+         * Class instance.
+         *
+         * @var Analytics instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+    }
+    /**
+     * A Psuedo WCPay gateway class.
+     *
+     * @extends WC_Payment_Gateway
+     */
+    class WCPaymentGatewayPreInstallWCPayPromotion extends \WC_Payment_Gateway
+    {
+        const GATEWAY_ID = 'pre_install_woocommerce_payments_promotion';
+        /**
+         * Constructor
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Initialise Gateway Settings Form Fields.
+         */
+        public function init_form_fields()
+        {
+        }
+        /**
+         * Check if the promotional gateaway has been dismissed.
+         *
+         * @return bool
+         */
+        public static function is_dismissed()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin {
+    /**
+     * Class WCPayWelcomePage
+     *
+     * @package Automattic\WooCommerce\Admin\Features
+     */
+    class WcPayWelcomePage
+    {
+        const EXPERIMENT_NAME_BASE = 'woocommerce_payments_menu_promo_nz_ie_:yyyy_:mm';
+        /**
+         * WCPayWelcomePage constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Registers the WooCommerce Payments welcome page.
+         */
+        public function register_payments_welcome_page()
+        {
+        }
+        /**
+         * Checks if user is in the experiment.
+         *
+         * @return bool Whether the user is in the treatment group.
+         */
+        private function should_add_the_menu()
+        {
+        }
+    }
+}
 namespace Automattic\WooCommerce\Admin\API {
     /**
      * Coupons controller.
@@ -13740,134 +16304,6 @@ namespace Automattic\WooCommerce\Admin\Composer {
          * Checks if notes have been initialized.
          */
         private static function is_notes_initialized()
-        {
-        }
-    }
-}
-namespace Automattic\WooCommerce\Admin {
-    /**
-     * Specs data source poller class.
-     * This handles polling specs from JSON endpoints, and
-     * stores the specs in to the database as an option.
-     */
-    abstract class DataSourcePoller
-    {
-        /**
-         * Get class instance.
-         */
-        public static abstract function get_instance();
-        /**
-         * Name of data sources filter.
-         */
-        const FILTER_NAME = 'data_source_poller_data_sources';
-        /**
-         * Name of data source specs filter.
-         */
-        const FILTER_NAME_SPECS = 'data_source_poller_specs';
-        /**
-         * Id of DataSourcePoller.
-         *
-         * @var string
-         */
-        protected $id = array();
-        /**
-         * Default data sources array.
-         *
-         * @var array
-         */
-        protected $data_sources = array();
-        /**
-         * Default args.
-         *
-         * @var array
-         */
-        protected $args = array();
-        /**
-         * The logger instance.
-         *
-         * @var WC_Logger|null
-         */
-        protected static $logger = null;
-        /**
-         * Constructor.
-         *
-         * @param string $id id of DataSourcePoller.
-         * @param array  $data_sources urls for data sources.
-         * @param array  $args Options for DataSourcePoller.
-         */
-        public function __construct($id, $data_sources = array(), $args = array())
-        {
-        }
-        /**
-         * Get the logger instance.
-         *
-         * @return WC_Logger
-         */
-        protected static function get_logger()
-        {
-        }
-        /**
-         * Returns the key identifier of spec, this can easily be overwritten. Defaults to id.
-         *
-         * @param mixed $spec a JSON parsed spec coming from the JSON feed.
-         * @return string|boolean
-         */
-        protected function get_spec_key($spec)
-        {
-        }
-        /**
-         * Reads the data sources for specs and persists those specs.
-         *
-         * @return array list of specs.
-         */
-        public function get_specs_from_data_sources()
-        {
-        }
-        /**
-         * Reads the data sources for specs and persists those specs.
-         *
-         * @return bool Whether any specs were read.
-         */
-        public function read_specs_from_data_sources()
-        {
-        }
-        /**
-         * Delete the specs transient.
-         *
-         * @return bool success of failure of transient deletion.
-         */
-        public function delete_specs_transient()
-        {
-        }
-        /**
-         * Read a single data source and return the read specs
-         *
-         * @param string $url The URL to read the specs from.
-         *
-         * @return array The specs that have been read from the data source.
-         */
-        protected static function read_data_source($url)
-        {
-        }
-        /**
-         * Merge the specs.
-         *
-         * @param Array  $specs_to_merge_in The specs to merge in to $specs.
-         * @param Array  $specs             The list of specs being merged into.
-         * @param string $url               The url of the feed being merged in (for error reporting).
-         */
-        protected function merge_specs($specs_to_merge_in, &$specs, $url)
-        {
-        }
-        /**
-         * Validate the spec.
-         *
-         * @param object $spec The spec to validate.
-         * @param string $url  The url of the feed that provided the spec.
-         *
-         * @return bool The result of the validation.
-         */
-        protected function validate_spec($spec, $url)
         {
         }
     }
@@ -22914,184 +25350,6 @@ namespace Automattic\WooCommerce\Admin {
         {
         }
     }
-}
-namespace Automattic\WooCommerce\Admin\Schedulers {
-    /**
-     * SchedulerTraits class.
-     */
-    trait SchedulerTraits
-    {
-        /**
-         * Action scheduler group.
-         *
-         * @var string|null
-         */
-        public static $group = 'wc-admin-data';
-        /**
-         * Queue instance.
-         *
-         * @var WC_Queue_Interface
-         */
-        protected static $queue = null;
-        /**
-         * Add all actions as hooks.
-         */
-        public static function init()
-        {
-        }
-        /**
-         * Get queue instance.
-         *
-         * @return WC_Queue_Interface
-         */
-        public static function queue()
-        {
-        }
-        /**
-         * Set queue instance.
-         *
-         * @param WC_Queue_Interface $queue Queue instance.
-         */
-        public static function set_queue($queue)
-        {
-        }
-        /**
-         * Gets the default scheduler actions for batching and scheduling actions.
-         */
-        public static function get_default_scheduler_actions()
-        {
-        }
-        /**
-         * Gets the actions for this specific scheduler.
-         *
-         * @return array
-         */
-        public static function get_scheduler_actions()
-        {
-        }
-        /**
-         * Get all available scheduling actions.
-         * Used to determine action hook names and clear events.
-         */
-        public static function get_actions()
-        {
-        }
-        /**
-         * Get an action tag name from the action name.
-         *
-         * @param string $action_name The action name.
-         * @return string|null
-         */
-        public static function get_action($action_name)
-        {
-        }
-        /**
-         * Returns an array of actions and dependencies as key => value pairs.
-         *
-         * @return array
-         */
-        public static function get_dependencies()
-        {
-        }
-        /**
-         * Get dependencies associated with an action.
-         *
-         * @param string $action_name The action slug.
-         * @return string|null
-         */
-        public static function get_dependency($action_name)
-        {
-        }
-        /**
-         * Batch action size.
-         */
-        public static function get_batch_sizes()
-        {
-        }
-        /**
-         * Returns the batch size for an action.
-         *
-         * @param string $action Single batch action name.
-         * @return int Batch size.
-         */
-        public static function get_batch_size($action)
-        {
-        }
-        /**
-         * Flatten multidimensional arrays to store for scheduling.
-         *
-         * @param array $args Argument array.
-         * @return string
-         */
-        public static function flatten_args($args)
-        {
-        }
-        /**
-         * Check if existing jobs exist for an action and arguments.
-         *
-         * @param string $action_name Action name.
-         * @param array  $args Array of arguments to pass to action.
-         * @return bool
-         */
-        public static function has_existing_jobs($action_name, $args)
-        {
-        }
-        /**
-         * Get the next blocking job for an action.
-         *
-         * @param string $action_name Action name.
-         * @return false|ActionScheduler_Action
-         */
-        public static function get_next_blocking_job($action_name)
-        {
-        }
-        /**
-         * Check for blocking jobs and reschedule if any exist.
-         */
-        public static function do_action_or_reschedule()
-        {
-        }
-        /**
-         * Get the DateTime for the next scheduled time an action should run.
-         * This function allows backwards compatibility with Action Scheduler < v3.0.
-         *
-         * @param \ActionScheduler_Action $action Action.
-         * @return DateTime|null
-         */
-        public static function get_next_action_time($action)
-        {
-        }
-        /**
-         * Schedule an action to run and check for dependencies.
-         *
-         * @param string $action_name Action name.
-         * @param array  $args Array of arguments to pass to action.
-         */
-        public static function schedule_action($action_name, $args = array())
-        {
-        }
-        /**
-         * Queue a large number of batch jobs, respecting the batch size limit.
-         * Reduces a range of batches down to "single batch" jobs.
-         *
-         * @param int    $range_start Starting batch number.
-         * @param int    $range_end Ending batch number.
-         * @param string $single_batch_action Action to schedule for a single batch.
-         * @param array  $action_args Action arguments.
-         * @return void
-         */
-        public static function queue_batches($range_start, $range_end, $single_batch_action, $action_args = array())
-        {
-        }
-        /**
-         * Clears all queued actions.
-         */
-        public static function clear_queued_actions()
-        {
-        }
-    }
-}
-namespace Automattic\WooCommerce\Admin {
     /**
      * ReportExporter Class.
      */
