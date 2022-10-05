@@ -58259,14 +58259,9 @@ namespace Automattic\WooCommerce\Admin\API\Reports {
         /**
          * Get cache version number.
          *
-         * This is based on WC_Cache_Helper::get_transient_version, but rounds the Unix timestamp to the nearest
-         * increment to rate-limit cache invalidations.
-         *
-         * @param bool $refresh True to generate a new value.
-         *
          * @return string
          */
-        public static function get_version($refresh = false)
+        public static function get_version()
         {
         }
         /**
