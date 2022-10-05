@@ -39432,6 +39432,12 @@ namespace {
         public function admin_options()
         {
         }
+        /**
+         * Clears the PhpMailer AltBody field, to prevent that content from leaking across emails.
+         */
+        private function clear_alt_body_field() : void
+        {
+        }
     }
     /**
      * Cancelled Order Email.
