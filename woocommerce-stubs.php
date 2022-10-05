@@ -67688,14 +67688,6 @@ namespace Automattic\WooCommerce\Admin\Marketing {
         {
         }
         /**
-         * Get Facebook extension data.
-         *
-         * @return array|bool
-         */
-        protected static function get_facebook_extension_data()
-        {
-        }
-        /**
          * Get Pinterest extension data.
          *
          * @return array|bool
