@@ -67198,6 +67198,13 @@ namespace Automattic\WooCommerce\Admin\Features\OnboardingTasks\Tasks {
         {
         }
         /**
+         * Delete the zone count transient used in has_shipping_zones() method
+         * to refresh the cache.
+         */
+        public static function delete_zone_count_transient()
+        {
+        }
+        /**
          * Check if the store sells digital products only.
          *
          * @return bool
