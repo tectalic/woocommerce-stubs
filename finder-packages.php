@@ -1,14 +1,14 @@
 <?php
 
 return \StubsGenerator\Finder::create()
-    ->in(['source/woocommerce/packages/*/src'])
+    ->in(['woocommerce/packages/*/src'])
     // Action Scheduler.
     ->append(
         \StubsGenerator\Finder::create()
             ->in([
-                'source/woocommerce/packages/action-scheduler/classes',
+                'woocommerce/packages/action-scheduler/classes',
                 // Current classes extend deprecated ones.
-                'source/woocommerce/packages/action-scheduler/deprecated',
+                'woocommerce/packages/action-scheduler/deprecated',
             ])
             // Uses WP-CLI.
             ->notPath('WP_CLI')
@@ -16,10 +16,9 @@ return \StubsGenerator\Finder::create()
     )
     ->append(
         \StubsGenerator\Finder::create()
-            ->in(['source/woocommerce/packages/action-scheduler'])
+            ->in(['woocommerce/packages/action-scheduler'])
             ->files()
             ->depth('< 1')
             ->path('functions.php')
     )
-    ->sortByName(true)
-;
+    ->sortByName(true);

@@ -12,7 +12,7 @@ set -e
 
 test -f "$FILE"
 test -f "$FILE_PKGS"
-test -d "source/woocommerce"
+test -d "woocommerce"
 
 # Exclude globals.
 "$(dirname "$0")/vendor/bin/generate-stubs" \
