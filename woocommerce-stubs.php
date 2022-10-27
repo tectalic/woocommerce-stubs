@@ -82244,6 +82244,7 @@ namespace {
     function wc_register_widgets()
     {
     }
+    \define('WC_PLUGIN_FILE', __FILE__);
     /**
      * Returns the main instance of WC.
      *
