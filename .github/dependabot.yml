@@ -1,0 +1,21 @@
+version: 2
+registries:
+  git-github-com:
+    type: git
+    url: https://github.com
+    username: om4csaba
+    password: "${{secrets.OM4CSABA_GITHUB_COM_PAT}}"
+
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "21:00"
+  open-pull-requests-limit: 10
+  versioning-strategy: increase
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect
+  registries:
+  - git-github-com

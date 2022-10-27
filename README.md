@@ -13,7 +13,7 @@ using [giacocorsiglia/stubs-generator](https://github.com/GiacoCorsiglia/php-stu
 
 ### Requirements
 
-- PHP >=7.1
+- PHP >=7.2
 
 ### Installation
 
@@ -34,5 +34,6 @@ parameters:
     bootstrapFiles:
         - %rootDir%/../../php-stubs/wordpress-stubs/wordpress-stubs.php
         - %rootDir%/../../php-stubs/woocommerce-stubs/woocommerce-stubs.php
-        #- %rootDir%/../../php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+        # Optionally
+        - %rootDir%/../../php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
 ```
