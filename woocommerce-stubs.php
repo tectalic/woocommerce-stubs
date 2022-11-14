@@ -40455,8 +40455,10 @@ namespace {
         }
         /**
          * Add mobile messaging.
+         *
+         * @param WC_Email $email that called for mobile messaging. May not contain a WC_Email for legacy reasons.
          */
-        public function mobile_messaging()
+        public function mobile_messaging($email)
         {
         }
     }
