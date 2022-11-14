@@ -1968,6 +1968,14 @@ namespace {
         public function get_recorded_coupon_usage_counts($context = 'view')
         {
         }
+        /**
+         * Get basic order data in array format.
+         *
+         * @return array
+         */
+        public function get_base_data()
+        {
+        }
         /*
         |--------------------------------------------------------------------------
         | Setters
@@ -24256,7 +24264,7 @@ namespace {
          *
          * @return array Array of order_id => class_name.
          */
-        private static function get_class_names_for_order_ids($order_ids)
+        public static function get_class_names_for_order_ids($order_ids)
         {
         }
         /**
