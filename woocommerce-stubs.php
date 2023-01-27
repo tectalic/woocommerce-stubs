@@ -14247,6 +14247,12 @@ namespace {
         {
         }
         /**
+         * Creates the React mount point for the embedded banner.
+         */
+        public function conflict_error()
+        {
+        }
+        /**
          * Add this page to settings.
          *
          * @param array $pages Existing pages.
@@ -23254,7 +23260,7 @@ namespace {
          *
          * @var array
          */
-        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'));
+        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'));
         /**
          * Hook in tabs.
          */
@@ -32655,6 +32661,18 @@ namespace {
         {
         }
         /**
+         * Checks whether a block template for a given taxonomy exists.
+         *
+         * **Note:** This checks both the `templates` and `block-templates` directories
+         * as both conventions should be supported.
+         *
+         * @param object $taxonomy Object taxonomy to check.
+         * @return boolean
+         */
+        private static function taxonomy_has_block_template($taxonomy) : bool
+        {
+        }
+        /**
          * Checks whether a block template with that name exists.
          *
          * **Note: ** This checks both the `templates` and `block-templates` directories
@@ -33781,7 +33799,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '7.2.3';
+        public $version = '7.3.0';
         /**
          * WooCommerce Schema version.
          *
@@ -55304,6 +55322,14 @@ namespace {
         public function track_settings_page_view()
         {
         }
+        /**
+         * Adds the tracking scripts for product setting pages.
+         *
+         * @param string $hook Page hook.
+         */
+        public function possibly_add_settings_tracking_scripts($hook)
+        {
+        }
     }
     /**
      * This class adds actions to track usage of WooCommerce Orders.
@@ -75260,9 +75286,11 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         /**
          * Create the custom orders tables in response to the user pressing the tool button.
          *
+         * @param bool $verify_nonce True to perform the nonce verification, false to skip it.
+         *
          * @throws \Exception Can't create the tables.
          */
-        private function create_custom_orders_tables()
+        private function create_custom_orders_tables(bool $verify_nonce = true)
         {
         }
         /**
@@ -75343,6 +75371,16 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * Handler for the all settings updated hook.
          */
         private function process_options_updated()
+        {
+        }
+        /**
+         * Handle the 'woocommerce_feature_enabled_changed' action,
+         * if the custom orders table feature is enabled create the database tables if they don't exist.
+         *
+         * @param string $feature_id The id of the feature that is being enabled or disabled.
+         * @param bool   $is_enabled True if the feature is being enabled, false if it's being disabled.
+         */
+        private function handle_feature_enabled_changed($feature_id, $is_enabled) : void
         {
         }
         /**
@@ -76034,7 +76072,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          *
          * @return void
          */
-        private function init_order_record(\WC_Abstract_Order &$order, int $order_id, \stdClass $order_data)
+        protected function init_order_record(\WC_Abstract_Order &$order, int $order_id, \stdClass $order_data)
         {
         }
         /**
@@ -76180,7 +76218,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          *
          * @return \stdClass[]|object|null DB Order objects or error.
          */
-        private function get_order_data_for_ids($ids)
+        protected function get_order_data_for_ids($ids)
         {
         }
         /**
@@ -76988,6 +77026,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          */
         private $sql = '';
         /**
+         * Final SQL query to count results after processing of args.
+         *
+         * @var string
+         */
+        private $count_sql = '';
+        /**
          * The number of pages (when pagination is enabled).
          *
          * @var int
@@ -77097,6 +77141,17 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @return void
          */
         private function build_query() : void
+        {
+        }
+        /**
+         * Build SQL query for counting total number of results.
+         *
+         * @param string $fields Prepared fields for SELECT clause.
+         * @param string $join Prepared JOIN clause.
+         * @param string $where Prepared WHERE clause.
+         * @param string $groupby Prepared GROUP BY clause.
+         */
+        private function build_count_query($fields, $join, $where, $groupby)
         {
         }
         /**
@@ -79475,7 +79530,7 @@ namespace {
      *
      * @param string $element The name of the element.
      *
-     * @since 7.1.0
+     * @since 7.0.1
      * @return string
      */
     function wc_wp_theme_get_element_class_name($element)
@@ -82288,9 +82343,10 @@ namespace {
      * Return the orders count of a specific order status.
      *
      * @param string $status Status.
+     * @param string $type   (Optional) Order type. Leave empty to include all 'for order-count' order types. @{see wc_get_order_types()}.
      * @return int
      */
-    function wc_orders_count($status)
+    function wc_orders_count($status, string $type = '')
     {
     }
     /**
@@ -82781,23 +82837,6 @@ namespace {
      * @return string
      */
     function wc_product_post_type_link($permalink, $post)
-    {
-    }
-    /**
-     * Filter to add upload tips under the product image thumbnail.
-     *
-     * @param  string $content The HTML markup for the admin post thumbnail.
-     * @return string
-     */
-    function wc_product_post_thumbnail_html($content)
-    {
-    }
-    /**
-     * Action to add the filter to add upload tips under the product image thumbnail.
-     *
-     * @param WP_Screen $current_screen Current WP_Screen object.
-     */
-    function wc_add_product_post_thumbnail_html_filter($current_screen)
     {
     }
     /**
