@@ -2,7 +2,7 @@
 /**
  * Generated stub declarations for WooCommerce.
  * @see https://woocommerce.com
- * @see https://github.com/php-stubs/woocommerce-stubs
+ * @see https://github.com/om4/woocommerce-stubs
  */
 
 namespace {
