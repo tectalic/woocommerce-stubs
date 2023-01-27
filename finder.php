@@ -12,6 +12,7 @@ return \StubsGenerator\Finder::create()
     ->append(
         \StubsGenerator\Finder::create()
             ->in(['woocommerce/src'])
+            ->files()
             ->notPath('Internal')
             ->sortByName(true)
     )
@@ -21,6 +22,12 @@ return \StubsGenerator\Finder::create()
             ->files()
             ->depth('< 1')
             ->path('CouponsMovedTrait.php')
+    )
+    ->append(
+        \StubsGenerator\Finder::create()
+            ->in(['woocommerce/src/Internal/DataStores'])
+            ->files()
+            ->sortByName(true)
     )
     /*
     // Comment out existing interface exclusion
