@@ -3,7 +3,7 @@
 # Generate WooCommerce stubs from the source directory.
 #
 
-HEADER=$'/**\n * Generated stub declarations for WooCommerce.\n * @see https://woocommerce.com\n * @see https://github.com/php-stubs/woocommerce-stubs\n */'
+HEADER=$'/**\n * Generated stub declarations for WooCommerce.\n * @see https://woocommerce.com\n * @see https://github.com/om4/woocommerce-stubs\n */'
 
 FILE="woocommerce-stubs.php"
 FILE_PKGS="woocommerce-packages-stubs.php"

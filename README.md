@@ -1,6 +1,6 @@
 # WooCommerce Stubs
 
-[![Build Status](https://travis-ci.com/php-stubs/woocommerce-stubs.svg?branch=master)](https://travis-ci.com/php-stubs/woocommerce-stubs)
+> Forked from https://github.com/php-stubs/woocommerce-stubs
 
 This package provides stub declarations for [WooCommerce](https://woocommerce.com/)
 functions, classes and interfaces.
@@ -9,7 +9,7 @@ like [PHPStan](https://github.com/phpstan/phpstan),
 which is not able to parse WooCommerce as it is not clean OOP code.
 
 Stubs are generated directly from the [source](https://github.com/woocommerce/woocommerce)
-using [giacocorsiglia/stubs-generator](https://github.com/GiacoCorsiglia/php-stubs-generator).
+using [php-stubs/generator](https://github.com/php-stubs/generator).
 
 ### Requirements
 
@@ -20,7 +20,7 @@ using [giacocorsiglia/stubs-generator](https://github.com/GiacoCorsiglia/php-stu
 Require this package as a development dependency with [Composer](https://getcomposer.org).
 
 ```bash
-composer require --dev php-stubs/woocommerce-stubs
+composer require --dev om4/woocommerce-stubs
 ```
 
 Alternatively you may download `woocommerce-stubs.php` directly.
@@ -32,8 +32,8 @@ Include all stubs in PHPStan configuration file.
 ```yaml
 parameters:
     bootstrapFiles:
-        - %rootDir%/../../php-stubs/wordpress-stubs/wordpress-stubs.php
-        - %rootDir%/../../php-stubs/woocommerce-stubs/woocommerce-stubs.php
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+        - vendor/om4/woocommerce-stubs/woocommerce-stubs.php
         # Optionally
-        - %rootDir%/../../php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+        - vendor/om4/woocommerce-stubs/woocommerce-packages-stubs.php
 ```

@@ -1,5 +1,5 @@
 {
-    "name": "php-stubs/woocommerce-stubs",
+    "name": "om4/woocommerce-stubs",
     "description": "WooCommerce function and class declaration stubs for static analysis.",
     "keywords": [
         "woocommerce",
@@ -7,7 +7,7 @@
         "static analysis",
         "phpstan"
     ],
-    "homepage": "https://github.com/php-stubs/woocommerce-stubs",
+    "homepage": "https://github.com/om4/woocommerce-stubs",
     "license": "MIT",
     "repositories": [
         {
