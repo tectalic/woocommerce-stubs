@@ -13,31 +13,8 @@ return \StubsGenerator\Finder::create()
         \StubsGenerator\Finder::create()
             ->in(['woocommerce/src'])
             ->files()
-            ->notPath('Internal')
             ->sortByName(true)
     )
-    ->append(
-        \StubsGenerator\Finder::create()
-            ->in(['woocommerce/src/Internal/Admin'])
-            ->files()
-            ->depth('< 1')
-            ->path('CouponsMovedTrait.php')
-    )
-    ->append(
-        \StubsGenerator\Finder::create()
-            ->in(['woocommerce/src/Internal/DataStores'])
-            ->files()
-            ->sortByName(true)
-    )
-    /*
-    // Comment out existing interface exclusion
-    // $ editor vendor/php-stubs/generator/src/NodeVisitor.php:352
-    ->append(
-        \StubsGenerator\Finder::create()
-            ->in(['woocommerce/vendor/psr/container/src'])
-            ->sortByName(true)
-    )
-*/
     // Exclude woocommerce.com API as is uses the woocommerce-rest-api package.
     ->notPath('wccom-site/rest-api/endpoints')
     // Exclude WP-CLI command as is extends Plugin_Command.
