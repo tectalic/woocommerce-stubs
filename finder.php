@@ -4,6 +4,11 @@ return \StubsGenerator\Finder::create()
     ->in('woocommerce/includes')
     ->append(
         \StubsGenerator\Finder::create()
+            ->in(['woocommerce/lib'])
+            ->files()
+    )
+    ->append(
+        \StubsGenerator\Finder::create()
             ->in(['woocommerce'])
             ->files()
             ->depth('< 1')
