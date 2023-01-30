@@ -56563,6 +56563,1127 @@ namespace {
         }
     }
 }
+namespace Automattic\WooCommerce\Vendor\League\Container {
+    interface ContainerAwareInterface
+    {
+        /**
+         * Set a container
+         *
+         * @param ContainerInterface $container
+         *
+         * @return self
+         */
+        public function setContainer(\Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface $container) : \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface;
+        /**
+         * Get the container
+         *
+         * @return ContainerInterface
+         */
+        public function getContainer() : \Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface;
+        /**
+         * Set a container. This will be removed in favour of setContainer receiving Container in next major release.
+         *
+         * @param Container $container
+         *
+         * @return self
+         */
+        public function setLeagueContainer(\Automattic\WooCommerce\Vendor\League\Container\Container $container) : self;
+        /**
+         * Get the container. This will be removed in favour of getContainer returning Container in next major release.
+         *
+         * @return Container
+         */
+        public function getLeagueContainer() : \Automattic\WooCommerce\Vendor\League\Container\Container;
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container\Argument {
+    interface ArgumentResolverInterface extends \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface
+    {
+        /**
+         * Resolve an array of arguments to their concrete implementations.
+         *
+         * @param array $arguments
+         *
+         * @return array
+         */
+        public function resolveArguments(array $arguments) : array;
+        /**
+         * Resolves the correct arguments to be passed to a method.
+         *
+         * @param ReflectionFunctionAbstract $method
+         * @param array                      $args
+         *
+         * @return array
+         */
+        public function reflectArguments(\ReflectionFunctionAbstract $method, array $args = []) : array;
+    }
+    trait ArgumentResolverTrait
+    {
+        /**
+         * {@inheritdoc}
+         */
+        public function resolveArguments(array $arguments) : array
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function reflectArguments(\ReflectionFunctionAbstract $method, array $args = []) : array
+        {
+        }
+        /**
+         * @return ContainerInterface
+         */
+        public abstract function getContainer() : \Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface;
+        /**
+         * @return Container
+         */
+        public abstract function getLeagueContainer() : \Automattic\WooCommerce\Vendor\League\Container\Container;
+    }
+    interface ClassNameInterface
+    {
+        /**
+         * Return the class name.
+         *
+         * @return string
+         */
+        public function getClassName() : string;
+    }
+    class ClassName implements \Automattic\WooCommerce\Vendor\League\Container\Argument\ClassNameInterface
+    {
+        /**
+         * @var string
+         */
+        protected $value;
+        /**
+         * Construct.
+         *
+         * @param string $value
+         */
+        public function __construct(string $value)
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getClassName() : string
+        {
+        }
+    }
+    class ClassNameWithOptionalValue implements \Automattic\WooCommerce\Vendor\League\Container\Argument\ClassNameInterface
+    {
+        /**
+         * @var string
+         */
+        private $className;
+        /**
+         * @var mixed
+         */
+        private $optionalValue;
+        /**
+         * @param string $className
+         * @param mixed $optionalValue
+         */
+        public function __construct(string $className, $optionalValue)
+        {
+        }
+        /**
+         * @inheritDoc
+         */
+        public function getClassName() : string
+        {
+        }
+        public function getOptionalValue()
+        {
+        }
+    }
+    interface RawArgumentInterface
+    {
+        /**
+         * Return the value of the raw argument.
+         *
+         * @return mixed
+         */
+        public function getValue();
+    }
+    class RawArgument implements \Automattic\WooCommerce\Vendor\League\Container\Argument\RawArgumentInterface
+    {
+        /**
+         * @var mixed
+         */
+        protected $value;
+        /**
+         * Construct.
+         *
+         * @param mixed $value
+         */
+        public function __construct($value)
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getValue()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Vendor\Psr\Container {
+    /**
+     * Describes the interface of a container that exposes methods to read its entries.
+     */
+    interface ContainerInterface
+    {
+        /**
+         * Finds an entry of the container by its identifier and returns it.
+         *
+         * @param string $id Identifier of the entry to look for.
+         *
+         * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
+         * @throws ContainerExceptionInterface Error while retrieving the entry.
+         *
+         * @return mixed Entry.
+         */
+        public function get(string $id);
+        /**
+         * Returns true if the container can return an entry for the given identifier.
+         * Returns false otherwise.
+         *
+         * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
+         * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+         *
+         * @param string $id Identifier of the entry to look for.
+         *
+         * @return bool
+         */
+        public function has(string $id);
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container {
+    class Container implements \Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface
+    {
+        /**
+         * @var boolean
+         */
+        protected $defaultToShared = false;
+        /**
+         * @var DefinitionAggregateInterface
+         */
+        protected $definitions;
+        /**
+         * @var ServiceProviderAggregateInterface
+         */
+        protected $providers;
+        /**
+         * @var InflectorAggregateInterface
+         */
+        protected $inflectors;
+        /**
+         * @var ContainerInterface[]
+         */
+        protected $delegates = [];
+        /**
+         * Construct.
+         *
+         * @param DefinitionAggregateInterface|null      $definitions
+         * @param ServiceProviderAggregateInterface|null $providers
+         * @param InflectorAggregateInterface|null       $inflectors
+         */
+        public function __construct(\Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionAggregateInterface $definitions = null, \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderAggregateInterface $providers = null, \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorAggregateInterface $inflectors = null)
+        {
+        }
+        /**
+         * Add an item to the container.
+         *
+         * @param string  $id
+         * @param mixed   $concrete
+         * @param boolean $shared
+         *
+         * @return DefinitionInterface
+         */
+        public function add(string $id, $concrete = null, bool $shared = null) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * Proxy to add with shared as true.
+         *
+         * @param string $id
+         * @param mixed  $concrete
+         *
+         * @return DefinitionInterface
+         */
+        public function share(string $id, $concrete = null) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * Whether the container should default to defining shared definitions.
+         *
+         * @param boolean $shared
+         *
+         * @return self
+         */
+        public function defaultToShared(bool $shared = true) : \Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface
+        {
+        }
+        /**
+         * Get a definition to extend.
+         *
+         * @param string $id [description]
+         *
+         * @return DefinitionInterface
+         */
+        public function extend(string $id) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * Add a service provider.
+         *
+         * @param ServiceProviderInterface|string $provider
+         *
+         * @return self
+         */
+        public function addServiceProvider($provider) : self
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function get($id, bool $new = false)
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function has($id) : bool
+        {
+        }
+        /**
+         * Allows for manipulation of specific types on resolution.
+         *
+         * @param string        $type
+         * @param callable|null $callback
+         *
+         * @return InflectorInterface
+         */
+        public function inflector(string $type, callable $callback = null) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface
+        {
+        }
+        /**
+         * Delegate a backup container to be checked for services if it
+         * cannot be resolved via this container.
+         *
+         * @param ContainerInterface $container
+         *
+         * @return self
+         */
+        public function delegate(\Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface $container) : self
+        {
+        }
+    }
+    trait ContainerAwareTrait
+    {
+        /**
+         * @var ContainerInterface
+         */
+        protected $container;
+        /**
+         * @var Container
+         */
+        protected $leagueContainer;
+        /**
+         * Set a container.
+         *
+         * @param ContainerInterface $container
+         *
+         * @return ContainerAwareInterface
+         */
+        public function setContainer(\Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface $container) : \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface
+        {
+        }
+        /**
+         * Get the container.
+         *
+         * @return ContainerInterface
+         */
+        public function getContainer() : \Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface
+        {
+        }
+        /**
+         * Set a container.
+         *
+         * @param Container $container
+         *
+         * @return self
+         */
+        public function setLeagueContainer(\Automattic\WooCommerce\Vendor\League\Container\Container $container) : \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface
+        {
+        }
+        /**
+         * Get the container.
+         *
+         * @return Container
+         */
+        public function getLeagueContainer() : \Automattic\WooCommerce\Vendor\League\Container\Container
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container\Definition {
+    interface DefinitionInterface extends \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface
+    {
+        /**
+         * Add a tag to the definition.
+         *
+         * @param string $tag
+         *
+         * @return self
+         */
+        public function addTag(string $tag) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Does the definition have a tag?
+         *
+         * @param string $tag
+         *
+         * @return boolean
+         */
+        public function hasTag(string $tag) : bool;
+        /**
+         * Set the alias of the definition.
+         *
+         * @param string $id
+         *
+         * @return DefinitionInterface
+         */
+        public function setAlias(string $id) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Get the alias of the definition.
+         *
+         * @return string
+         */
+        public function getAlias() : string;
+        /**
+         * Set whether this is a shared definition.
+         *
+         * @param boolean $shared
+         *
+         * @return self
+         */
+        public function setShared(bool $shared) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Is this a shared definition?
+         *
+         * @return boolean
+         */
+        public function isShared() : bool;
+        /**
+         * Get the concrete of the definition.
+         *
+         * @return mixed
+         */
+        public function getConcrete();
+        /**
+         * Set the concrete of the definition.
+         *
+         * @param mixed $concrete
+         *
+         * @return DefinitionInterface
+         */
+        public function setConcrete($concrete) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Add an argument to be injected.
+         *
+         * @param mixed $arg
+         *
+         * @return self
+         */
+        public function addArgument($arg) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Add multiple arguments to be injected.
+         *
+         * @param array $args
+         *
+         * @return self
+         */
+        public function addArguments(array $args) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Add a method to be invoked
+         *
+         * @param string $method
+         * @param array  $args
+         *
+         * @return self
+         */
+        public function addMethodCall(string $method, array $args = []) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Add multiple methods to be invoked
+         *
+         * @param array $methods
+         *
+         * @return self
+         */
+        public function addMethodCalls(array $methods = []) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Handle instantiation and manipulation of value and return.
+         *
+         * @param boolean $new
+         *
+         * @return mixed
+         */
+        public function resolve(bool $new = false);
+    }
+    class Definition implements \Automattic\WooCommerce\Vendor\League\Container\Argument\ArgumentResolverInterface, \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+    {
+        use \Automattic\WooCommerce\Vendor\League\Container\Argument\ArgumentResolverTrait;
+        use \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareTrait;
+        /**
+         * @var string
+         */
+        protected $alias;
+        /**
+         * @var mixed
+         */
+        protected $concrete;
+        /**
+         * @var boolean
+         */
+        protected $shared = false;
+        /**
+         * @var array
+         */
+        protected $tags = [];
+        /**
+         * @var array
+         */
+        protected $arguments = [];
+        /**
+         * @var array
+         */
+        protected $methods = [];
+        /**
+         * @var mixed
+         */
+        protected $resolved;
+        /**
+         * Constructor.
+         *
+         * @param string $id
+         * @param mixed  $concrete
+         */
+        public function __construct(string $id, $concrete = null)
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function addTag(string $tag) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function hasTag(string $tag) : bool
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function setAlias(string $id) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getAlias() : string
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function setShared(bool $shared = true) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function isShared() : bool
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getConcrete()
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function setConcrete($concrete) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function addArgument($arg) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function addArguments(array $args) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function addMethodCall(string $method, array $args = []) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function addMethodCalls(array $methods = []) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function resolve(bool $new = false)
+        {
+        }
+        /**
+         * Resolve a callable.
+         *
+         * @param callable $concrete
+         *
+         * @return mixed
+         */
+        protected function resolveCallable(callable $concrete)
+        {
+        }
+        /**
+         * Resolve a class.
+         *
+         * @param string $concrete
+         *
+         * @return object
+         *
+         * @throws ReflectionException
+         */
+        protected function resolveClass(string $concrete)
+        {
+        }
+        /**
+         * Invoke methods on resolved instance.
+         *
+         * @param object $instance
+         *
+         * @return object
+         */
+        protected function invokeMethods($instance)
+        {
+        }
+    }
+    interface DefinitionAggregateInterface extends \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface, \IteratorAggregate
+    {
+        /**
+         * Add a definition to the aggregate.
+         *
+         * @param string  $id
+         * @param mixed   $definition
+         * @param boolean $shared
+         *
+         * @return DefinitionInterface
+         */
+        public function add(string $id, $definition, bool $shared = false) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Checks whether alias exists as definition.
+         *
+         * @param string $id
+         *
+         * @return boolean
+         */
+        public function has(string $id) : bool;
+        /**
+         * Checks whether tag exists as definition.
+         *
+         * @param string $tag
+         *
+         * @return boolean
+         */
+        public function hasTag(string $tag) : bool;
+        /**
+         * Get the definition to be extended.
+         *
+         * @param string $id
+         *
+         * @return DefinitionInterface
+         */
+        public function getDefinition(string $id) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface;
+        /**
+         * Resolve and build a concrete value from an id/alias.
+         *
+         * @param string  $id
+         * @param boolean $new
+         *
+         * @return mixed
+         */
+        public function resolve(string $id, bool $new = false);
+        /**
+         * Resolve and build an array of concrete values from a tag.
+         *
+         * @param string  $tag
+         * @param boolean $new
+         *
+         * @return mixed
+         */
+        public function resolveTagged(string $tag, bool $new = false);
+    }
+    class DefinitionAggregate implements \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionAggregateInterface
+    {
+        use \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareTrait;
+        /**
+         * @var DefinitionInterface[]
+         */
+        protected $definitions = [];
+        /**
+         * Construct.
+         *
+         * @param DefinitionInterface[] $definitions
+         */
+        public function __construct(array $definitions = [])
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function add(string $id, $definition, bool $shared = false) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function has(string $id) : bool
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function hasTag(string $tag) : bool
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getDefinition(string $id) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function resolve(string $id, bool $new = false)
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function resolveTagged(string $tag, bool $new = false) : array
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getIterator() : \Generator
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Vendor\Psr\Container {
+    /**
+     * Base interface representing a generic exception in a container.
+     */
+    interface ContainerExceptionInterface
+    {
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container\Exception {
+    class ContainerException extends \RuntimeException implements \Automattic\WooCommerce\Vendor\Psr\Container\ContainerExceptionInterface
+    {
+    }
+}
+namespace Automattic\WooCommerce\Vendor\Psr\Container {
+    /**
+     * No entry was found in the container.
+     */
+    interface NotFoundExceptionInterface extends \Automattic\WooCommerce\Vendor\Psr\Container\ContainerExceptionInterface
+    {
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container\Exception {
+    class NotFoundException extends \InvalidArgumentException implements \Automattic\WooCommerce\Vendor\Psr\Container\NotFoundExceptionInterface
+    {
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container\Inflector {
+    interface InflectorInterface
+    {
+        /**
+         * Get the type.
+         *
+         * @return string
+         */
+        public function getType() : string;
+        /**
+         * Defines a method to be invoked on the subject object.
+         *
+         * @param string $name
+         * @param array  $args
+         *
+         * @return self
+         */
+        public function invokeMethod(string $name, array $args) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface;
+        /**
+         * Defines multiple methods to be invoked on the subject object.
+         *
+         * @param array $methods
+         *
+         * @return self
+         */
+        public function invokeMethods(array $methods) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface;
+        /**
+         * Defines a property to be set on the subject object.
+         *
+         * @param string $property
+         * @param mixed  $value
+         *
+         * @return self
+         */
+        public function setProperty(string $property, $value) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface;
+        /**
+         * Defines multiple properties to be set on the subject object.
+         *
+         * @param array $properties
+         *
+         * @return self
+         */
+        public function setProperties(array $properties) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface;
+        /**
+         * Apply inflections to an object.
+         *
+         * @param object $object
+         *
+         * @return void
+         */
+        public function inflect($object);
+    }
+    class Inflector implements \Automattic\WooCommerce\Vendor\League\Container\Argument\ArgumentResolverInterface, \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface
+    {
+        use \Automattic\WooCommerce\Vendor\League\Container\Argument\ArgumentResolverTrait;
+        use \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareTrait;
+        /**
+         * @var string
+         */
+        protected $type;
+        /**
+         * @var callable|null
+         */
+        protected $callback;
+        /**
+         * @var array
+         */
+        protected $methods = [];
+        /**
+         * @var array
+         */
+        protected $properties = [];
+        /**
+         * Construct.
+         *
+         * @param string        $type
+         * @param callable|null $callback
+         */
+        public function __construct(string $type, callable $callback = null)
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getType() : string
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function invokeMethod(string $name, array $args) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function invokeMethods(array $methods) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function setProperty(string $property, $value) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function setProperties(array $properties) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function inflect($object)
+        {
+        }
+    }
+    interface InflectorAggregateInterface extends \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface, \IteratorAggregate
+    {
+        /**
+         * Add an inflector to the aggregate.
+         *
+         * @param string   $type
+         * @param callable $callback
+         *
+         * @return Inflector
+         */
+        public function add(string $type, callable $callback = null) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\Inflector;
+        /**
+         * Applies all inflectors to an object.
+         *
+         * @param  object $object
+         * @return object
+         */
+        public function inflect($object);
+    }
+    class InflectorAggregate implements \Automattic\WooCommerce\Vendor\League\Container\Inflector\InflectorAggregateInterface
+    {
+        use \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareTrait;
+        /**
+         * @var Inflector[]
+         */
+        protected $inflectors = [];
+        /**
+         * {@inheritdoc}
+         */
+        public function add(string $type, callable $callback = null) : \Automattic\WooCommerce\Vendor\League\Container\Inflector\Inflector
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getIterator() : \Generator
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function inflect($object)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container {
+    class ReflectionContainer implements \Automattic\WooCommerce\Vendor\League\Container\Argument\ArgumentResolverInterface, \Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface
+    {
+        use \Automattic\WooCommerce\Vendor\League\Container\Argument\ArgumentResolverTrait;
+        use \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareTrait;
+        /**
+         * @var boolean
+         */
+        protected $cacheResolutions = false;
+        /**
+         * Cache of resolutions.
+         *
+         * @var array
+         */
+        protected $cache = [];
+        /**
+         * {@inheritdoc}
+         *
+         * @throws ReflectionException
+         */
+        public function get($id, array $args = [])
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function has($id) : bool
+        {
+        }
+        /**
+         * Invoke a callable via the container.
+         *
+         * @param callable $callable
+         * @param array    $args
+         *
+         * @return mixed
+         *
+         * @throws ReflectionException
+         */
+        public function call(callable $callable, array $args = [])
+        {
+        }
+        /**
+         * Whether the container should default to caching resolutions and returning
+         * the cache on following calls.
+         *
+         * @param boolean $option
+         *
+         * @return self
+         */
+        public function cacheResolutions(bool $option = true) : \Automattic\WooCommerce\Vendor\Psr\Container\ContainerInterface
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Vendor\League\Container\ServiceProvider {
+    interface ServiceProviderInterface extends \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface
+    {
+        /**
+         * Returns a boolean if checking whether this provider provides a specific
+         * service or returns an array of provided services if no argument passed.
+         *
+         * @param string $service
+         *
+         * @return boolean
+         */
+        public function provides(string $service) : bool;
+        /**
+         * Use the register method to register items with the container via the
+         * protected $this->leagueContainer property or the `getLeagueContainer` method
+         * from the ContainerAwareTrait.
+         *
+         * @return void
+         */
+        public function register();
+        /**
+         * Set a custom id for the service provider. This enables
+         * registering the same service provider multiple times.
+         *
+         * @param string $id
+         *
+         * @return self
+         */
+        public function setIdentifier(string $id) : \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderInterface;
+        /**
+         * The id of the service provider uniquely identifies it, so
+         * that we can quickly determine if it has already been registered.
+         * Defaults to get_class($provider).
+         *
+         * @return string
+         */
+        public function getIdentifier() : string;
+    }
+    abstract class AbstractServiceProvider implements \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderInterface
+    {
+        use \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareTrait;
+        /**
+         * @var array
+         */
+        protected $provides = [];
+        /**
+         * @var string
+         */
+        protected $identifier;
+        /**
+         * {@inheritdoc}
+         */
+        public function provides(string $alias) : bool
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function setIdentifier(string $id) : \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getIdentifier() : string
+        {
+        }
+    }
+    interface BootableServiceProviderInterface extends \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderInterface
+    {
+        /**
+         * Method will be invoked on registration of a service provider implementing
+         * this interface. Provides ability for eager loading of Service Providers.
+         *
+         * @return void
+         */
+        public function boot();
+    }
+    interface ServiceProviderAggregateInterface extends \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareInterface, \IteratorAggregate
+    {
+        /**
+         * Add a service provider to the aggregate.
+         *
+         * @param string|ServiceProviderInterface $provider
+         *
+         * @return self
+         */
+        public function add($provider) : \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderAggregateInterface;
+        /**
+         * Determines whether a service is provided by the aggregate.
+         *
+         * @param string $service
+         *
+         * @return boolean
+         */
+        public function provides(string $service) : bool;
+        /**
+         * Invokes the register method of a provider that provides a specific service.
+         *
+         * @param string $service
+         *
+         * @return void
+         */
+        public function register(string $service);
+    }
+    class ServiceProviderAggregate implements \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderAggregateInterface
+    {
+        use \Automattic\WooCommerce\Vendor\League\Container\ContainerAwareTrait;
+        /**
+         * @var ServiceProviderInterface[]
+         */
+        protected $providers = [];
+        /**
+         * @var array
+         */
+        protected $registered = [];
+        /**
+         * {@inheritdoc}
+         */
+        public function add($provider) : \Automattic\WooCommerce\Vendor\League\Container\ServiceProvider\ServiceProviderAggregateInterface
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function provides(string $service) : bool
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function getIterator() : \Generator
+        {
+        }
+        /**
+         * {@inheritdoc}
+         */
+        public function register(string $service)
+        {
+        }
+    }
+}
 namespace Automattic\WooCommerce\Admin\API {
     /**
      * Coupons controller.
