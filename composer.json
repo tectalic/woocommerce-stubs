@@ -27,18 +27,6 @@
         "symfony/polyfill-php73": "Symfony polyfill backporting some PHP 7.3+ features to lower PHP versions"
     },
     "minimum-stability": "stable",
-    "scripts": {
-        "cleanup": "rm -rf ./woocommerce",
-        "generate": [
-            "@cleanup",
-            "composer update",
-            "./generate.sh"
-        ]
-    },
-    "scripts-descriptions": {
-        "cleanup": "Remove all ignored files.",
-        "generate": "Generate stub files."
-    },
     "extra": {
         "installer-paths": {
             "woocommerce/packages/{$name}/": [
