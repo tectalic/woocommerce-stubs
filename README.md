@@ -1,6 +1,6 @@
 # WooCommerce Stubs
 
-> Forked from https://github.com/php-stubs/woocommerce-stubs
+> Based on the [php-stubs/woocommerce-stubs](https://github.com/php-stubs/woocommerce-stubs) package. Thanks [@szepeviktor](https://github.com/szepeviktor)!
 
 This package provides stub declarations for [WooCommerce](https://woocommerce.com/) functions, classes and interfaces.
 These stubs can help plugin and theme developers leverage static analysis tools like [PHPStan](https://github.com/phpstan/phpstan), which is not able to parse WooCommerce as it is not clean OOP code.
