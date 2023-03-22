@@ -1831,6 +1831,24 @@ namespace {
         {
         }
         /**
+         * Get date_modified.
+         *
+         * @param  string $context View or edit context.
+         * @return WC_DateTime|NULL object if the date is set or null if there is no date.
+         */
+        public function get_date_paid($context = 'view')
+        {
+        }
+        /**
+         * Get date_modified.
+         *
+         * @param  string $context View or edit context.
+         * @return WC_DateTime|NULL object if the date is set or null if there is no date.
+         */
+        public function get_date_completed($context = 'view')
+        {
+        }
+        /**
          * Return the order statuses without wc- internal prefix.
          *
          * @param  string $context View or edit context.
@@ -19667,13 +19685,13 @@ namespace {
          *
          * @var array
          */
-        protected $deprecated_hooks = array('woocommerce_structured_data_order' => 'woocommerce_email_order_schema_markup', 'woocommerce_add_to_cart_fragments' => 'add_to_cart_fragments', 'woocommerce_add_to_cart_redirect' => 'add_to_cart_redirect', 'woocommerce_product_get_width' => 'woocommerce_product_width', 'woocommerce_product_get_height' => 'woocommerce_product_height', 'woocommerce_product_get_length' => 'woocommerce_product_length', 'woocommerce_product_get_weight' => 'woocommerce_product_weight', 'woocommerce_product_get_sku' => 'woocommerce_get_sku', 'woocommerce_product_get_price' => 'woocommerce_get_price', 'woocommerce_product_get_regular_price' => 'woocommerce_get_regular_price', 'woocommerce_product_get_sale_price' => 'woocommerce_get_sale_price', 'woocommerce_product_get_tax_class' => 'woocommerce_product_tax_class', 'woocommerce_product_get_stock_quantity' => 'woocommerce_get_stock_quantity', 'woocommerce_product_get_attributes' => 'woocommerce_get_product_attributes', 'woocommerce_product_get_gallery_image_ids' => 'woocommerce_product_gallery_attachment_ids', 'woocommerce_product_get_review_count' => 'woocommerce_product_review_count', 'woocommerce_product_get_downloads' => 'woocommerce_product_files', 'woocommerce_order_get_currency' => 'woocommerce_get_currency', 'woocommerce_order_get_discount_total' => 'woocommerce_order_amount_discount_total', 'woocommerce_order_get_discount_tax' => 'woocommerce_order_amount_discount_tax', 'woocommerce_order_get_shipping_total' => 'woocommerce_order_amount_shipping_total', 'woocommerce_order_get_shipping_tax' => 'woocommerce_order_amount_shipping_tax', 'woocommerce_order_get_cart_tax' => 'woocommerce_order_amount_cart_tax', 'woocommerce_order_get_total' => 'woocommerce_order_amount_total', 'woocommerce_order_get_total_tax' => 'woocommerce_order_amount_total_tax', 'woocommerce_order_get_total_discount' => 'woocommerce_order_amount_total_discount', 'woocommerce_order_get_subtotal' => 'woocommerce_order_amount_subtotal', 'woocommerce_order_get_tax_totals' => 'woocommerce_order_tax_totals', 'woocommerce_get_order_refund_get_amount' => 'woocommerce_refund_amount', 'woocommerce_get_order_refund_get_reason' => 'woocommerce_refund_reason', 'default_checkout_billing_country' => 'default_checkout_country', 'default_checkout_billing_state' => 'default_checkout_state', 'default_checkout_billing_postcode' => 'default_checkout_postcode', 'woocommerce_system_status_environment_rows' => 'woocommerce_debug_posting', 'woocommerce_credit_card_type_labels' => 'wocommerce_credit_card_type_labels', 'woocommerce_settings_tabs_advanced' => 'woocommerce_settings_tabs_api', 'woocommerce_settings_advanced' => 'woocommerce_settings_api', 'woocommerce_csv_importer_check_import_file_path' => 'woocommerce_product_csv_importer_check_import_file_path');
+        protected $deprecated_hooks = array('woocommerce_account_orders_columns' => 'woocommerce_my_account_my_orders_columns', 'woocommerce_structured_data_order' => 'woocommerce_email_order_schema_markup', 'woocommerce_add_to_cart_fragments' => 'add_to_cart_fragments', 'woocommerce_add_to_cart_redirect' => 'add_to_cart_redirect', 'woocommerce_product_get_width' => 'woocommerce_product_width', 'woocommerce_product_get_height' => 'woocommerce_product_height', 'woocommerce_product_get_length' => 'woocommerce_product_length', 'woocommerce_product_get_weight' => 'woocommerce_product_weight', 'woocommerce_product_get_sku' => 'woocommerce_get_sku', 'woocommerce_product_get_price' => 'woocommerce_get_price', 'woocommerce_product_get_regular_price' => 'woocommerce_get_regular_price', 'woocommerce_product_get_sale_price' => 'woocommerce_get_sale_price', 'woocommerce_product_get_tax_class' => 'woocommerce_product_tax_class', 'woocommerce_product_get_stock_quantity' => 'woocommerce_get_stock_quantity', 'woocommerce_product_get_attributes' => 'woocommerce_get_product_attributes', 'woocommerce_product_get_gallery_image_ids' => 'woocommerce_product_gallery_attachment_ids', 'woocommerce_product_get_review_count' => 'woocommerce_product_review_count', 'woocommerce_product_get_downloads' => 'woocommerce_product_files', 'woocommerce_order_get_currency' => 'woocommerce_get_currency', 'woocommerce_order_get_discount_total' => 'woocommerce_order_amount_discount_total', 'woocommerce_order_get_discount_tax' => 'woocommerce_order_amount_discount_tax', 'woocommerce_order_get_shipping_total' => 'woocommerce_order_amount_shipping_total', 'woocommerce_order_get_shipping_tax' => 'woocommerce_order_amount_shipping_tax', 'woocommerce_order_get_cart_tax' => 'woocommerce_order_amount_cart_tax', 'woocommerce_order_get_total' => 'woocommerce_order_amount_total', 'woocommerce_order_get_total_tax' => 'woocommerce_order_amount_total_tax', 'woocommerce_order_get_total_discount' => 'woocommerce_order_amount_total_discount', 'woocommerce_order_get_subtotal' => 'woocommerce_order_amount_subtotal', 'woocommerce_order_get_tax_totals' => 'woocommerce_order_tax_totals', 'woocommerce_get_order_refund_get_amount' => 'woocommerce_refund_amount', 'woocommerce_get_order_refund_get_reason' => 'woocommerce_refund_reason', 'default_checkout_billing_country' => 'default_checkout_country', 'default_checkout_billing_state' => 'default_checkout_state', 'default_checkout_billing_postcode' => 'default_checkout_postcode', 'woocommerce_system_status_environment_rows' => 'woocommerce_debug_posting', 'woocommerce_credit_card_type_labels' => 'wocommerce_credit_card_type_labels', 'woocommerce_settings_tabs_advanced' => 'woocommerce_settings_tabs_api', 'woocommerce_settings_advanced' => 'woocommerce_settings_api', 'woocommerce_csv_importer_check_import_file_path' => 'woocommerce_product_csv_importer_check_import_file_path');
         /**
          * Array of versions on each hook has been deprecated.
          *
          * @var array
          */
-        protected $deprecated_version = array('woocommerce_email_order_schema_markup' => '3.0.0', 'add_to_cart_fragments' => '3.0.0', 'add_to_cart_redirect' => '3.0.0', 'woocommerce_product_width' => '3.0.0', 'woocommerce_product_height' => '3.0.0', 'woocommerce_product_length' => '3.0.0', 'woocommerce_product_weight' => '3.0.0', 'woocommerce_get_sku' => '3.0.0', 'woocommerce_get_price' => '3.0.0', 'woocommerce_get_regular_price' => '3.0.0', 'woocommerce_get_sale_price' => '3.0.0', 'woocommerce_product_tax_class' => '3.0.0', 'woocommerce_get_stock_quantity' => '3.0.0', 'woocommerce_get_product_attributes' => '3.0.0', 'woocommerce_product_gallery_attachment_ids' => '3.0.0', 'woocommerce_product_review_count' => '3.0.0', 'woocommerce_product_files' => '3.0.0', 'woocommerce_get_currency' => '3.0.0', 'woocommerce_order_amount_discount_total' => '3.0.0', 'woocommerce_order_amount_discount_tax' => '3.0.0', 'woocommerce_order_amount_shipping_total' => '3.0.0', 'woocommerce_order_amount_shipping_tax' => '3.0.0', 'woocommerce_order_amount_cart_tax' => '3.0.0', 'woocommerce_order_amount_total' => '3.0.0', 'woocommerce_order_amount_total_tax' => '3.0.0', 'woocommerce_order_amount_total_discount' => '3.0.0', 'woocommerce_order_amount_subtotal' => '3.0.0', 'woocommerce_order_tax_totals' => '3.0.0', 'woocommerce_refund_amount' => '3.0.0', 'woocommerce_refund_reason' => '3.0.0', 'default_checkout_country' => '3.0.0', 'default_checkout_state' => '3.0.0', 'default_checkout_postcode' => '3.0.0', 'woocommerce_debug_posting' => '3.0.0', 'wocommerce_credit_card_type_labels' => '3.0.0', 'woocommerce_settings_tabs_api' => '3.4.0', 'woocommerce_settings_api' => '3.4.0', 'woocommerce_product_csv_importer_check_import_file_path' => '6.5.0');
+        protected $deprecated_version = array('woocommerce_my_account_my_orders_columns' => '2.6.0', 'woocommerce_email_order_schema_markup' => '3.0.0', 'add_to_cart_fragments' => '3.0.0', 'add_to_cart_redirect' => '3.0.0', 'woocommerce_product_width' => '3.0.0', 'woocommerce_product_height' => '3.0.0', 'woocommerce_product_length' => '3.0.0', 'woocommerce_product_weight' => '3.0.0', 'woocommerce_get_sku' => '3.0.0', 'woocommerce_get_price' => '3.0.0', 'woocommerce_get_regular_price' => '3.0.0', 'woocommerce_get_sale_price' => '3.0.0', 'woocommerce_product_tax_class' => '3.0.0', 'woocommerce_get_stock_quantity' => '3.0.0', 'woocommerce_get_product_attributes' => '3.0.0', 'woocommerce_product_gallery_attachment_ids' => '3.0.0', 'woocommerce_product_review_count' => '3.0.0', 'woocommerce_product_files' => '3.0.0', 'woocommerce_get_currency' => '3.0.0', 'woocommerce_order_amount_discount_total' => '3.0.0', 'woocommerce_order_amount_discount_tax' => '3.0.0', 'woocommerce_order_amount_shipping_total' => '3.0.0', 'woocommerce_order_amount_shipping_tax' => '3.0.0', 'woocommerce_order_amount_cart_tax' => '3.0.0', 'woocommerce_order_amount_total' => '3.0.0', 'woocommerce_order_amount_total_tax' => '3.0.0', 'woocommerce_order_amount_total_discount' => '3.0.0', 'woocommerce_order_amount_subtotal' => '3.0.0', 'woocommerce_order_tax_totals' => '3.0.0', 'woocommerce_refund_amount' => '3.0.0', 'woocommerce_refund_reason' => '3.0.0', 'default_checkout_country' => '3.0.0', 'default_checkout_state' => '3.0.0', 'default_checkout_postcode' => '3.0.0', 'woocommerce_debug_posting' => '3.0.0', 'wocommerce_credit_card_type_labels' => '3.0.0', 'woocommerce_settings_tabs_api' => '3.4.0', 'woocommerce_settings_api' => '3.4.0', 'woocommerce_product_csv_importer_check_import_file_path' => '6.5.0');
         /**
          * Hook into the new hook so we can handle deprecated hooks once fired.
          *
@@ -30766,7 +30784,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '7.4.1';
+        public $version = '7.5.0';
         /**
          * WooCommerce Schema version.
          *
@@ -30787,6 +30805,12 @@ namespace {
          * @var WC_Query
          */
         public $query = \null;
+        /**
+         * API instance
+         *
+         * @var WC_API
+         */
+        public $api;
         /**
          * Product factory instance.
          *
@@ -59422,6 +59446,12 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Orders {
     class DataStore extends \Automattic\WooCommerce\Admin\API\Reports\DataStore implements \Automattic\WooCommerce\Admin\API\Reports\DataStoreInterface
     {
         /**
+         * Dynamically sets the date column name based on configuration
+         */
+        public function __construct()
+        {
+        }
+        /**
          * Table used to get the data.
          *
          * @var string
@@ -59661,6 +59691,12 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Orders\Stats {
          * @var string
          */
         protected $context = 'orders_stats';
+        /**
+         * Dynamically sets the date column name based on configuration
+         */
+        public function __construct()
+        {
+        }
         /**
          * Assign report columns once full table name has been assigned.
          */
@@ -62624,7 +62660,7 @@ namespace Automattic\WooCommerce\Admin\Features {
          *
          * @var array
          */
-        protected static $optional_features = array('multichannel-marketing' => array('default' => 'no'), 'navigation' => array('default' => 'no'), 'settings' => array('default' => 'no'), 'new-product-management-experience' => array('default' => 'no'), 'analytics' => array('default' => 'yes'), 'remote-inbox-notifications' => array('default' => 'yes'));
+        protected static $optional_features = array('multichannel-marketing' => array('default' => 'no'), 'navigation' => array('default' => 'no'), 'settings' => array('default' => 'no'), 'analytics' => array('default' => 'yes'), 'remote-inbox-notifications' => array('default' => 'yes'));
         /**
          * Beta features
          *
@@ -63406,6 +63442,12 @@ namespace Automattic\WooCommerce\Admin\Features {
          * Constructor
          */
         public function __construct()
+        {
+        }
+        /**
+         * Maybe show disabled notice.
+         */
+        public function maybe_show_disabled_notice()
         {
         }
         /**
@@ -75345,24 +75387,27 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
         public static function get_argument_from_path($arguments, $path, $delimiter = '.')
         {
         }
+        /**
+         * Array of required arguments.
+         *
+         * @var array
+         */
+        protected $required_arguments = array();
+        /**
+         * Get missing arguments of args array.
+         *
+         * @param array $args field arguments.
+         * @return array
+         */
+        public function get_missing_arguments($args)
+        {
+        }
     }
     /**
      * Field class.
      */
     class Field extends \Automattic\WooCommerce\Internal\Admin\ProductForm\Component
     {
-        /**
-         * Field type.
-         *
-         * @var string
-         */
-        public $type;
-        /**
-         * Array of required arguments.
-         *
-         * @var array
-         */
-        const REQUIRED_ARGUMENTS = array('type', 'section', 'properties.name', 'properties.label');
         /**
          * Constructor
          *
@@ -75378,15 +75423,6 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
          * @throws \Exception If there are missing arguments.
          */
         public function __construct($id, $plugin_id, $additional_args)
-        {
-        }
-        /**
-         * Get missing arguments of args array.
-         *
-         * @param array $args field arguments.
-         * @return array
-         */
-        public static function get_missing_arguments($args)
         {
         }
     }
@@ -75419,6 +75455,12 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
          * @var array
          */
         protected static $form_sections = array();
+        /**
+         * Store form tabs.
+         *
+         * @var array
+         */
+        protected static $form_tabs = array();
         /**
          * Get class instance.
          */
@@ -75455,7 +75497,7 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
          * @param string $id Subsection id.
          * @param string $plugin_id Plugin id.
          * @param array  $args Array containing the necessary arguments.
-         * @return Card|WP_Error New subsection or WP_Error.
+         * @return Subsection|WP_Error New subsection or WP_Error.
          */
         public static function add_subsection($id, $plugin_id, $args = array())
         {
@@ -75466,17 +75508,20 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
          * @param string $id Card id.
          * @param string $plugin_id Plugin id.
          * @param array  $args Array containing the necessary arguments.
-         * @return Card|WP_Error New section or WP_Error.
+         * @return Section|WP_Error New section or WP_Error.
          */
         public static function add_section($id, $plugin_id, $args)
         {
         }
         /**
-         * Returns form config.
+         * Adds a tab to the product form.
          *
-         * @return array form config.
+         * @param string $id Card id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $args Array containing the necessary arguments.
+         * @return Tab|WP_Error New section or WP_Error.
          */
-        public static function get_form_config()
+        public static function add_tab($id, $plugin_id, $args)
         {
         }
         /**
@@ -75506,24 +75551,21 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
         public static function get_sections($sort_by = array('key' => 'order', 'order' => 'asc'))
         {
         }
+        /**
+         * Returns list of registered tabs.
+         *
+         * @param array $sort_by key and order to sort by.
+         * @return array list of registered tabs.
+         */
+        public static function get_tabs($sort_by = array('key' => 'order', 'order' => 'asc'))
+        {
+        }
     }
     /**
      * Section class.
      */
     class Section extends \Automattic\WooCommerce\Internal\Admin\ProductForm\Component
     {
-        /**
-         * Section title.
-         *
-         * @var string
-         */
-        protected $title;
-        /**
-         * Array of required arguments.
-         *
-         * @var array
-         */
-        const REQUIRED_ARGUMENTS = array('title');
         /**
          * Constructor
          *
@@ -75540,21 +75582,35 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
         public function __construct($id, $plugin_id, $additional_args)
         {
         }
-        /**
-         * Get missing arguments of args array.
-         *
-         * @param array $args section arguments.
-         * @return array
-         */
-        public static function get_missing_arguments($args)
-        {
-        }
     }
     /**
      * SubSection class.
      */
     class Subsection extends \Automattic\WooCommerce\Internal\Admin\ProductForm\Component
     {
+    }
+    /**
+     * Field class.
+     */
+    class Tab extends \Automattic\WooCommerce\Internal\Admin\ProductForm\Component
+    {
+        /**
+         * Constructor
+         *
+         * @param string $id Field id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $additional_args Array containing the necessary arguments.
+         *     $args = array(
+         *       'name'            => (string) Tab name. Required.
+         *       'title'         => (string) Tab title. Required.
+         *       'order'           => (int) Tab order.
+         *       'properties'      => (array) Tab properties.
+         *     ).
+         * @throws \Exception If there are missing arguments.
+         */
+        public function __construct($id, $plugin_id, $additional_args)
+        {
+        }
     }
 }
 namespace Automattic\WooCommerce\Internal\Admin\ProductReviews {
@@ -76921,6 +76977,43 @@ namespace Automattic\WooCommerce\Internal\Admin {
          * Determines whether banner is eligible for display (does not include a/b logic).
          */
         public function should_display_banner()
+        {
+        }
+    }
+    /**
+     * SiteHealth class.
+     */
+    class SiteHealth
+    {
+        /**
+         * Class instance.
+         *
+         * @var SiteHealth instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
+        {
+        }
+        /**
+         * Hook into WooCommerce.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Counts specific types of WooCommerce entities to determine if a persistent object cache would be beneficial.
+         *
+         * Note that if all measured WooCommerce entities are below their thresholds, this will return null so that the
+         * other normal WordPress checks will still be run.
+         *
+         * @param true|null $check A non-null value will short-circuit WP's normal tests for this.
+         *
+         * @return true|null True if the store would benefit from a persistent object cache. Otherwise null.
+         */
+        public function should_suggest_persistent_object_cache($check)
         {
         }
     }
@@ -81524,6 +81617,38 @@ namespace Automattic\WooCommerce\Utilities {
          * from the WordPress plugins page.
          */
         public static function allow_activating_plugins_with_incompatible_features() : void
+        {
+        }
+    }
+    /**
+     * A class of utilities for dealing with internationalization.
+     */
+    final class I18nUtil
+    {
+        /**
+         * Get the translated label for a weight unit of measure.
+         *
+         * This will return the original input string if it isn't found in the units array. This way a custom unit of
+         * measure can be used even if it's not getting translated.
+         *
+         * @param string $weight_unit The abbreviated weight unit in English, e.g. kg.
+         *
+         * @return string
+         */
+        public static function get_weight_unit_label($weight_unit)
+        {
+        }
+        /**
+         * Get the translated label for a dimensions unit of measure.
+         *
+         * This will return the original input string if it isn't found in the units array. This way a custom unit of
+         * measure can be used even if it's not getting translated.
+         *
+         * @param string $dimensions_unit The abbreviated dimension unit in English, e.g. cm.
+         *
+         * @return string
+         */
+        public static function get_dimensions_unit_label($dimensions_unit)
         {
         }
     }
