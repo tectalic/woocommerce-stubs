@@ -1885,7 +1885,7 @@ namespace {
         {
         }
         /**
-         * Gets order grand total. incl. taxes. Used in gateways.
+         * Gets order grand total including taxes, shipping cost, fees, and coupon discounts. Used in gateways.
          *
          * @param  string $context View or edit context.
          * @return float
@@ -1917,7 +1917,9 @@ namespace {
         {
         }
         /**
-         * Gets order subtotal.
+         * Gets order subtotal. Order subtotal is the price of all items excluding taxes, fees, shipping cost, and coupon discounts.
+         * If sale price is set on an item, the subtotal will include this sale discount. E.g. a product with a regular
+         * price of $100 bought at a 50% discount will represent $50 of the subtotal for the order.
          *
          * @return float
          */
@@ -7673,11 +7675,150 @@ namespace {
         {
         }
     }
+}
+namespace Automattic\WooCommerce\Internal\Traits {
+    /**
+     * This trait allows making private methods of a class accessible from outside.
+     * This is useful to define hook handlers with the [$this, 'method'] or [__CLASS__, 'method'] syntax
+     * without having to make the method public (and thus having to keep it forever for backwards compatibility).
+     *
+     * Example:
+     *
+     * class Foobar {
+     *   use AccessiblePrivateMethods;
+     *
+     *   public function __construct() {
+     *     self::add_action('some_action', [$this, 'handle_some_action']);
+     *   }
+     *
+     *   public static function init() {
+     *     self::add_filter('some_filter', [__CLASS__, 'handle_some_filter']);
+     *   }
+     *
+     *   private function handle_some_action() {
+     *   }
+     *
+     *   private static function handle_some_filter() {
+     *   }
+     * }
+     *
+     * For this to work the callback must be an array and the first element of the array must be either '$this', '__CLASS__',
+     * or another instance of the same class; otherwise the method won't be marked as accessible
+     * (but the corresponding WordPress 'add_action' and 'add_filter' functions will still be called).
+     *
+     * No special procedure is needed to remove hooks set up with these methods, the regular 'remove_action'
+     * and 'remove_filter' functions provided by WordPress can be used as usual.
+     */
+    trait AccessiblePrivateMethods
+    {
+        //phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
+        /**
+         * List of instance methods marked as externally accessible.
+         *
+         * @var array
+         */
+        private $_accessible_private_methods = array();
+        /**
+         * List of static methods marked as externally accessible.
+         *
+         * @var array
+         */
+        private static $_accessible_static_private_methods = array();
+        //phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
+        /**
+         * Register a WordPress action.
+         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
+         *
+         * $callback can be a standard callable, or a string representing the name of a method in this class.
+         *
+         * @param string          $hook_name       The name of the action to add the callback to.
+         * @param callable|string $callback        The callback to be run when the action is called.
+         * @param int             $priority        Optional. Used to specify the order in which the functions
+         *                                         associated with a particular action are executed.
+         *                                         Lower numbers correspond with earlier execution,
+         *                                         and functions with the same priority are executed
+         *                                         in the order in which they were added to the action. Default 10.
+         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
+         */
+        protected static function add_action(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
+        {
+        }
+        /**
+         * Register a WordPress filter.
+         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
+         *
+         * $callback can be a standard callable, or a string representing the name of a method in this class.
+         *
+         * @param string          $hook_name       The name of the filter to add the callback to.
+         * @param callable|string $callback        The callback to be run when the filter is called.
+         * @param int             $priority        Optional. Used to specify the order in which the functions
+         *                                         associated with a particular filter are executed.
+         *                                         Lower numbers correspond with earlier execution,
+         *                                         and functions with the same priority are executed
+         *                                         in the order in which they were added to the filter. Default 10.
+         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
+         */
+        protected static function add_filter(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
+        {
+        }
+        /**
+         * Do the required processing to a callback before invoking the WordPress 'add_action' or 'add_filter' function.
+         *
+         * @param callable $callback The callback to process.
+         * @return void
+         */
+        protected static function process_callback_before_hooking($callback) : void
+        {
+        }
+        /**
+         * Register a private or protected instance method of this class as externally accessible.
+         *
+         * @param string $method_name Method name.
+         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
+         */
+        protected function mark_method_as_accessible(string $method_name) : bool
+        {
+        }
+        /**
+         * Register a private or protected static method of this class as externally accessible.
+         *
+         * @param string $method_name Method name.
+         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
+         */
+        protected static function mark_static_method_as_accessible(string $method_name) : bool
+        {
+        }
+        /**
+         * Undefined/inaccessible instance method call handler.
+         *
+         * @param string $name Called method name.
+         * @param array  $arguments Called method arguments.
+         * @return mixed
+         * @throws \Error The called instance method doesn't exist or is private/protected and not marked as externally accessible.
+         */
+        public function __call($name, $arguments)
+        {
+        }
+        /**
+         * Undefined/inaccessible static method call handler.
+         *
+         * @param string $name Called method name.
+         * @param array  $arguments Called method arguments.
+         * @return mixed
+         * @throws \Error The called static method doesn't exist or is private/protected and not marked as externally accessible.
+         */
+        public static function __callStatic($name, $arguments)
+        {
+        }
+    }
+}
+namespace {
     /**
      * WC_Admin_Notices Class.
      */
     class WC_Admin_Notices
     {
+        use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
         /**
          * Constructor.
          */
@@ -7720,6 +7861,7 @@ namespace {
         public static function reset_admin_notices()
         {
         }
+        // phpcs:enable Generic.Commenting.Todo.TaskFound
         /**
          * Show a notice.
          *
@@ -8046,6 +8188,16 @@ namespace {
          * @return array
          */
         public function post_updated_messages($messages)
+        {
+        }
+        /**
+         * Add messages when an order is updated.
+         *
+         * @param array $messages Array of messages.
+         *
+         * @return array
+         */
+        public function order_updated_messages(array $messages)
         {
         }
         /**
@@ -25366,7 +25518,7 @@ namespace {
          * @param  int    $meta_id    Meta ID.
          * @param  int    $object_id  Object ID.
          * @param  string $meta_key   Meta key.
-         * @param  string $meta_value Meta value.
+         * @param  mixed  $meta_value Meta value.
          */
         public static function flush_object_meta_cache($meta_id, $object_id, $meta_key, $meta_value)
         {
@@ -27327,144 +27479,6 @@ namespace {
         {
         }
     }
-}
-namespace Automattic\WooCommerce\Internal\Traits {
-    /**
-     * This trait allows making private methods of a class accessible from outside.
-     * This is useful to define hook handlers with the [$this, 'method'] or [__CLASS__, 'method'] syntax
-     * without having to make the method public (and thus having to keep it forever for backwards compatibility).
-     *
-     * Example:
-     *
-     * class Foobar {
-     *   use AccessiblePrivateMethods;
-     *
-     *   public function __construct() {
-     *     self::add_action('some_action', [$this, 'handle_some_action']);
-     *   }
-     *
-     *   public static function init() {
-     *     self::add_filter('some_filter', [__CLASS__, 'handle_some_filter']);
-     *   }
-     *
-     *   private function handle_some_action() {
-     *   }
-     *
-     *   private static function handle_some_filter() {
-     *   }
-     * }
-     *
-     * For this to work the callback must be an array and the first element of the array must be either '$this', '__CLASS__',
-     * or another instance of the same class; otherwise the method won't be marked as accessible
-     * (but the corresponding WordPress 'add_action' and 'add_filter' functions will still be called).
-     *
-     * No special procedure is needed to remove hooks set up with these methods, the regular 'remove_action'
-     * and 'remove_filter' functions provided by WordPress can be used as usual.
-     */
-    trait AccessiblePrivateMethods
-    {
-        //phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
-        /**
-         * List of instance methods marked as externally accessible.
-         *
-         * @var array
-         */
-        private $_accessible_private_methods = array();
-        /**
-         * List of static methods marked as externally accessible.
-         *
-         * @var array
-         */
-        private static $_accessible_static_private_methods = array();
-        //phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
-        /**
-         * Register a WordPress action.
-         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
-         *
-         * $callback can be a standard callable, or a string representing the name of a method in this class.
-         *
-         * @param string          $hook_name       The name of the action to add the callback to.
-         * @param callable|string $callback        The callback to be run when the action is called.
-         * @param int             $priority        Optional. Used to specify the order in which the functions
-         *                                         associated with a particular action are executed.
-         *                                         Lower numbers correspond with earlier execution,
-         *                                         and functions with the same priority are executed
-         *                                         in the order in which they were added to the action. Default 10.
-         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
-         */
-        protected static function add_action(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
-        {
-        }
-        /**
-         * Register a WordPress filter.
-         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
-         *
-         * $callback can be a standard callable, or a string representing the name of a method in this class.
-         *
-         * @param string          $hook_name       The name of the filter to add the callback to.
-         * @param callable|string $callback        The callback to be run when the filter is called.
-         * @param int             $priority        Optional. Used to specify the order in which the functions
-         *                                         associated with a particular filter are executed.
-         *                                         Lower numbers correspond with earlier execution,
-         *                                         and functions with the same priority are executed
-         *                                         in the order in which they were added to the filter. Default 10.
-         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
-         */
-        protected static function add_filter(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
-        {
-        }
-        /**
-         * Do the required processing to a callback before invoking the WordPress 'add_action' or 'add_filter' function.
-         *
-         * @param callable $callback The callback to process.
-         * @return void
-         */
-        protected static function process_callback_before_hooking($callback) : void
-        {
-        }
-        /**
-         * Register a private or protected instance method of this class as externally accessible.
-         *
-         * @param string $method_name Method name.
-         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
-         */
-        protected function mark_method_as_accessible(string $method_name) : bool
-        {
-        }
-        /**
-         * Register a private or protected static method of this class as externally accessible.
-         *
-         * @param string $method_name Method name.
-         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
-         */
-        protected static function mark_static_method_as_accessible(string $method_name) : bool
-        {
-        }
-        /**
-         * Undefined/inaccessible instance method call handler.
-         *
-         * @param string $name Called method name.
-         * @param array  $arguments Called method arguments.
-         * @return mixed
-         * @throws \Error The called instance method doesn't exist or is private/protected and not marked as externally accessible.
-         */
-        public function __call($name, $arguments)
-        {
-        }
-        /**
-         * Undefined/inaccessible static method call handler.
-         *
-         * @param string $name Called method name.
-         * @param array  $arguments Called method arguments.
-         * @return mixed
-         * @throws \Error The called static method doesn't exist or is private/protected and not marked as externally accessible.
-         */
-        public static function __callStatic($name, $arguments)
-        {
-        }
-    }
-}
-namespace {
     /**
      * WC_Query Class.
      */
@@ -30752,7 +30766,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '7.3.0';
+        public $version = '7.4.0';
         /**
          * WooCommerce Schema version.
          *
@@ -33714,7 +33728,7 @@ namespace {
          *
          * @param  int    $item_id Item ID.
          * @param  string $meta_key Meta key.
-         * @param  string $meta_value Meta value (default: '').
+         * @param  mixed  $meta_value Meta value (default: '').
          * @param  bool   $delete_all Delete all matching entries? (default: false).
          * @return bool
          */
@@ -33813,7 +33827,7 @@ namespace {
          * @since  3.0.0
          * @param  int    $item_id Item ID.
          * @param  string $meta_key Meta key.
-         * @param  string $meta_value (default: '').
+         * @param  mixed  $meta_value (default: '').
          * @param  bool   $delete_all (default: false).
          * @return bool
          */
@@ -44775,6 +44789,7 @@ namespace {
         {
         }
     }
+    // phpcs:disable Squiz.Classes.ClassFileName.NoMatch, Squiz.Classes.ValidClassName.NotCamelCaps -- Legacy class name, can't change without breaking backward compat.
     /**
      * REST API Orders controller class.
      *
@@ -44783,6 +44798,7 @@ namespace {
      */
     class WC_REST_Orders_V2_Controller extends \WC_REST_CRUD_Controller
     {
+        // phpcs:enable
         /**
          * Endpoint namespace.
          *
@@ -45081,6 +45097,15 @@ namespace {
          * @return array
          */
         public function get_collection_params()
+        {
+        }
+        /**
+         * Get objects.
+         *
+         * @param  array $query_args Query args.
+         * @return array
+         */
+        protected function get_objects($query_args)
         {
         }
     }
@@ -47901,15 +47926,6 @@ namespace {
         {
         }
         /**
-         * Get objects.
-         *
-         * @param  array $query_args Query args.
-         * @return array
-         */
-        protected function get_objects($query_args)
-        {
-        }
-        /**
          * Get the Order's schema, conforming to JSON Schema.
          *
          * @return array
@@ -48300,6 +48316,12 @@ namespace {
          */
         protected $namespace = 'wc/v3';
         /**
+         * Register the routes for products.
+         */
+        public function register_routes()
+        {
+        }
+        /**
          * Prepare a single variation output for response.
          *
          * @param  WC_Data         $object  Object data.
@@ -48363,6 +48385,15 @@ namespace {
          * @return array
          */
         public function get_collection_params()
+        {
+        }
+        /**
+         * Generate all variations for a given product.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         * @return WP_Error|WP_REST_Response
+         */
+        public function generate($request)
         {
         }
     }
@@ -51411,6 +51442,14 @@ namespace {
         public function track_add_order_from_edit()
         {
         }
+        /**
+         * Adds the tracking scripts for product setting pages.
+         *
+         * @param string $hook Page hook.
+         */
+        public function possibly_add_order_tracking_scripts($hook)
+        {
+        }
     }
     /**
      * This class adds actions to track usage of WooCommerce Products.
@@ -51497,6 +51536,14 @@ namespace {
          * @param string $hook Page hook.
          */
         public function possibly_add_product_tracking_scripts($hook)
+        {
+        }
+        /**
+         * Adds the tracking scripts for product setting pages.
+         *
+         * @param string $hook Page hook.
+         */
+        public function possibly_add_product_import_scripts($hook)
         {
         }
         /**
@@ -54324,6 +54371,223 @@ namespace Automattic\WooCommerce\Admin\API {
         }
     }
     /**
+     * MarketingCampaignTypes Controller.
+     *
+     * @internal
+     * @extends WC_REST_Controller
+     * @since x.x.x
+     */
+    class MarketingCampaignTypes extends \WC_REST_Controller
+    {
+        /**
+         * Endpoint namespace.
+         *
+         * @var string
+         */
+        protected $namespace = 'wc-admin';
+        /**
+         * Route base.
+         *
+         * @var string
+         */
+        protected $rest_base = 'marketing/campaign-types';
+        /**
+         * Register routes.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * Retrieves the query params for the collections.
+         *
+         * @return array Query parameters for the collection.
+         */
+        public function get_collection_params()
+        {
+        }
+        /**
+         * Check whether a given request has permission to view marketing campaigns.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         *
+         * @return WP_Error|boolean
+         */
+        public function get_items_permissions_check($request)
+        {
+        }
+        /**
+         * Returns an aggregated array of marketing campaigns for all active marketing channels.
+         *
+         * @param WP_REST_Request $request Request data.
+         *
+         * @return WP_Error|WP_REST_Response
+         */
+        public function get_items($request)
+        {
+        }
+        /**
+         * Prepares the item for the REST response.
+         *
+         * @param MarketingCampaignType $item    WordPress representation of the item.
+         * @param WP_REST_Request       $request Request object.
+         *
+         * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+         */
+        public function prepare_item_for_response($item, $request)
+        {
+        }
+        /**
+         * Retrieves the item's schema, conforming to JSON Schema.
+         *
+         * @return array Item schema data.
+         */
+        public function get_item_schema()
+        {
+        }
+    }
+    /**
+     * MarketingCampaigns Controller.
+     *
+     * @internal
+     * @extends WC_REST_Controller
+     * @since x.x.x
+     */
+    class MarketingCampaigns extends \WC_REST_Controller
+    {
+        /**
+         * Endpoint namespace.
+         *
+         * @var string
+         */
+        protected $namespace = 'wc-admin';
+        /**
+         * Route base.
+         *
+         * @var string
+         */
+        protected $rest_base = 'marketing/campaigns';
+        /**
+         * Register routes.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * Check whether a given request has permission to view marketing campaigns.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         *
+         * @return WP_Error|boolean
+         */
+        public function get_items_permissions_check($request)
+        {
+        }
+        /**
+         * Returns an aggregated array of marketing campaigns for all active marketing channels.
+         *
+         * @param WP_REST_Request $request Request data.
+         *
+         * @return WP_Error|WP_REST_Response
+         */
+        public function get_items($request)
+        {
+        }
+        /**
+         * Prepares the item for the REST response.
+         *
+         * @param MarketingCampaign $item    WordPress representation of the item.
+         * @param WP_REST_Request   $request Request object.
+         *
+         * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+         */
+        public function prepare_item_for_response($item, $request)
+        {
+        }
+        /**
+         * Retrieves the item's schema, conforming to JSON Schema.
+         *
+         * @return array Item schema data.
+         */
+        public function get_item_schema()
+        {
+        }
+        /**
+         * Retrieves the query params for the collections.
+         *
+         * @return array Query parameters for the collection.
+         */
+        public function get_collection_params()
+        {
+        }
+    }
+    /**
+     * MarketingChannels Controller.
+     *
+     * @internal
+     * @extends WC_REST_Controller
+     * @since x.x.x
+     */
+    class MarketingChannels extends \WC_REST_Controller
+    {
+        /**
+         * Endpoint namespace.
+         *
+         * @var string
+         */
+        protected $namespace = 'wc-admin';
+        /**
+         * Route base.
+         *
+         * @var string
+         */
+        protected $rest_base = 'marketing/channels';
+        /**
+         * Register routes.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * Check whether a given request has permission to view marketing channels.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         *
+         * @return WP_Error|boolean
+         */
+        public function get_items_permissions_check($request)
+        {
+        }
+        /**
+         * Return installed marketing channels.
+         *
+         * @param WP_REST_Request $request Request data.
+         *
+         * @return WP_Error|WP_REST_Response
+         */
+        public function get_items($request)
+        {
+        }
+        /**
+         * Prepares the item for the REST response.
+         *
+         * @param MarketingChannelInterface $item    WordPress representation of the item.
+         * @param WP_REST_Request           $request Request object.
+         *
+         * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+         */
+        public function prepare_item_for_response($item, $request)
+        {
+        }
+        /**
+         * Retrieves the item's schema, conforming to JSON Schema.
+         *
+         * @return array Item schema data.
+         */
+        public function get_item_schema()
+        {
+        }
+    }
+    /**
      * Marketing Overview Controller.
      *
      * @internal
@@ -54377,6 +54641,73 @@ namespace Automattic\WooCommerce\Admin\API {
          * @return \WP_Error|\WP_REST_Response
          */
         public function get_installed_plugins($request)
+        {
+        }
+    }
+    /**
+     * MarketingRecommendations Controller.
+     *
+     * @internal
+     * @extends WC_REST_Controller
+     * @since x.x.x
+     */
+    class MarketingRecommendations extends \WC_REST_Controller
+    {
+        /**
+         * Endpoint namespace.
+         *
+         * @var string
+         */
+        protected $namespace = 'wc-admin';
+        /**
+         * Route base.
+         *
+         * @var string
+         */
+        protected $rest_base = 'marketing/recommendations';
+        /**
+         * Register routes.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * Check whether a given request has permission to view marketing recommendations.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         *
+         * @return WP_Error|boolean
+         */
+        public function get_items_permissions_check($request)
+        {
+        }
+        /**
+         * Retrieves a collection of recommendations.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         *
+         * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+         */
+        public function get_items($request)
+        {
+        }
+        /**
+         * Prepares the item for the REST response.
+         *
+         * @param array           $item    WordPress representation of the item.
+         * @param WP_REST_Request $request Request object.
+         *
+         * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+         */
+        public function prepare_item_for_response($item, $request)
+        {
+        }
+        /**
+         * Retrieves the item's schema, conforming to JSON Schema.
+         *
+         * @return array Item schema data.
+         */
+        public function get_item_schema()
         {
         }
     }
@@ -55053,14 +55384,6 @@ namespace Automattic\WooCommerce\Admin\API {
          * @return WP_Error|WP_REST_Response
          */
         public static function import_sample_products()
-        {
-        }
-        /**
-         * Check if product task experiment is treatment.
-         *
-         * @return bool
-         */
-        public static function is_experiment_product_task()
         {
         }
         /**
@@ -55787,6 +56110,60 @@ namespace Automattic\WooCommerce\Admin\API {
         protected $namespace = 'wc-analytics';
     }
     /**
+     * ProductForm Controller.
+     *
+     * @internal
+     * @extends WC_REST_Data_Controller
+     */
+    class ProductForm extends \WC_REST_Data_Controller
+    {
+        /**
+         * Endpoint namespace.
+         *
+         * @var string
+         */
+        protected $namespace = 'wc-admin';
+        /**
+         * Route base.
+         *
+         * @var string
+         */
+        protected $rest_base = 'product-form';
+        /**
+         * Register routes.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * Check if a given request has access to manage woocommerce.
+         *
+         * @param  WP_REST_Request $request Full details about the request.
+         * @return WP_Error|boolean
+         */
+        public function get_product_form_permission_check($request)
+        {
+        }
+        /**
+         * Get the form fields.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         * @return WP_REST_Response|WP_Error
+         */
+        public function get_fields($request)
+        {
+        }
+        /**
+         * Get the form config.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         * @return WP_REST_Response|WP_Error
+         */
+        public function get_form_config($request)
+        {
+        }
+    }
+    /**
      * Product reviews controller.
      *
      * @internal
@@ -56348,7 +56725,7 @@ namespace Automattic\WooCommerce\Admin\API\Reports {
          * @param string $type   Clause type.
          * @param string $clause SQL clause.
          */
-        protected function add_sql_clause($type, $clause)
+        public function add_sql_clause($type, $clause)
         {
         }
         /**
@@ -62247,13 +62624,13 @@ namespace Automattic\WooCommerce\Admin\Features {
          *
          * @var array
          */
-        protected static $optional_features = array('multichannel-marketing' => array('default' => 'no'), 'navigation' => array('default' => 'no'), 'settings' => array('default' => 'no'), 'analytics' => array('default' => 'yes'), 'remote-inbox-notifications' => array('default' => 'yes'));
+        protected static $optional_features = array('multichannel-marketing' => array('default' => 'no'), 'navigation' => array('default' => 'no'), 'settings' => array('default' => 'no'), 'new-product-management-experience' => array('default' => 'no'), 'analytics' => array('default' => 'yes'), 'remote-inbox-notifications' => array('default' => 'yes'));
         /**
          * Beta features
          *
          * @var array
          */
-        protected static $beta_features = array('multichannel-marketing', 'navigation', 'settings');
+        protected static $beta_features = array('multichannel-marketing', 'navigation', 'new-product-management-experience', 'settings');
         /**
          * Get class instance.
          */
@@ -63022,6 +63399,10 @@ namespace Automattic\WooCommerce\Admin\Features {
     class NewProductManagementExperience
     {
         /**
+         * Option name used to toggle this feature.
+         */
+        const TOGGLE_OPTION_NAME = 'woocommerce_new_product_management_enabled';
+        /**
          * Constructor
          */
         public function __construct()
@@ -63031,6 +63412,16 @@ namespace Automattic\WooCommerce\Admin\Features {
          * Enqueue styles needed for the rich text editor.
          */
         public function enqueue_styles()
+        {
+        }
+        /**
+         * Update the edit product links when the new experience is enabled.
+         *
+         * @param string $link    The edit link.
+         * @param int    $post_id Post ID.
+         * @return string
+         */
+        public function update_edit_product_link($link, $post_id)
         {
         }
     }
@@ -64060,10 +64451,11 @@ namespace Automattic\WooCommerce\Admin\Features\OnboardingTasks {
          * Add task to a given task list.
          *
          * @param string $list_id List ID to add the task to.
-         * @param array  $args Task properties.
+         * @param Task   $task Task object.
+         *
          * @return \WP_Error|Task
          */
-        public static function add_task($list_id, $args)
+        public static function add_task($list_id, $task)
         {
         }
         /**
@@ -65784,6 +66176,354 @@ namespace Automattic\WooCommerce\Admin\Marketing {
          * @return array|false
          */
         protected static function get_extension_base_data($slug)
+        {
+        }
+    }
+    /**
+     * MarketingCampaign class
+     *
+     * @since x.x.x
+     */
+    class MarketingCampaign
+    {
+        /**
+         * The unique identifier.
+         *
+         * @var string
+         */
+        protected $id;
+        /**
+         * The marketing campaign type.
+         *
+         * @var MarketingCampaignType
+         */
+        protected $type;
+        /**
+         * Title of the marketing campaign.
+         *
+         * @var string
+         */
+        protected $title;
+        /**
+         * The URL to the channel's campaign management page.
+         *
+         * @var string
+         */
+        protected $manage_url;
+        /**
+         * The cost of the marketing campaign with the currency.
+         *
+         * @var Price
+         */
+        protected $cost;
+        /**
+         * MarketingCampaign constructor.
+         *
+         * @param string                $id         The marketing campaign's unique identifier.
+         * @param MarketingCampaignType $type       The marketing campaign type.
+         * @param string                $title      The title of the marketing campaign.
+         * @param string                $manage_url The URL to the channel's campaign management page.
+         * @param Price|null            $cost       The cost of the marketing campaign with the currency.
+         */
+        public function __construct(string $id, \Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType $type, string $title, string $manage_url, \Automattic\WooCommerce\Admin\Marketing\Price $cost = null)
+        {
+        }
+        /**
+         * Returns the marketing campaign's unique identifier.
+         *
+         * @return string
+         */
+        public function get_id() : string
+        {
+        }
+        /**
+         * Returns the marketing campaign type.
+         *
+         * @return MarketingCampaignType
+         */
+        public function get_type() : \Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType
+        {
+        }
+        /**
+         * Returns the title of the marketing campaign.
+         *
+         * @return string
+         */
+        public function get_title() : string
+        {
+        }
+        /**
+         * Returns the URL to manage the marketing campaign.
+         *
+         * @return string
+         */
+        public function get_manage_url() : string
+        {
+        }
+        /**
+         * Returns the cost of the marketing campaign with the currency.
+         *
+         * @return Price|null
+         */
+        public function get_cost() : ?\Automattic\WooCommerce\Admin\Marketing\Price
+        {
+        }
+    }
+    /**
+     * MarketingCampaignType class
+     *
+     * @since x.x.x
+     */
+    class MarketingCampaignType
+    {
+        /**
+         * The unique identifier.
+         *
+         * @var string
+         */
+        protected $id;
+        /**
+         * The marketing channel that this campaign type belongs to.
+         *
+         * @var MarketingChannelInterface
+         */
+        protected $channel;
+        /**
+         * Name of the marketing campaign type.
+         *
+         * @var string
+         */
+        protected $name;
+        /**
+         * Description of the marketing campaign type.
+         *
+         * @var string
+         */
+        protected $description;
+        /**
+         * The URL to the create campaign page.
+         *
+         * @var string
+         */
+        protected $create_url;
+        /**
+         * The URL to an image/icon for the campaign type.
+         *
+         * @var string
+         */
+        protected $icon_url;
+        /**
+         * MarketingCampaignType constructor.
+         *
+         * @param string                    $id          A unique identifier for the campaign type.
+         * @param MarketingChannelInterface $channel     The marketing channel that this campaign type belongs to.
+         * @param string                    $name        Name of the marketing campaign type.
+         * @param string                    $description Description of the marketing campaign type.
+         * @param string                    $create_url  The URL to the create campaign page.
+         * @param string                    $icon_url    The URL to an image/icon for the campaign type.
+         */
+        public function __construct(string $id, \Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface $channel, string $name, string $description, string $create_url, string $icon_url)
+        {
+        }
+        /**
+         * Returns the marketing campaign's unique identifier.
+         *
+         * @return string
+         */
+        public function get_id() : string
+        {
+        }
+        /**
+         * Returns the marketing channel that this campaign type belongs to.
+         *
+         * @return MarketingChannelInterface
+         */
+        public function get_channel() : \Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface
+        {
+        }
+        /**
+         * Returns the name of the marketing campaign type.
+         *
+         * @return string
+         */
+        public function get_name() : string
+        {
+        }
+        /**
+         * Returns the description of the marketing campaign type.
+         *
+         * @return string
+         */
+        public function get_description() : string
+        {
+        }
+        /**
+         * Returns the URL to the create campaign page.
+         *
+         * @return string
+         */
+        public function get_create_url() : string
+        {
+        }
+        /**
+         * Returns the URL to an image/icon for the campaign type.
+         *
+         * @return string
+         */
+        public function get_icon_url() : string
+        {
+        }
+    }
+    /**
+     * MarketingChannelInterface interface
+     *
+     * @since x.x.x
+     */
+    interface MarketingChannelInterface
+    {
+        public const PRODUCT_LISTINGS_NOT_APPLICABLE = 'not-applicable';
+        public const PRODUCT_LISTINGS_SYNC_IN_PROGRESS = 'sync-in-progress';
+        public const PRODUCT_LISTINGS_SYNC_FAILED = 'sync-failed';
+        public const PRODUCT_LISTINGS_SYNCED = 'synced';
+        /**
+         * Returns the unique identifier string for the marketing channel extension, also known as the plugin slug.
+         *
+         * @return string
+         */
+        public function get_slug() : string;
+        /**
+         * Returns the name of the marketing channel.
+         *
+         * @return string
+         */
+        public function get_name() : string;
+        /**
+         * Returns the description of the marketing channel.
+         *
+         * @return string
+         */
+        public function get_description() : string;
+        /**
+         * Returns the path to the channel icon.
+         *
+         * @return string
+         */
+        public function get_icon_url() : string;
+        /**
+         * Returns the setup status of the marketing channel.
+         *
+         * @return bool
+         */
+        public function is_setup_completed() : bool;
+        /**
+         * Returns the URL to the settings page, or the link to complete the setup/onboarding if the channel has not been set up yet.
+         *
+         * @return string
+         */
+        public function get_setup_url() : string;
+        /**
+         * Returns the status of the marketing channel's product listings.
+         *
+         * @return string
+         */
+        public function get_product_listings_status() : string;
+        /**
+         * Returns the number of channel issues/errors (e.g. account-related errors, product synchronization issues, etc.).
+         *
+         * @return int The number of issues to resolve, or 0 if there are no issues with the channel.
+         */
+        public function get_errors_count() : int;
+        /**
+         * Returns an array of marketing campaign types that the channel supports.
+         *
+         * @return MarketingCampaignType[] Array of marketing campaign type objects.
+         */
+        public function get_supported_campaign_types() : array;
+        /**
+         * Returns an array of the channel's marketing campaigns.
+         *
+         * @return MarketingCampaign[]
+         */
+        public function get_campaigns() : array;
+    }
+    /**
+     * MarketingChannels repository class
+     *
+     * @since x.x.x
+     */
+    class MarketingChannels
+    {
+        /**
+         * Registers a marketing channel.
+         *
+         * @param MarketingChannelInterface $channel The marketing channel to register.
+         *
+         * @return void
+         *
+         * @throws Exception If the given marketing channel is already registered.
+         */
+        public function register(\Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface $channel) : void
+        {
+        }
+        /**
+         * Unregisters all marketing channels.
+         *
+         * @return void
+         */
+        public function unregister_all() : void
+        {
+        }
+        /**
+         * Returns an array of all registered marketing channels.
+         *
+         * @return MarketingChannelInterface[]
+         */
+        public function get_registered_channels() : array
+        {
+        }
+    }
+    /**
+     * Price class
+     *
+     * @since x.x.x
+     */
+    class Price
+    {
+        /**
+         * The price.
+         *
+         * @var string
+         */
+        protected $value;
+        /**
+         * The currency of the price.
+         *
+         * @var string
+         */
+        protected $currency;
+        /**
+         * Price constructor.
+         *
+         * @param string $value    The value of the price.
+         * @param string $currency The currency of the price.
+         */
+        public function __construct(string $value, string $currency)
+        {
+        }
+        /**
+         * Get value of the price.
+         *
+         * @return string
+         */
+        public function get_value() : string
+        {
+        }
+        /**
+         * Get the currency of the price.
+         *
+         * @return string
+         */
+        public function get_currency() : string
         {
         }
     }
@@ -69740,7 +70480,7 @@ namespace Automattic\WooCommerce\Admin {
          * Regenerate data for reports.
          *
          * @param int|bool $days Number of days to import.
-         * @param bool     $skip_existing Skip exisiting records.
+         * @param bool     $skip_existing Skip existing records.
          * @return string
          */
         public static function regenerate_report_data($days, $skip_existing)
@@ -71987,18 +72727,6 @@ namespace Automattic\WooCommerce\Internal\Admin {
     {
         use \Automattic\WooCommerce\Internal\Admin\CouponsMovedTrait;
         /**
-         * Name of recommended plugins transient.
-         *
-         * @var string
-         */
-        const RECOMMENDED_PLUGINS_TRANSIENT = 'wc_marketing_recommended_plugins';
-        /**
-         * Name of knowledge base post transient.
-         *
-         * @var string
-         */
-        const KNOWLEDGE_BASE_TRANSIENT = 'wc_marketing_knowledge_base';
-        /**
          * Class instance.
          *
          * @var Marketing instance
@@ -72058,24 +72786,97 @@ namespace Automattic\WooCommerce\Internal\Admin {
         public function component_settings($settings)
         {
         }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\Marketing {
+    /**
+     * Marketing Specifications Class.
+     *
+     * @internal
+     * @since x.x.x
+     */
+    class MarketingSpecs
+    {
+        /**
+         * Name of recommended plugins transient.
+         *
+         * @var string
+         */
+        const RECOMMENDED_PLUGINS_TRANSIENT = 'wc_marketing_recommended_plugins';
+        /**
+         * Name of knowledge base post transient.
+         *
+         * @var string
+         */
+        const KNOWLEDGE_BASE_TRANSIENT = 'wc_marketing_knowledge_base';
+        /**
+         * Slug of the category specifying marketing extensions on the WooCommerce.com store.
+         *
+         * @var string
+         */
+        const MARKETING_EXTENSION_CATEGORY_SLUG = 'marketing';
+        /**
+         * Slug of the subcategory specifying marketing channels on the WooCommerce.com store.
+         *
+         * @var string
+         */
+        const MARKETING_CHANNEL_SUBCATEGORY_SLUG = 'sales-channels';
         /**
          * Load recommended plugins from WooCommerce.com
          *
          * @return array
          */
-        public function get_recommended_plugins()
+        public function get_recommended_plugins() : array
+        {
+        }
+        /**
+         * Return only the recommended marketing channels from WooCommerce.com.
+         *
+         * @return array
+         */
+        public function get_recommended_marketing_channels() : array
+        {
+        }
+        /**
+         * Return all recommended marketing extensions EXCEPT the marketing channels from WooCommerce.com.
+         *
+         * @return array
+         */
+        public function get_recommended_marketing_extensions_excluding_channels() : array
+        {
+        }
+        /**
+         * Returns whether a plugin is a marketing extension.
+         *
+         * @param array $plugin_data The plugin properties returned by the API.
+         *
+         * @return bool
+         */
+        protected function is_marketing_plugin(array $plugin_data) : bool
+        {
+        }
+        /**
+         * Returns whether a plugin is a marketing channel.
+         *
+         * @param array $plugin_data The plugin properties returned by the API.
+         *
+         * @return bool
+         */
+        protected function is_marketing_channel_plugin(array $plugin_data) : bool
         {
         }
         /**
          * Load knowledge base posts from WooCommerce.com
          *
-         * @param string $category Category of posts to retrieve.
+         * @param string|null $category Category of posts to retrieve.
          * @return array
          */
-        public function get_knowledge_base_posts($category)
+        public function get_knowledge_base_posts(?string $category) : array
         {
         }
     }
+}
+namespace Automattic\WooCommerce\Internal\Admin {
     /**
      * Determine if the mobile app banner shows on Android devices
      */
@@ -73988,6 +74789,14 @@ namespace Automattic\WooCommerce\Internal\Admin\Orders {
         {
         }
         /**
+         * Set the current action for the form.
+         *
+         * @param string $action Action name.
+         */
+        public function set_current_action(string $action)
+        {
+        }
+        /**
          * Takes care of updating order data. Fires action that metaboxes can hook to for order data updating.
          *
          * @return void
@@ -74415,6 +75224,337 @@ namespace Automattic\WooCommerce\Internal\Admin\Orders {
         public function __construct(\Automattic\WooCommerce\Internal\Admin\Orders\PageController $page_controller)
         {
         }
+    }
+}
+namespace Automattic\WooCommerce\Internal\Admin\ProductForm {
+    /**
+     * ComponentTrait class.
+     */
+    trait ComponentTrait
+    {
+        /**
+         * Component ID.
+         *
+         * @var string
+         */
+        protected $id;
+        /**
+         * Plugin ID.
+         *
+         * @var string
+         */
+        protected $plugin_id;
+        /**
+         * Product form component location.
+         *
+         * @var string
+         */
+        protected $location;
+        /**
+         * Product form component order.
+         *
+         * @var number
+         */
+        protected $order;
+        /**
+         * Return id.
+         *
+         * @return string
+         */
+        public function get_id()
+        {
+        }
+        /**
+         * Return plugin id.
+         *
+         * @return string
+         */
+        public function get_plugin_id()
+        {
+        }
+    }
+    /**
+     * Component class.
+     */
+    abstract class Component
+    {
+        /**
+         * Product Component traits.
+         */
+        use \Automattic\WooCommerce\Internal\Admin\ProductForm\ComponentTrait;
+        /**
+         * Component additional arguments.
+         *
+         * @var array
+         */
+        protected $additional_args;
+        /**
+         * Constructor
+         *
+         * @param string $id Component id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $additional_args Array containing additional arguments.
+         */
+        public function __construct($id, $plugin_id, $additional_args)
+        {
+        }
+        /**
+         * Component arguments.
+         *
+         * @return array
+         */
+        public function get_additional_args()
+        {
+        }
+        /**
+         * Component arguments.
+         *
+         * @param string $key key of argument.
+         * @return mixed
+         */
+        public function get_additional_argument($key)
+        {
+        }
+        /**
+         * Get the component as JSON.
+         *
+         * @return array
+         */
+        public function get_json()
+        {
+        }
+        /**
+         * Sorting function for product form component.
+         *
+         * @param Component $a Component a.
+         * @param Component $b Component b.
+         * @param array     $sort_by key and order to sort by.
+         * @return int
+         */
+        public static function sort($a, $b, $sort_by = array())
+        {
+        }
+        /**
+         * Gets argument by dot notation path.
+         *
+         * @param array  $arguments Arguments array.
+         * @param string $path Path for argument key.
+         * @param string $delimiter Path delimiter, default: '.'.
+         * @return mixed|null
+         */
+        public static function get_argument_from_path($arguments, $path, $delimiter = '.')
+        {
+        }
+    }
+    /**
+     * Field class.
+     */
+    class Field extends \Automattic\WooCommerce\Internal\Admin\ProductForm\Component
+    {
+        /**
+         * Field type.
+         *
+         * @var string
+         */
+        public $type;
+        /**
+         * Array of required arguments.
+         *
+         * @var array
+         */
+        const REQUIRED_ARGUMENTS = array('type', 'section', 'properties.name', 'properties.label');
+        /**
+         * Constructor
+         *
+         * @param string $id Field id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $additional_args Array containing the necessary arguments.
+         *     $args = array(
+         *       'type'            => (string) Field type. Required.
+         *       'section'         => (string) Field location. Required.
+         *       'order'           => (int) Field order.
+         *       'properties'      => (array) Field properties.
+         *     ).
+         * @throws \Exception If there are missing arguments.
+         */
+        public function __construct($id, $plugin_id, $additional_args)
+        {
+        }
+        /**
+         * Get missing arguments of args array.
+         *
+         * @param array $args field arguments.
+         * @return array
+         */
+        public static function get_missing_arguments($args)
+        {
+        }
+    }
+    /**
+     * Factory that contains logic for the WooCommerce Product Form.
+     */
+    class FormFactory
+    {
+        /**
+         * Class instance.
+         *
+         * @var Form instance
+         */
+        protected static $instance = null;
+        /**
+         * Store form fields.
+         *
+         * @var array
+         */
+        protected static $form_fields = array();
+        /**
+         * Store form cards.
+         *
+         * @var array
+         */
+        protected static $form_subsections = array();
+        /**
+         * Store form sections.
+         *
+         * @var array
+         */
+        protected static $form_sections = array();
+        /**
+         * Get class instance.
+         */
+        public static final function instance()
+        {
+        }
+        /**
+         * Init.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Adds a field to the product form.
+         *
+         * @param string $id Field id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $args Array containing the necessary arguments.
+         *     $args = array(
+         *       'type'            => (string) Field type. Required.
+         *       'section'         => (string) Field location. Required.
+         *       'order'           => (int) Field order.
+         *       'properties'      => (array) Field properties.
+         *       'name'            => (string) Field name.
+         *     ).
+         * @return Field|WP_Error New field or WP_Error.
+         */
+        public static function add_field($id, $plugin_id, $args)
+        {
+        }
+        /**
+         * Adds a Subsection to the product form.
+         *
+         * @param string $id Subsection id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $args Array containing the necessary arguments.
+         * @return Card|WP_Error New subsection or WP_Error.
+         */
+        public static function add_subsection($id, $plugin_id, $args = array())
+        {
+        }
+        /**
+         * Adds a section to the product form.
+         *
+         * @param string $id Card id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $args Array containing the necessary arguments.
+         * @return Card|WP_Error New section or WP_Error.
+         */
+        public static function add_section($id, $plugin_id, $args)
+        {
+        }
+        /**
+         * Returns form config.
+         *
+         * @return array form config.
+         */
+        public static function get_form_config()
+        {
+        }
+        /**
+         * Returns list of registered fields.
+         *
+         * @param array $sort_by key and order to sort by.
+         * @return array list of registered fields.
+         */
+        public static function get_fields($sort_by = array('key' => 'order', 'order' => 'asc'))
+        {
+        }
+        /**
+         * Returns list of registered cards.
+         *
+         * @param array $sort_by key and order to sort by.
+         * @return array list of registered cards.
+         */
+        public static function get_subsections($sort_by = array('key' => 'order', 'order' => 'asc'))
+        {
+        }
+        /**
+         * Returns list of registered sections.
+         *
+         * @param array $sort_by key and order to sort by.
+         * @return array list of registered sections.
+         */
+        public static function get_sections($sort_by = array('key' => 'order', 'order' => 'asc'))
+        {
+        }
+    }
+    /**
+     * Section class.
+     */
+    class Section extends \Automattic\WooCommerce\Internal\Admin\ProductForm\Component
+    {
+        /**
+         * Section title.
+         *
+         * @var string
+         */
+        protected $title;
+        /**
+         * Array of required arguments.
+         *
+         * @var array
+         */
+        const REQUIRED_ARGUMENTS = array('title');
+        /**
+         * Constructor
+         *
+         * @param string $id Section id.
+         * @param string $plugin_id Plugin id.
+         * @param array  $additional_args Array containing additional arguments.
+         *     $args = array(
+         *       'order'       => (int) Section order.
+         *       'title'       => (string) Section description.
+         *       'description' => (string) Section description.
+         *     ).
+         * @throws \Exception If there are missing arguments.
+         */
+        public function __construct($id, $plugin_id, $additional_args)
+        {
+        }
+        /**
+         * Get missing arguments of args array.
+         *
+         * @param array $args section arguments.
+         * @return array
+         */
+        public static function get_missing_arguments($args)
+        {
+        }
+    }
+    /**
+     * SubSection class.
+     */
+    class Subsection extends \Automattic\WooCommerce\Internal\Admin\ProductForm\Component
+    {
     }
 }
 namespace Automattic\WooCommerce\Internal\Admin\ProductReviews {
@@ -77184,7 +78324,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         public function search_orders($term)
         {
         }
-        //phpcs:enable Squiz.Commenting, Generic.Commenting
         /**
          * Fetch order type for orders in bulk.
          *
@@ -77306,7 +78445,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         protected function get_db_row_from_order($order, $column_mapping, $only_changes = false)
         {
         }
-        //phpcs:disable Squiz.Commenting, Generic.Commenting
         /**
          * Method to delete an order from the database.
          *
@@ -77321,7 +78459,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         /**
          * Trashes an order.
          *
-         * @param WC_Order $order The order object
+         * @param  WC_Order $order The order object.
+         *
          * @return void
          */
         public function trash_order($order)
@@ -77360,6 +78499,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * This should not contain and specific meta or actions, so that it can be used other order types safely.
          *
          * @param \WC_Order $order Order object.
+         * @param bool      $force_all_fields Force update all fields, instead of calculating and updating only changed fields.
+         * @param bool      $backfill Whether to backfill data to post datastore.
          *
          * @return void
          *
@@ -77371,7 +78512,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         /**
          * Method to update an order in the database.
          *
-         * @param \WC_Order $order
+         * @param \WC_Order $order Order object.
          */
         public function update(&$order)
         {
@@ -77392,6 +78533,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * This is expected to be reused by other order types, and should not contain any specific metadata updates or actions.
          *
          * @param \WC_Order $order Order object.
+         * @param bool      $backfill Whether to backfill data to post tables.
          *
          * @return array $changes Array of changes.
          *
@@ -77456,10 +78598,14 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         public function release_held_coupons($order, $save = true)
         {
         }
+        /**
+         * Performs actual query to get orders. Uses `OrdersTableQuery` to build and generate the query.
+         *
+         * @param array $query_vars Query variables.
+         *
+         * @return array|object List of orders and count of orders.
+         */
         public function query($query_vars)
-        {
-        }
-        public function get_order_item_type($order, $order_item_id)
         {
         }
         //phpcs:enable Squiz.Commenting, Generic.Commenting
@@ -77584,6 +78730,30 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * }
          */
         public function get_sql_clauses() : array
+        {
+        }
+        /**
+         * Returns a list of names (corresponding to meta_query clauses) that can be used as an 'orderby' arg.
+         *
+         * @since 7.4
+         *
+         * @return array
+         */
+        public function get_orderby_keys() : array
+        {
+        }
+        /**
+         * Returns an SQL fragment for the given meta_query key that can be used in an ORDER BY clause.
+         * Call {@see 'get_orderby_keys'} to obtain a list of valid keys.
+         *
+         * @since 7.4
+         *
+         * @param string $key The key name.
+         * @return string
+         *
+         * @throws \Exception When an invalid key is passed.
+         */
+        public function get_orderby_clause_for_key(string $key) : string
         {
         }
     }
@@ -78099,6 +79269,26 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders 
          * @var array
          */
         protected $provides = array(\Automattic\WooCommerce\Internal\Features\FeaturesController::class);
+        /**
+         * Register the classes.
+         */
+        public function register()
+        {
+        }
+    }
+    /**
+     * Service provider for the non-static utils classes in the Automattic\WooCommerce\src namespace.
+     *
+     * @since x.x.x
+     */
+    class MarketingServiceProvider extends \Automattic\WooCommerce\Internal\DependencyManagement\AbstractServiceProvider
+    {
+        /**
+         * The classes/interfaces that are serviced by this service provider.
+         *
+         * @var array
+         */
+        protected $provides = array(\Automattic\WooCommerce\Internal\Admin\Marketing\MarketingSpecs::class, \Automattic\WooCommerce\Admin\Marketing\MarketingChannels::class);
         /**
          * Register the classes.
          */
@@ -81953,6 +83143,21 @@ namespace {
     function wc_wp_theme_get_element_class_name($element)
     {
     }
+    /**
+     * Given an element name, returns true or false depending on whether the
+     * current theme has styles for that element defined in theme.json.
+     *
+     * If the theme is not a block theme or the WP-related function is not defined,
+     * return false.
+     *
+     * @param string $element The name of the element.
+     *
+     * @since 7.4.0
+     * @return bool
+     */
+    function wc_block_theme_has_styles_for_element($element)
+    {
+    }
     // Before wpautop().
     /**
      * Define a constant if it is not already defined.
@@ -83702,7 +84907,7 @@ namespace {
      * @deprecated 3.6.0
      * @param int    $term_id    Term ID.
      * @param string $meta_key   Meta key.
-     * @param string $meta_value Meta value (default: '').
+     * @param mixed  $meta_value Meta value (default: '').
      * @param bool   $deprecated Deprecated param (default: false).
      * @return bool
      */
@@ -83795,10 +85000,10 @@ namespace {
      *
      * @param int|float $dimension    Dimension.
      * @param string    $to_unit      Unit to convert to.
-     *                                Options: 'in', 'm', 'cm', 'm'.
+     *                                Options: 'in', 'mm', 'cm', 'm'.
      * @param string    $from_unit    Unit to convert from.
      *                                Defaults to ''.
-     *                                Options: 'in', 'm', 'cm', 'm'.
+     *                                Options: 'in', 'mm', 'cm', 'm'.
      * @return float
      */
     function wc_get_dimension($dimension, $to_unit, $from_unit = '')
@@ -85021,7 +86226,7 @@ namespace {
      *
      * @param int    $item_id    Item ID.
      * @param string $meta_key   Meta key.
-     * @param string $meta_value Meta value.
+     * @param mixed  $meta_value Meta value.
      * @param string $prev_value Previous value (default: '').
      *
      * @throws Exception         When `WC_Data_Store::load` validation fails.
@@ -85035,7 +86240,7 @@ namespace {
      *
      * @param int    $item_id    Item ID.
      * @param string $meta_key   Meta key.
-     * @param string $meta_value Meta value.
+     * @param mixed  $meta_value Meta value.
      * @param bool   $unique     If meta data should be unique (default: false).
      *
      * @throws Exception         When `WC_Data_Store::load` validation fails.
@@ -85049,7 +86254,7 @@ namespace {
      *
      * @param int    $item_id    Item ID.
      * @param string $meta_key   Meta key.
-     * @param string $meta_value Meta value (default: '').
+     * @param mixed  $meta_value Meta value (default: '').
      * @param bool   $delete_all Delete all meta data, defaults to `false`.
      *
      * @throws Exception         When `WC_Data_Store::load` validation fails.
@@ -87669,7 +88874,7 @@ namespace {
      * @param int    $meta_id     ID of the meta object that was changed.
      * @param int    $user_id     The user that was updated.
      * @param string $meta_key    Name of the meta key that was changed.
-     * @param string $_meta_value Value of the meta that was changed.
+     * @param mixed  $_meta_value Value of the meta that was changed.
      */
     function wc_meta_update_last_update_time($meta_id, $user_id, $meta_key, $_meta_value)
     {

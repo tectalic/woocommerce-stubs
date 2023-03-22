@@ -27,13 +27,15 @@ namespace {
     class ActionScheduler_ActionFactory
     {
         /**
-         * @param string $status The action's status in the data store
-         * @param string $hook The hook to trigger when this action runs
-         * @param array $args Args to pass to callbacks when the hook is triggered
-         * @param ActionScheduler_Schedule $schedule The action's schedule
-         * @param string $group A group to put the action in
+         * Return stored actions for given params.
          *
-         * @return ActionScheduler_Action An instance of the stored action
+         * @param string                   $status The action's status in the data store.
+         * @param string                   $hook The hook to trigger when this action runs.
+         * @param array                    $args Args to pass to callbacks when the hook is triggered.
+         * @param ActionScheduler_Schedule $schedule The action's schedule.
+         * @param string                   $group A group to put the action in.
+         *
+         * @return ActionScheduler_Action An instance of the stored action.
          */
         public function get_stored_action($status, $hook, array $args = array(), \ActionScheduler_Schedule $schedule = \null, $group = '')
         {
@@ -41,61 +43,119 @@ namespace {
         /**
          * Enqueue an action to run one time, as soon as possible (rather a specific scheduled time).
          *
-         * This method creates a new action with the NULLSchedule. This schedule maps to a MySQL datetime string of
-         * 0000-00-00 00:00:00. This is done to create a psuedo "async action" type that is fully backward compatible.
-         * Existing queries to claim actions claim by date, meaning actions scheduled for 0000-00-00 00:00:00 will
-         * always be claimed prior to actions scheduled for a specific date. This makes sure that any async action is
-         * given priority in queue processing. This has the added advantage of making sure async actions can be
-         * claimed by both the existing WP Cron and WP CLI runners, as well as a new async request runner.
+         * This method creates a new action using the NullSchedule. In practice, this results in an action scheduled to
+         * execute "now". Therefore, it will generally run as soon as possible but is not prioritized ahead of other actions
+         * that are already past-due.
          *
-         * @param string $hook The hook to trigger when this action runs
-         * @param array $args Args to pass when the hook is triggered
-         * @param string $group A group to put the action in
+         * @param string $hook The hook to trigger when this action runs.
+         * @param array  $args Args to pass when the hook is triggered.
+         * @param string $group A group to put the action in.
          *
-         * @return int The ID of the stored action
+         * @return int The ID of the stored action.
          */
         public function async($hook, $args = array(), $group = '')
         {
         }
         /**
-         * @param string $hook The hook to trigger when this action runs
-         * @param array $args Args to pass when the hook is triggered
-         * @param int $when Unix timestamp when the action will run
-         * @param string $group A group to put the action in
+         * Same as async, but also supports $unique param.
          *
-         * @return int The ID of the stored action
+         * @param string $hook The hook to trigger when this action runs.
+         * @param array  $args Args to pass when the hook is triggered.
+         * @param string $group A group to put the action in.
+         * @param bool   $unique Whether to ensure the action is unique.
+         *
+         * @return int The ID of the stored action.
+         */
+        public function async_unique($hook, $args = array(), $group = '', $unique = \true)
+        {
+        }
+        /**
+         * Create single action.
+         *
+         * @param string $hook  The hook to trigger when this action runs.
+         * @param array  $args  Args to pass when the hook is triggered.
+         * @param int    $when  Unix timestamp when the action will run.
+         * @param string $group A group to put the action in.
+         *
+         * @return int The ID of the stored action.
          */
         public function single($hook, $args = array(), $when = \null, $group = '')
         {
         }
         /**
+         * Create single action only if there is no pending or running action with same name and params.
+         *
+         * @param string $hook The hook to trigger when this action runs.
+         * @param array  $args Args to pass when the hook is triggered.
+         * @param int    $when Unix timestamp when the action will run.
+         * @param string $group A group to put the action in.
+         * @param bool   $unique Whether action scheduled should be unique.
+         *
+         * @return int The ID of the stored action.
+         */
+        public function single_unique($hook, $args = array(), $when = \null, $group = '', $unique = \true)
+        {
+        }
+        /**
          * Create the first instance of an action recurring on a given interval.
          *
-         * @param string $hook The hook to trigger when this action runs
-         * @param array $args Args to pass when the hook is triggered
-         * @param int $first Unix timestamp for the first run
-         * @param int $interval Seconds between runs
-         * @param string $group A group to put the action in
+         * @param string $hook The hook to trigger when this action runs.
+         * @param array  $args Args to pass when the hook is triggered.
+         * @param int    $first Unix timestamp for the first run.
+         * @param int    $interval Seconds between runs.
+         * @param string $group A group to put the action in.
          *
-         * @return int The ID of the stored action
+         * @return int The ID of the stored action.
          */
         public function recurring($hook, $args = array(), $first = \null, $interval = \null, $group = '')
         {
         }
         /**
+         * Create the first instance of an action recurring on a given interval only if there is no pending or running action with same name and params.
+         *
+         * @param string $hook The hook to trigger when this action runs.
+         * @param array  $args Args to pass when the hook is triggered.
+         * @param int    $first Unix timestamp for the first run.
+         * @param int    $interval Seconds between runs.
+         * @param string $group A group to put the action in.
+         * @param bool   $unique Whether action scheduled should be unique.
+         *
+         * @return int The ID of the stored action.
+         */
+        public function recurring_unique($hook, $args = array(), $first = \null, $interval = \null, $group = '', $unique = \true)
+        {
+        }
+        /**
          * Create the first instance of an action recurring on a Cron schedule.
          *
-         * @param string $hook The hook to trigger when this action runs
-         * @param array $args Args to pass when the hook is triggered
-         * @param int $base_timestamp The first instance of the action will be scheduled
+         * @param string $hook The hook to trigger when this action runs.
+         * @param array  $args Args to pass when the hook is triggered.
+         * @param int    $base_timestamp The first instance of the action will be scheduled
          *        to run at a time calculated after this timestamp matching the cron
          *        expression. This can be used to delay the first instance of the action.
-         * @param int $schedule A cron definition string
-         * @param string $group A group to put the action in
+         * @param int    $schedule A cron definition string.
+         * @param string $group A group to put the action in.
          *
-         * @return int The ID of the stored action
+         * @return int The ID of the stored action.
          */
         public function cron($hook, $args = array(), $base_timestamp = \null, $schedule = \null, $group = '')
+        {
+        }
+        /**
+         * Create the first instance of an action recurring on a Cron schedule only if there is no pending or running action with same name and params.
+         *
+         * @param string $hook The hook to trigger when this action runs.
+         * @param array  $args Args to pass when the hook is triggered.
+         * @param int    $base_timestamp The first instance of the action will be scheduled
+         *        to run at a time calculated after this timestamp matching the cron
+         *        expression. This can be used to delay the first instance of the action.
+         * @param int    $schedule A cron definition string.
+         * @param string $group A group to put the action in.
+         * @param bool   $unique Whether action scheduled should be unique.
+         *
+         * @return int The ID of the stored action.
+         **/
+        public function cron_unique($hook, $args = array(), $base_timestamp = \null, $schedule = \null, $group = '', $unique = \true)
         {
         }
         /**
@@ -126,11 +186,23 @@ namespace {
         {
         }
         /**
-         * @param ActionScheduler_Action $action
+         * Save action to database.
+         *
+         * @param ActionScheduler_Action $action Action object to save.
          *
          * @return int The ID of the stored action
          */
         protected function store(\ActionScheduler_Action $action)
+        {
+        }
+        /**
+         * Store action if it's unique.
+         *
+         * @param ActionScheduler_Action $action Action object to store.
+         *
+         * @return int ID of the created action. Will be 0 if action was not created.
+         */
+        protected function store_unique_action(\ActionScheduler_Action $action)
         {
         }
     }
@@ -322,6 +394,24 @@ namespace {
          * @return ActionScheduler_ListTable
          */
         protected function get_list_table()
+        {
+        }
+        /**
+         * Action: admin_notices
+         *
+         * Maybe check past-due actions, and print notice.
+         *
+         * @uses $this->check_pastdue_actions()
+         */
+        public function maybe_check_pastdue_actions()
+        {
+        }
+        /**
+         * Check past-due actions, and print notice.
+         *
+         * @todo update $link_url to "Past-due" filter when released (see issue #510, PR #511)
+         */
+        protected function check_pastdue_actions()
         {
         }
         /**
@@ -627,7 +717,7 @@ namespace {
      * Facilitates catching Exceptions unique to Action Scheduler.
      *
      * @package ActionScheduler
-     * @since %VERSION%
+     * @since 2.1.0
      */
     interface ActionScheduler_Exception
     {
@@ -1764,12 +1854,10 @@ namespace {
         {
         }
         /**
-         * Running large batches can eat up memory, as WP adds data to its object cache.
+         * Flush the cache if possible (intended for use after a batch of actions has been processed).
          *
-         * If using a persistent object store, this has the side effect of flushing that
-         * as well, so this is disabled by default. To enable:
-         *
-         * add_filter( 'action_scheduler_queue_runner_flush_cache', '__return_true' );
+         * This is useful because running large batches can eat up memory and because invalid data can accrue in the
+         * runtime cache, which may lead to unexpected results.
          */
         protected function clear_caches()
         {
@@ -2473,7 +2561,7 @@ namespace {
         /**
          * Query for action count or list of action IDs.
          *
-         * @since x.x.x $query['status'] accepts array of statuses instead of a single status.
+         * @since 3.3.0 $query['status'] accepts array of statuses instead of a single status.
          *
          * @param array  $query {
          *      Query filtering options.
@@ -2500,7 +2588,7 @@ namespace {
         /**
          * Run query to get a single action ID.
          *
-         * @since x.x.x
+         * @since 3.3.0
          *
          * @see ActionScheduler_Store::query_actions for $query arg usage but 'per_page' and 'offset' can't be used.
          *
@@ -2517,6 +2605,16 @@ namespace {
          * @return array
          */
         public abstract function action_counts();
+        /**
+         * Get additional action counts.
+         *
+         * - add past-due actions
+         *
+         * @return array
+         */
+        public function extra_action_counts()
+        {
+        }
         /**
          * @param string $action_id
          */
@@ -2762,6 +2860,15 @@ namespace {
         public function __construct($hook, array $args = array(), \ActionScheduler_Schedule $schedule = \NULL, $group = '')
         {
         }
+        /**
+         * Executes the action.
+         *
+         * If no callbacks are registered, an exception will be thrown and the action will not be
+         * fired. This is useful to help detect cases where the code responsible for setting up
+         * a scheduled action no longer exists.
+         *
+         * @throws Exception If no callbacks are registered for this action.
+         */
         public function execute()
         {
         }
@@ -2938,15 +3045,27 @@ namespace {
         {
         }
         /**
-         * Save an action.
+         * Save an action, checks if this is a unique action before actually saving.
+         *
+         * @param ActionScheduler_Action $action         Action object.
+         * @param \DateTime              $scheduled_date Optional schedule date. Default null.
+         *
+         * @return int                  Action ID.
+         * @throws RuntimeException     Throws exception when saving the action fails.
+         */
+        public function save_unique_action(\ActionScheduler_Action $action, \DateTime $scheduled_date = \null)
+        {
+        }
+        /**
+         * Save an action. Can save duplicate action as well, prefer using `save_unique_action` instead.
          *
          * @param ActionScheduler_Action $action Action object.
-         * @param DateTime              $date Optional schedule date. Default null.
+         * @param \DateTime              $scheduled_date Optional schedule date. Default null.
          *
          * @return int Action ID.
          * @throws RuntimeException     Throws exception when saving the action fails.
          */
-        public function save_action(\ActionScheduler_Action $action, \DateTime $date = \null)
+        public function save_action(\ActionScheduler_Action $action, \DateTime $scheduled_date = \null)
         {
         }
         /**
@@ -3019,7 +3138,7 @@ namespace {
         /**
          * Returns the SQL statement to query (or count) actions.
          *
-         * @since x.x.x $query['status'] accepts array of statuses instead of a single status.
+         * @since 3.3.0 $query['status'] accepts array of statuses instead of a single status.
          *
          * @param array  $query Filtering options.
          * @param string $select_or_count  Whether the SQL should select and return the IDs or just the row count.
@@ -3033,7 +3152,7 @@ namespace {
         /**
          * Query for action count or list of action IDs.
          *
-         * @since x.x.x $query['status'] accepts array of statuses instead of a single status.
+         * @since 3.3.0 $query['status'] accepts array of statuses instead of a single status.
          *
          * @see ActionScheduler_Store::query_actions for $query arg usage.
          *
@@ -3761,7 +3880,7 @@ namespace {
         /**
          * Query for action count or list of action IDs.
          *
-         * @since x.x.x $query['status'] accepts array of statuses instead of a single status.
+         * @since 3.3.0 $query['status'] accepts array of statuses instead of a single status.
          *
          * @see ActionScheduler_Store::query_actions for $query arg usage.
          *
@@ -4754,6 +4873,8 @@ namespace {
      */
     class ActionScheduler_NullSchedule extends \ActionScheduler_SimpleSchedule
     {
+        /** @var DateTime|null */
+        protected $scheduled_date;
         /**
          * Make the $date param optional and default to null.
          *
@@ -5039,12 +5160,10 @@ namespace Automattic\WooCommerce\Blocks\Assets {
         {
         }
         /**
-         * Returns the appropriate asset path for loading either legacy builds or
-         * current builds.
+         * Returns the appropriate asset path for current builds.
          *
          * @param   string $filename  Filename for asset path (without extension).
          * @param   string $type      File type (.css or .js).
-         *
          * @return  string             The generated path.
          */
         public function get_block_asset_build_path($filename, $type = 'js')
@@ -6885,6 +7004,18 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         protected $block_name = 'checkout-payment-block';
     }
     /**
+     * CheckoutPickupOptionsBlock class.
+     */
+    class CheckoutPickupOptionsBlock extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractInnerBlock
+    {
+        /**
+         * Block name.
+         *
+         * @var string
+         */
+        protected $block_name = 'checkout-pickup-options-block';
+    }
+    /**
      * CheckoutShippingAddressBlock class.
      */
     class CheckoutShippingAddressBlock extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractInnerBlock
@@ -6895,6 +7026,18 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'checkout-shipping-address-block';
+    }
+    /**
+     * CheckoutShippingMethodBlock class.
+     */
+    class CheckoutShippingMethodBlock extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractInnerBlock
+    {
+        /**
+         * Block name.
+         *
+         * @var string
+         */
+        protected $block_name = 'checkout-shipping-method-block';
     }
     /**
      * CheckoutShippingMethodsBlock class.
@@ -7004,6 +7147,33 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @return array
          */
         public function filter_products_by_stock($meta_query)
+        {
+        }
+    }
+    /**
+     * CustomerAccount class.
+     */
+    class CustomerAccount extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock
+    {
+        const TEXT_ONLY = 'text_only';
+        const ICON_ONLY = 'icon_only';
+        const DISPLAY_ALT = 'alt';
+        /**
+         * Block name.
+         *
+         * @var string
+         */
+        protected $block_name = 'customer-account';
+        /**
+         * Render the block.
+         *
+         * @param array    $attributes Block attributes.
+         * @param string   $content Block content.
+         * @param WP_Block $block Block instance.
+         *
+         * @return string Rendered block output.
+         */
+        protected function render($attributes, $content, $block)
         {
         }
     }
@@ -10280,6 +10450,162 @@ namespace Automattic\WooCommerce\Blocks\Registry {
         }
     }
 }
+namespace Automattic\WooCommerce\Blocks\Shipping {
+    /**
+     * Local Pickup Shipping Method.
+     */
+    class PickupLocation extends \WC_Shipping_Method
+    {
+        /**
+         * Constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Init function.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Calculate shipping.
+         *
+         * @param array $package Package information.
+         */
+        public function calculate_shipping($package = array())
+        {
+        }
+        /**
+         * See if the method is available.
+         *
+         * @param array $package Package information.
+         * @return bool
+         */
+        public function is_available($package)
+        {
+        }
+        /**
+         * Translates meta data for the shipping method.
+         *
+         * @param string $label Meta label.
+         * @param string $name Meta key.
+         * @param mixed  $product Product if applicable.
+         * @return string
+         */
+        public function translate_meta_data($label, $name, $product)
+        {
+        }
+        /**
+         * Admin options screen.
+         *
+         * See also WC_Shipping_Method::admin_options().
+         */
+        public function admin_options()
+        {
+        }
+    }
+    /**
+     * ShippingController class.
+     *
+     * @internal
+     */
+    class ShippingController
+    {
+        /**
+         * Instance of the asset API.
+         *
+         * @var AssetApi
+         */
+        protected $asset_api;
+        /**
+         * Instance of the asset data registry.
+         *
+         * @var AssetDataRegistry
+         */
+        protected $asset_data_registry;
+        /**
+         * Constructor.
+         *
+         * @param AssetApi          $asset_api Instance of the asset API.
+         * @param AssetDataRegistry $asset_data_registry Instance of the asset data registry.
+         */
+        public function __construct(\Automattic\WooCommerce\Blocks\Assets\Api $asset_api, \Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry $asset_data_registry)
+        {
+        }
+        /**
+         * Initialization method.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Register Local Pickup settings for rest api.
+         */
+        public function register_settings()
+        {
+        }
+        /**
+         * Hydrate client settings
+         */
+        public function hydrate_client_settings()
+        {
+        }
+        /**
+         * Load admin scripts.
+         */
+        public function admin_scripts()
+        {
+        }
+        /**
+         * Registers the Local Pickup shipping method used by the Checkout Block.
+         */
+        public function register_local_pickup()
+        {
+        }
+        /**
+         * Declares the Pickup Location shipping method as a Local Pickup method for WooCommerce.
+         *
+         * @param array $methods Shipping method ids.
+         * @return array
+         */
+        public function register_local_pickup_method($methods)
+        {
+        }
+        /**
+         * Everytime we save or update local pickup settings, we flush the shipping
+         * transient group.
+         *
+         * @param array $settings The setting array we're saving.
+         * @return array $settings The setting array we're saving.
+         */
+        public function flush_cache($settings)
+        {
+        }
+        /**
+         * Filter the location used for taxes based on the chosen pickup location.
+         *
+         * @param array $address Location args.
+         * @return array
+         */
+        public function filter_taxable_address($address)
+        {
+        }
+        /**
+         * Local Pickup requires all packages to support local pickup. This is because the entire order must be picked up
+         * so that all packages get the same tax rates applied during checkout.
+         *
+         * If a shipping package does not support local pickup (e.g. if disabled by an extension), this filters the option
+         * out for all packages. This will in turn disable the "pickup" toggle in Block Checkout.
+         *
+         * @param array $packages Array of shipping packages.
+         * @return array
+         */
+        public function filter_shipping_packages($packages)
+        {
+        }
+    }
+}
 namespace Automattic\WooCommerce\StoreApi {
     /**
      * Authentication class.
@@ -10308,6 +10634,15 @@ namespace Automattic\WooCommerce\StoreApi {
          * @param string $logged_in_cookie The value for the logged in cookie.
          */
         public function set_logged_in_cookie($logged_in_cookie)
+        {
+        }
+        /**
+         * Applies Rate Limiting to the request, and passes through any errors from other authentication methods used before this one.
+         *
+         * @param \WP_Error|mixed $result Error from another authentication handler, null if we should handle it, or another value if not.
+         * @return \WP_Error|null|bool
+         */
+        protected function apply_rate_limiting($result)
         {
         }
         /**
@@ -14460,15 +14795,6 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         {
         }
         /**
-         * We want to make local pickup always avaiable without checking for a shipping zone or address.
-         *
-         * @param array $shipping_methods Package we're checking against right now.
-         * @return array $shipping_methods Shipping methods with local pickup.
-         */
-        public function enable_local_pickup_without_address($shipping_methods)
-        {
-        }
-        /**
          * Creates a name for a package.
          *
          * @param array $package Shipping package from WooCommerce.
@@ -16062,6 +16388,8 @@ namespace {
     }
     /**
      * General API functions for scheduling actions
+     *
+     * @package ActionScheduler.
      */
     /**
      * Enqueue an action to run one time, as soon as possible
@@ -16069,45 +16397,49 @@ namespace {
      * @param string $hook The hook to trigger.
      * @param array  $args Arguments to pass when the hook triggers.
      * @param string $group The group to assign this job to.
+     * @param bool   $unique Whether the action should be unique.
+     *
      * @return int The action ID.
      */
-    function as_enqueue_async_action($hook, $args = array(), $group = '')
+    function as_enqueue_async_action($hook, $args = array(), $group = '', $unique = \false)
     {
     }
     /**
      * Schedule an action to run one time
      *
-     * @param int $timestamp When the job will run.
+     * @param int    $timestamp When the job will run.
      * @param string $hook The hook to trigger.
-     * @param array $args Arguments to pass when the hook triggers.
+     * @param array  $args Arguments to pass when the hook triggers.
      * @param string $group The group to assign this job to.
+     * @param bool   $unique Whether the action should be unique.
      *
      * @return int The action ID.
      */
-    function as_schedule_single_action($timestamp, $hook, $args = array(), $group = '')
+    function as_schedule_single_action($timestamp, $hook, $args = array(), $group = '', $unique = \false)
     {
     }
     /**
      * Schedule a recurring action
      *
-     * @param int $timestamp When the first instance of the job will run.
-     * @param int $interval_in_seconds How long to wait between runs.
+     * @param int    $timestamp When the first instance of the job will run.
+     * @param int    $interval_in_seconds How long to wait between runs.
      * @param string $hook The hook to trigger.
-     * @param array $args Arguments to pass when the hook triggers.
+     * @param array  $args Arguments to pass when the hook triggers.
      * @param string $group The group to assign this job to.
+     * @param bool   $unique Whether the action should be unique.
      *
      * @return int The action ID.
      */
-    function as_schedule_recurring_action($timestamp, $interval_in_seconds, $hook, $args = array(), $group = '')
+    function as_schedule_recurring_action($timestamp, $interval_in_seconds, $hook, $args = array(), $group = '', $unique = \false)
     {
     }
     /**
      * Schedule an action that recurs on a cron-like schedule.
      *
-     * @param int $base_timestamp The first instance of the action will be scheduled
-     *        to run at a time calculated after this timestamp matching the cron
-     *        expression. This can be used to delay the first instance of the action.
-     * @param string $schedule A cron-link schedule string
+     * @param int    $timestamp The first instance of the action will be scheduled
+     *           to run at a time calculated after this timestamp matching the cron
+     *           expression. This can be used to delay the first instance of the action.
+     * @param string $schedule A cron-link schedule string.
      * @see http://en.wikipedia.org/wiki/Cron
      *   *    *    *    *    *    *
      *   ┬    ┬    ┬    ┬    ┬    ┬
@@ -16119,12 +16451,13 @@ namespace {
      *   |    +-------------------- hour (0 - 23)
      *   +------------------------- min (0 - 59)
      * @param string $hook The hook to trigger.
-     * @param array $args Arguments to pass when the hook triggers.
+     * @param array  $args Arguments to pass when the hook triggers.
      * @param string $group The group to assign this job to.
+     * @param bool   $unique Whether the action should be unique.
      *
      * @return int The action ID.
      */
-    function as_schedule_cron_action($timestamp, $schedule, $hook, $args = array(), $group = '')
+    function as_schedule_cron_action($timestamp, $schedule, $hook, $args = array(), $group = '', $unique = \false)
     {
     }
     /**
@@ -16138,7 +16471,7 @@ namespace {
      * by this method also.
      *
      * @param string $hook The hook that the job will trigger.
-     * @param array $args Args that would have been passed to the job.
+     * @param array  $args Args that would have been passed to the job.
      * @param string $group The group the job is assigned to.
      *
      * @return int|null The scheduled action ID if a scheduled action was found, or null if no matching action found.
@@ -16150,7 +16483,7 @@ namespace {
      * Cancel all occurrences of a scheduled action.
      *
      * @param string $hook The hook that the job will trigger.
-     * @param array $args Args that would have been passed to the job.
+     * @param array  $args Args that would have been passed to the job.
      * @param string $group The group the job is assigned to.
      */
     function as_unschedule_all_actions($hook, $args = array(), $group = '')
@@ -16165,9 +16498,9 @@ namespace {
      * returned. Or there may be no async, in-progress or pending action for this hook, in which case,
      * boolean false will be the return value.
      *
-     * @param string $hook
-     * @param array $args
-     * @param string $group
+     * @param string $hook Name of the hook to search for.
+     * @param array  $args Arguments of the action to be searched.
+     * @param string $group Group of the action to be searched.
      *
      * @return int|bool The timestamp for the next occurrence of a pending scheduled action, true for an async or in-progress action or false if there is no matching action.
      */
@@ -16180,7 +16513,7 @@ namespace {
      * It's recommended to use this function when you need to know whether a specific action is currently scheduled
      * (pending or in-progress).
      *
-     * @since x.x.x
+     * @since 3.3.0
      *
      * @param string $hook  The hook of the action.
      * @param array  $args  Args that have been passed to the action. Null will matches any args.
@@ -16194,20 +16527,20 @@ namespace {
     /**
      * Find scheduled actions
      *
-     * @param array $args Possible arguments, with their default values:
-     *        'hook' => '' - the name of the action that will be triggered
-     *        'args' => NULL - the args array that will be passed with the action
-     *        'date' => NULL - the scheduled date of the action. Expects a DateTime object, a unix timestamp, or a string that can parsed with strtotime(). Used in UTC timezone.
-     *        'date_compare' => '<=' - operator for testing "date". accepted values are '!=', '>', '>=', '<', '<=', '='
-     *        'modified' => NULL - the date the action was last updated. Expects a DateTime object, a unix timestamp, or a string that can parsed with strtotime(). Used in UTC timezone.
-     *        'modified_compare' => '<=' - operator for testing "modified". accepted values are '!=', '>', '>=', '<', '<=', '='
-     *        'group' => '' - the group the action belongs to
-     *        'status' => '' - ActionScheduler_Store::STATUS_COMPLETE or ActionScheduler_Store::STATUS_PENDING
-     *        'claimed' => NULL - TRUE to find claimed actions, FALSE to find unclaimed actions, a string to find a specific claim ID
-     *        'per_page' => 5 - Number of results to return
-     *        'offset' => 0
-     *        'orderby' => 'date' - accepted values are 'hook', 'group', 'modified', 'date' or 'none'
-     *        'order' => 'ASC'
+     * @param array  $args Possible arguments, with their default values.
+     *         'hook' => '' - the name of the action that will be triggered.
+     *         'args' => NULL - the args array that will be passed with the action.
+     *         'date' => NULL - the scheduled date of the action. Expects a DateTime object, a unix timestamp, or a string that can parsed with strtotime(). Used in UTC timezone.
+     *         'date_compare' => '<=' - operator for testing "date". accepted values are '!=', '>', '>=', '<', '<=', '='.
+     *         'modified' => NULL - the date the action was last updated. Expects a DateTime object, a unix timestamp, or a string that can parsed with strtotime(). Used in UTC timezone.
+     *         'modified_compare' => '<=' - operator for testing "modified". accepted values are '!=', '>', '>=', '<', '<=', '='.
+     *         'group' => '' - the group the action belongs to.
+     *         'status' => '' - ActionScheduler_Store::STATUS_COMPLETE or ActionScheduler_Store::STATUS_PENDING.
+     *         'claimed' => NULL - TRUE to find claimed actions, FALSE to find unclaimed actions, a string to find a specific claim ID.
+     *         'per_page' => 5 - Number of results to return.
+     *         'offset' => 0.
+     *         'orderby' => 'date' - accepted values are 'hook', 'group', 'modified', 'date' or 'none'.
+     *         'order' => 'ASC'.
      *
      * @param string $return_format OBJECT, ARRAY_A, or ids.
      *
@@ -16228,7 +16561,7 @@ namespace {
      * timezone when instantiating datetimes rather than leaving it up to
      * the PHP default.
      *
-     * @param mixed $date_string A date/time string. Valid formats are explained in http://php.net/manual/en/datetime.formats.php.
+     * @param mixed  $date_string A date/time string. Valid formats are explained in http://php.net/manual/en/datetime.formats.php.
      * @param string $timezone A timezone identifier, like UTC or Europe/Lisbon. The list of valid identifiers is available http://php.net/manual/en/timezones.php.
      *
      * @return ActionScheduler_DateTime
