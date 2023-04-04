@@ -41,6 +41,7 @@ test -d "woocommerce"
     --interfaces \
     --traits \
     --constants \
+    --include-inaccessible-class-nodes \
     --out="$FILE"
 
 # There are no WC functions to read these constants.
@@ -57,6 +58,7 @@ printf '\nnamespace {\n%s\n}\n' "define('WC_VERSION', '0.0.0');" >>"$FILE"
     --classes \
     --interfaces \
     --traits \
+    --include-inaccessible-class-nodes \
     --out="$FILE_PKGS"
 # FIXME Add modern core arguments.
 ##sed -e 's#^\s*public function feedback(\$string#&, ...$args#' -i "$FILE_PKGS"
