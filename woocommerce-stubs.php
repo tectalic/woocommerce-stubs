@@ -837,6 +837,18 @@ namespace {
         {
         }
         /**
+         * Generates HTML for the 'safe_text' input type (mostly used for gateway-related settings).
+         *
+         * @param string $key Field key.
+         * @param array  $data Field data.
+         * @return string
+         *
+         * @since 7.6.0
+         */
+        public function generate_safe_text_html($key, $data)
+        {
+        }
+        /**
          * Generate Price Input HTML.
          *
          * @param string $key Field key.
@@ -2358,9 +2370,11 @@ namespace {
          * Manual discounts are not affected; those are separate and do not affect
          * stored line totals.
          *
-         * @since  3.2.0
+         * @since 3.2.0
+         * @since 7.6.0 Returns a boolean indicating success.
+         *
          * @param  string $code Coupon code.
-         * @return void
+         * @return bool TRUE if coupon was removed, FALSE otherwise.
          */
         public function remove_coupon($code)
         {
@@ -2465,6 +2479,16 @@ namespace {
          * @return array
          */
         protected function get_tax_location($args = array())
+        {
+        }
+        /**
+         * Public wrapper for exposing get_tax_location() method, enabling 3rd parties to get the tax location for an order.
+         *
+         * @since 7.6.0
+         * @param array $args array Override the location.
+         * @return array
+         */
+        public function get_taxable_location($args = array())
         {
         }
         /**
@@ -10967,6 +10991,12 @@ namespace {
          */
         protected $update_existing = \false;
         /**
+         * The character encoding to use to interpret the input file, or empty string for autodetect.
+         *
+         * @var string
+         */
+        protected $character_encoding = 'UTF-8';
+        /**
          * Get importer instance.
          *
          * @param  string $file File to import.
@@ -14717,6 +14747,30 @@ namespace {
         {
         }
         /**
+         * Save attributes and variations via ajax.
+         */
+        public static function add_attributes_and_variations()
+        {
+        }
+        /**
+         * Create product with attributes from POST data.
+         *
+         * @param  array $data Attribute data.
+         * @return mixed Product class.
+         */
+        private static function create_product_with_attributes($data)
+        {
+        }
+        /**
+         * Create all product variations from existing attributes.
+         *
+         * @param mixed $product Product class.
+         * @returns int Number of variations created.
+         */
+        private static function create_all_product_variations($product)
+        {
+        }
+        /**
          * Add variation via ajax function.
          */
         public static function add_variation()
@@ -16029,11 +16083,66 @@ namespace {
         {
         }
     }
+}
+namespace Automattic\WooCommerce\Caching {
+    /**
+     * Implements namespacing algorithm to simulate grouping and namespacing for wp_cache, memcache and other caching engines that don't support grouping natively.
+     *
+     * See the algorithm details here: https://github.com/memcached/memcached/wiki/ProgrammingTricks#namespacing.
+     *
+     * To use the namespacing algorithm in the CacheEngine class:
+     * 1. Use a group string to identify all objects of a type.
+     * 2. Before setting cache, prefix the cache key by using the `get_cache_prefix`.
+     * 3. Use `invalidate_cache_group` function to invalidate all caches in entire group at once.
+     */
+    trait CacheNameSpaceTrait
+    {
+        /**
+         * Get prefix for use with wp_cache_set. Allows all cache in a group to be invalidated at once.
+         *
+         * @param  string $group Group of cache to get.
+         * @return string Prefix.
+         */
+        public static function get_cache_prefix($group)
+        {
+        }
+        /**
+         * Increment group cache prefix (invalidates cache).
+         *
+         * @param string $group Group of cache to clear.
+         */
+        public static function incr_cache_prefix($group)
+        {
+        }
+        /**
+         * Invalidate cache group.
+         *
+         * @param string $group Group of cache to clear.
+         * @since 3.9.0
+         */
+        public static function invalidate_cache_group($group)
+        {
+        }
+        /**
+         * Helper method to get prefixed key.
+         *
+         * @param  string $key   Key to prefix.
+         * @param  string $group Group of cache to get.
+         *
+         * @return string Prefixed key.
+         */
+        public static function get_prefixed_key($key, $group)
+        {
+        }
+    }
+}
+namespace {
     /**
      * WC_Cache_Helper.
      */
     class WC_Cache_Helper
     {
+        use \Automattic\WooCommerce\Caching\CacheNameSpaceTrait;
         /**
          * Transients to delete on shutdown.
          *
@@ -16079,32 +16188,6 @@ namespace {
          * @param array $attribute_keys Attribute keys.
          */
         public static function invalidate_attribute_count($attribute_keys)
-        {
-        }
-        /**
-         * Get prefix for use with wp_cache_set. Allows all cache in a group to be invalidated at once.
-         *
-         * @param  string $group Group of cache to get.
-         * @return string
-         */
-        public static function get_cache_prefix($group)
-        {
-        }
-        /**
-         * Increment group cache prefix (invalidates cache).
-         *
-         * @param string $group Group of cache to clear.
-         */
-        public static function incr_cache_prefix($group)
-        {
-        }
-        /**
-         * Invalidate cache group.
-         *
-         * @param string $group Group of cache to clear.
-         * @since 3.9.0
-         */
-        public static function invalidate_cache_group($group)
         {
         }
         /**
@@ -33324,6 +33407,16 @@ namespace {
         {
         }
         /**
+         * Get tracker data for a pickup location method.
+         *
+         * @return array Associative array of tracker data with keys:
+         * - pickup_location_enabled
+         * - pickup_locations_count
+         */
+        public static function get_pickup_location_data()
+        {
+        }
+        /**
          * Get info about the cart & checkout pages.
          *
          * @return array
@@ -34017,7 +34110,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '7.5.1';
+        public $version = '7.6.0';
         /**
          * WooCommerce Schema version.
          *
@@ -35619,6 +35712,29 @@ namespace {
         {
         }
         /**
+         * Return the order type of a given item which belongs to WC_Order.
+         *
+         * @since  3.2.0
+         * @param  WC_Order $order Order Object.
+         * @param  int      $order_item_id Order item id.
+         * @return string Order Item type
+         */
+        public function get_order_item_type($order, $order_item_id)
+        {
+        }
+        /**
+         * Prime following caches:
+         *  1. item-$order_item_id   For individual items.
+         *  2. order-items-$order-id For fetching items associated with an order.
+         *  3. order-item meta.
+         *
+         * @param array $order_ids  Order Ids to prime cache for.
+         * @param array $query_vars Query vars for the query.
+         */
+        protected function prime_order_item_caches_for_orders($order_ids, $query_vars)
+        {
+        }
+        /**
          * Remove all line items (products, coupons, shipping, taxes) from the order.
          *
          * @param WC_Order $order Order object.
@@ -37200,35 +37316,12 @@ namespace {
         {
         }
         /**
-         * Prime following caches:
-         *  1. item-$order_item_id   For individual items.
-         *  2. order-items-$order-id For fetching items associated with an order.
-         *  3. order-item meta.
-         *
-         * @param array $order_ids  Order Ids to prime cache for.
-         * @param array $query_vars Query vars for the query.
-         */
-        private function prime_order_item_caches_for_orders($order_ids, $query_vars)
-        {
-        }
-        /**
          * Prime cache for raw meta data for orders in bulk. Difference between this and WP built-in metadata is that this method also fetches `meta_id` field which we use and cache it.
          *
          * @param array $order_ids  Order Ids to prime cache for.
          * @param array $query_vars Query vars for the query.
          */
         private function prime_raw_meta_cache_for_orders($order_ids, $query_vars)
-        {
-        }
-        /**
-         * Return the order type of a given item which belongs to WC_Order.
-         *
-         * @since  3.2.0
-         * @param  WC_Order $order Order Object.
-         * @param  int      $order_item_id Order item id.
-         * @return string Order Item type
-         */
-        public function get_order_item_type($order, $order_item_id)
         {
         }
     }
@@ -43244,6 +43337,15 @@ namespace {
         {
         }
         /**
+         * Convert a string from the input encoding to UTF-8.
+         *
+         * @param string $value The string to convert.
+         * @return string The converted string.
+         */
+        private function adjust_character_encoding($value)
+        {
+        }
+        /**
          * Read file.
          */
         protected function read_file()
@@ -48758,6 +48860,18 @@ namespace {
         {
         }
         /**
+         * With HPOS, few internal meta keys such as _billing_address_index, _shipping_address_index are not considered internal anymore (since most internal keys were flattened into dedicated columns).
+         *
+         * This function helps in filtering out any remaining internal meta keys with HPOS is enabled.
+         *
+         * @param array $meta_data Order meta data.
+         *
+         * @return array Filtered order meta data.
+         */
+        private function filter_internal_meta_keys($meta_data)
+        {
+        }
+        /**
          * Get formatted item data.
          *
          * @since 3.0.0
@@ -51814,15 +51928,6 @@ namespace {
         {
         }
         /**
-         * Get formatted item data.
-         *
-         * @param WC_Order $order WC_Data instance.
-         * @return array
-         */
-        protected function get_formatted_item_data($order)
-        {
-        }
-        /**
          * Prepare objects query.
          *
          * @since  3.0.0
@@ -52252,9 +52357,10 @@ namespace {
          * Get the image for a product variation.
          *
          * @param WC_Product_Variation $variation Variation data.
+         * @param string               $context   Context of the request: 'view' or 'edit'.
          * @return array
          */
-        protected function get_image($variation)
+        protected function get_image($variation, $context = 'view')
         {
         }
         /**
@@ -55550,6 +55656,12 @@ namespace {
          * @var array
          */
         protected $updated_options = array();
+        /**
+         * Toggled options.
+         *
+         * @var array
+         */
+        protected $toggled_options = array('enabled' => array(), 'disabled' => array());
         /**
          * Init tracking.
          */
@@ -59929,6 +60041,17 @@ namespace Automattic\WooCommerce\Admin\API {
         {
         }
         /**
+         * Helper method to allow searching by partial order number.
+         *
+         * @param int   $number Partial order number match.
+         * @param array $args List of arguments for the request.
+         *
+         * @return array Modified args with partial order search included.
+         */
+        private function search_partial_order_number($number, $args)
+        {
+        }
+        /**
          * Get product IDs, names, and quantity from order ID.
          *
          * @param array $order_id ID of order.
@@ -60800,21 +60923,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports {
          */
         protected $rest_base = 'reports';
         /**
-         * Register the routes for reports.
-         */
-        public function register_routes()
-        {
-        }
-        /**
-         * Check whether a given request has permission to read reports.
-         *
-         * @param  WP_REST_Request $request Full details about the request.
-         * @return WP_Error|boolean
-         */
-        public function get_items_permissions_check($request)
-        {
-        }
-        /**
          * Get all reports.
          *
          * @param WP_REST_Request $request Request data.
@@ -60899,12 +61007,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Categories {
      */
     class Controller extends \Automattic\WooCommerce\Admin\API\Reports\Controller implements \Automattic\WooCommerce\Admin\API\Reports\ExportableInterface
     {
-        /**
-         * Endpoint namespace.
-         *
-         * @var string
-         */
-        protected $namespace = 'wc-analytics';
         /**
          * Route base.
          *
@@ -61702,11 +61804,10 @@ namespace Automattic\WooCommerce\Admin\API\Reports {
          * Returns product attribute subquery elements used in JOIN and WHERE clauses,
          * based on query arguments from the user.
          *
-         * @param array  $query_args Parameters supplied by the user.
-         * @param string $table_name Database table name.
+         * @param array $query_args Parameters supplied by the user.
          * @return array
          */
-        protected function get_attribute_subqueries($query_args, $table_name)
+        protected function get_attribute_subqueries($query_args)
         {
         }
         /**
@@ -62871,6 +62972,17 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Customers {
         {
         }
         /**
+         * Update the database if the "last active" meta value was changed.
+         * Function expects to be hooked into the `added_user_meta` and `updated_user_meta` actions.
+         *
+         * @param int    $meta_id ID of updated metadata entry.
+         * @param int    $user_id ID of the user being updated.
+         * @param string $meta_key Meta key being updated.
+         */
+        public static function update_registered_customer_via_last_active($meta_id, $user_id, $meta_key)
+        {
+        }
+        /**
          * Check if a user ID is a valid customer or other user role with past orders.
          *
          * @param int $user_id User ID.
@@ -62893,6 +63005,16 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Customers {
          * @param int $user_id WordPress User ID.
          */
         public static function delete_customer_by_user_id($user_id)
+        {
+        }
+        /**
+         * Anonymize the customer data for a single order.
+         *
+         * @internal
+         * @param int $order_id Order id.
+         * @return void
+         */
+        public static function anonymize_customer($order_id)
         {
         }
         /**
@@ -63062,12 +63184,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Downloads {
      */
     class Controller extends \Automattic\WooCommerce\Admin\API\Reports\Controller implements \Automattic\WooCommerce\Admin\API\Reports\ExportableInterface
     {
-        /**
-         * Endpoint namespace.
-         *
-         * @var string
-         */
-        protected $namespace = 'wc-analytics';
         /**
          * Route base.
          *
@@ -63480,12 +63596,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Export {
     class Controller extends \Automattic\WooCommerce\Admin\API\Reports\Controller
     {
         /**
-         * Endpoint namespace.
-         *
-         * @var string
-         */
-        protected $namespace = 'wc-analytics';
-        /**
          * Route base.
          *
          * @var string
@@ -63550,12 +63660,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Import {
      */
     class Controller extends \Automattic\WooCommerce\Admin\API\Reports\Controller
     {
-        /**
-         * Endpoint namespace.
-         *
-         * @var string
-         */
-        protected $namespace = 'wc-analytics';
         /**
          * Route base.
          *
@@ -63668,12 +63772,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Orders {
      */
     class Controller extends \Automattic\WooCommerce\Admin\API\Reports\Controller implements \Automattic\WooCommerce\Admin\API\Reports\ExportableInterface
     {
-        /**
-         * Endpoint namespace.
-         *
-         * @var string
-         */
-        protected $namespace = 'wc-analytics';
         /**
          * Route base.
          *
@@ -63939,12 +64037,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Orders\Stats {
      */
     class Controller extends \Automattic\WooCommerce\Admin\API\Reports\Controller
     {
-        /**
-         * Endpoint namespace.
-         *
-         * @var string
-         */
-        protected $namespace = 'wc-analytics';
         /**
          * Route base.
          *
@@ -66146,7 +66238,7 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Variations {
      * REST API Reports products controller class.
      *
      * @internal
-     * @extends WC_REST_Reports_Controller
+     * @extends ReportsController
      */
     class Controller extends \Automattic\WooCommerce\Admin\API\Reports\Controller implements \Automattic\WooCommerce\Admin\API\Reports\ExportableInterface
     {
@@ -66154,12 +66246,6 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Variations {
          * Exportable traits.
          */
         use \Automattic\WooCommerce\Admin\API\Reports\ExportableTraits;
-        /**
-         * Endpoint namespace.
-         *
-         * @var string
-         */
-        protected $namespace = 'wc-analytics';
         /**
          * Route base.
          *
@@ -66656,6 +66742,67 @@ namespace Automattic\WooCommerce\Admin\API {
         }
     }
     /**
+     * ShippingPartnerSuggestions Controller.
+     *
+     * @internal
+     * @extends WC_REST_Data_Controller
+     */
+    class ShippingPartnerSuggestions extends \WC_REST_Data_Controller
+    {
+        /**
+         * Endpoint namespace.
+         *
+         * @var string
+         */
+        protected $namespace = 'wc-admin';
+        /**
+         * Route base.
+         *
+         * @var string
+         */
+        protected $rest_base = 'shipping-partner-suggestions';
+        /**
+         * Register routes.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * Check if a given request has access to manage plugins.
+         *
+         * @param  WP_REST_Request $request Full details about the request.
+         * @return WP_Error|boolean
+         */
+        public function get_permission_check($request)
+        {
+        }
+        /**
+         * Check if suggestions should be shown in the settings screen.
+         *
+         * @return bool
+         */
+        private function should_display()
+        {
+        }
+        /**
+         * Return suggested shipping partners.
+         *
+         * @param WP_REST_Request $request Full details about the request.
+         * @return \WP_Error|\WP_HTTP_Response|\WP_REST_Response
+         */
+        public function get_suggestions($request)
+        {
+        }
+        /**
+         * Get the schema, conforming to JSON Schema.
+         *
+         * @return array
+         */
+        public static function get_suggestions_schema()
+        {
+        }
+    }
+    /**
      * Taxes controller.
      *
      * @internal
@@ -67082,6 +67229,54 @@ namespace Automattic\WooCommerce\Admin {
 }
 namespace Automattic\WooCommerce\Admin\Features {
     /**
+     * Loads assets related to the new product management experience page.
+     */
+    class BlockEditorFeatureEnabled
+    {
+        const FEATURE_ID = 'block-editor-feature-enabled';
+        /**
+         * Option name used to toggle this feature.
+         */
+        const TOGGLE_OPTION_NAME = 'woocommerce_' . self::FEATURE_ID . '_enabled';
+        /**
+         * Constructor
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Enqueue scripts needed for the product form block editor.
+         */
+        public function enqueue_scripts()
+        {
+        }
+        /**
+         * Enqueue styles needed for the rich text editor.
+         */
+        public function enqueue_styles()
+        {
+        }
+        /**
+         * Update the edit product links when the new experience is enabled.
+         *
+         * @param string $link    The edit link.
+         * @param int    $post_id Post ID.
+         * @return string
+         */
+        public function update_edit_product_link($link, $post_id)
+        {
+        }
+        /**
+         * Updates the product endpoint to use WooCommerce REST API.
+         *
+         * @param array $post_args Args for the product post type.
+         * @return array
+         */
+        public function add_rest_base_config($post_args)
+        {
+        }
+    }
+    /**
      * Features Class.
      */
     class Features
@@ -67103,7 +67298,7 @@ namespace Automattic\WooCommerce\Admin\Features {
          *
          * @var array
          */
-        protected static $beta_features = array('multichannel-marketing', 'navigation', 'new-product-management-experience', 'settings');
+        protected static $beta_features = array('multichannel-marketing', 'navigation', 'new-product-management-experience', 'block-editor-feature-enabled', 'settings');
         /**
          * Get class instance.
          */
@@ -70504,6 +70699,78 @@ namespace Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions {
          * @param string $gateway_id Gateway ID.
          */
         public static function handle_successfull_connection($gateway_id)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Admin\Features\ShippingPartnerSuggestions {
+    /**
+     * Default Shipping Partners
+     */
+    class DefaultShippingPartners
+    {
+        /**
+         * Get default specs.
+         *
+         * @return array Default specs.
+         */
+        public static function get_all()
+        {
+        }
+        /**
+         * Get rules that match the store base location to one of the provided countries.
+         *
+         * @param array $countries Array of countries to match.
+         * @return object Rules to match.
+         */
+        public static function get_rules_for_countries($countries)
+        {
+        }
+    }
+    /**
+     * Class ShippingPartnerSuggestions
+     */
+    class ShippingPartnerSuggestions
+    {
+        /**
+         * Go through the specs and run them.
+         *
+         * @param array|null $specs shipping partner suggestion spec array.
+         * @return array
+         */
+        public static function get_suggestions($specs = null)
+        {
+        }
+        /**
+         * Get specs or fetch remotely if they don't exist.
+         */
+        public static function get_specs_from_datasource()
+        {
+        }
+    }
+    /**
+     * Specs data source poller class for shipping partner suggestions.
+     */
+    class ShippingPartnerSuggestionsDataSourcePoller extends \Automattic\WooCommerce\Admin\DataSourcePoller
+    {
+        /**
+         * Data Source Poller ID.
+         */
+        const ID = 'shipping_partner_suggestions';
+        /**
+         * Default data sources array.
+         */
+        const DATA_SOURCES = array('https://woocommerce.com/wp-json/wccom/shipping-partner-suggestions/1.0/suggestions.json');
+        /**
+         * Class instance.
+         *
+         * @var ShippingPartnerSuggestionsDataSourcePoller instance
+         */
+        protected static $instance = null;
+        /**
+         * Get class instance.
+         */
+        public static function get_instance()
         {
         }
     }
@@ -75377,6 +75644,312 @@ namespace Automattic\WooCommerce {
 }
 namespace Automattic\WooCommerce\Caching {
     /**
+     * Base class for caching objects (or associative arrays) that have a unique identifier.
+     * At the very least, derived classes need to implement the 'get_object_type' method,
+     * but usually it will be convenient to override some of the other protected members.
+     *
+     * The actual caching is delegated to an instance of CacheEngine. By default WpCacheEngine is used,
+     * but a different engine can be used by either overriding the get_cache_engine_instance method
+     * or capturing the wc_object_cache_get_engine filter.
+     *
+     * Objects are identified by ids that are either integers or strings. The actual cache keys passed
+     * to the cache engine will be prefixed with the object type and a random string. The 'flush' operation
+     * just forces the generation a new prefix and lets the old cached objects expire.
+     */
+    abstract class ObjectCache
+    {
+        /**
+         * Expiration value to be passed to 'set' to use the value of $default_expiration.
+         */
+        public const DEFAULT_EXPIRATION = -1;
+        /**
+         * Maximum expiration time value, in seconds, that can be passed to 'set'.
+         */
+        public const MAX_EXPIRATION = MONTH_IN_SECONDS;
+        /**
+         * This needs to be set in each derived class.
+         *
+         * @var string
+         */
+        private $object_type;
+        /**
+         * Default value for the duration of the objects in the cache, in seconds
+         * (may not be used depending on the cache engine used WordPress cache implementation).
+         *
+         * @var int
+         */
+        protected $default_expiration = HOUR_IN_SECONDS;
+        /**
+         * Temporarily used when retrieving data in 'get'.
+         *
+         * @var array
+         */
+        private $last_cached_data;
+        /**
+         * The cache engine to use.
+         *
+         * @var ?CacheEngine
+         */
+        private $cache_engine = null;
+        /**
+         * Gets an identifier for the types of objects cached by this class.
+         * This identifier will be used to compose the keys passed to the cache engine,
+         * to the name of the option that stores the cache prefix, and the names of the hooks used.
+         * It must be unique for each class inheriting from ObjectCache.
+         *
+         * @return string
+         */
+        public abstract function get_object_type() : string;
+        /**
+         * Creates a new instance of the class.
+         *
+         * @throws CacheException If get_object_type returns null or an empty string.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Get the default expiration time for cached objects, in seconds.
+         *
+         * @return int
+         */
+        public function get_default_expiration_value() : int
+        {
+        }
+        /**
+         * Get the cache engine to use and cache it internally.
+         *
+         * @return CacheEngine
+         */
+        private function get_cache_engine() : \Automattic\WooCommerce\Caching\CacheEngine
+        {
+        }
+        /**
+         * Add an object to the cache, or update an already cached object.
+         *
+         * @param object|array    $object The object to be cached.
+         * @param int|string|null $id Id of the object to be cached, if null, get_object_id will be used to get it.
+         * @param int             $expiration Expiration of the cached data in seconds from the current time, or DEFAULT_EXPIRATION to use the default value.
+         * @return bool True on success, false on error.
+         * @throws CacheException Invalid parameter, or null id was passed and get_object_id returns null too.
+         */
+        public function set($object, $id = null, int $expiration = self::DEFAULT_EXPIRATION) : bool
+        {
+        }
+        /**
+         * Update an object in the cache, but only if an object is already cached with the same id.
+         *
+         * @param object|array    $object The new object that will replace the already cached one.
+         * @param int|string|null $id Id of the object to be cached, if null, get_object_id will be used to get it.
+         * @param int             $expiration Expiration of the cached data in seconds from the current time, or DEFAULT_EXPIRATION to use the default value.
+         * @return bool True on success, false on error or if no object wiith the supplied id was cached.
+         * @throws CacheException Invalid parameter, or null id was passed and get_object_id returns null too.
+         */
+        public function update_if_cached($object, $id = null, int $expiration = self::DEFAULT_EXPIRATION) : bool
+        {
+        }
+        /**
+         * Get the id from an object if the id itself is null.
+         *
+         * @param object|array    $object The object to get the id from.
+         * @param int|string|null $id An object id or null.
+         *
+         * @return int|string|null Passed $id if it wasn't null, otherwise id obtained from $object using get_object_id.
+         *
+         * @throws CacheException Passed $id is null and get_object_id returned null too.
+         */
+        private function get_id_from_object_if_null($object, $id)
+        {
+        }
+        /**
+         * Check if the given expiration time value is valid, throw an exception if not.
+         *
+         * @param int $expiration Expiration time to check.
+         * @return void
+         * @throws CacheException Expiration time is negative or higher than MAX_EXPIRATION.
+         */
+        private function verify_expiration_value(int $expiration) : void
+        {
+        }
+        /**
+         * Retrieve a cached object, and if no object is cached with the given id,
+         * try to get one via get_from_datastore method or by supplying a callback and then cache it.
+         *
+         * If you want to provide a callable but still use the default expiration value,
+         * pass "ObjectCache::DEFAULT_EXPIRATION" as the second parameter.
+         *
+         * @param int|string    $id The id of the object to retrieve.
+         * @param int           $expiration Expiration of the cached data in seconds from the current time, used if an object is retrieved from datastore and cached.
+         * @param callable|null $get_from_datastore_callback Optional callback to get the object if it's not cached, it must return an object/array or null.
+         * @return object|array|null Cached object, or null if it's not cached and can't be retrieved from datastore or via callback.
+         * @throws CacheException Invalid id parameter.
+         */
+        public function get($id, int $expiration = self::DEFAULT_EXPIRATION, callable $get_from_datastore_callback = null)
+        {
+        }
+        /**
+         * Remove an object from the cache.
+         *
+         * @param int|string $id The id of the object to remove.
+         * @return bool True if the object is removed from the cache successfully, false otherwise (because the object wasn't cached or for other reason).
+         */
+        public function remove($id) : bool
+        {
+        }
+        /**
+         * Remove all the objects from the cache.
+         *
+         * @return bool True on success, false on error.
+         */
+        public function flush() : bool
+        {
+        }
+        /**
+         * Is a given object cached?
+         *
+         * @param int|string $id The id of the object to check.
+         * @return bool True if there's a cached object with the specified id.
+         */
+        public function is_cached($id) : bool
+        {
+        }
+        /**
+         * Get the id of an object. This is used by 'set' when a null id is passed.
+         * If the object id can't be determined the method must return null.
+         *
+         * @param array|object $object The object to get the id for.
+         * @return int|string|null
+         */
+        protected abstract function get_object_id($object);
+        /**
+         * Validate an object before it's cached.
+         *
+         * @param array|object $object Object to validate.
+         * @return array|null An array with validation error messages, null or an empty array if there are no errors.
+         */
+        protected abstract function validate($object) : ?array;
+        /**
+         * Get the instance of the cache engine to use.
+         *
+         * @return CacheEngine
+         */
+        protected function get_cache_engine_instance() : \Automattic\WooCommerce\Caching\CacheEngine
+        {
+        }
+        /**
+         * Get a random string to be used to compose the cache key prefix.
+         * It should return a different string each time.
+         *
+         * @return string
+         */
+        protected function get_random_string() : string
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Caches {
+    /**
+     * A class to cache order objects.
+     */
+    class OrderCache extends \Automattic\WooCommerce\Caching\ObjectCache
+    {
+        /**
+         * Get the identifier for the type of the cached objects.
+         *
+         * @return string
+         */
+        public function get_object_type() : string
+        {
+        }
+        /**
+         * Get the id of an object to be cached.
+         *
+         * @param array|object $object The object to be cached.
+         * @return int|string|null The id of the object, or null if it can't be determined.
+         */
+        protected function get_object_id($object)
+        {
+        }
+        /**
+         * Validate an object before caching it.
+         *
+         * @param array|object $object The object to validate.
+         * @return string[]|null An array of error messages, or null if the object is valid.
+         */
+        protected function validate($object) : ?array
+        {
+        }
+    }
+    /**
+     * A class to control the usage of the orders cache.
+     */
+    class OrderCacheController
+    {
+        use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
+        /**
+         * The orders cache to use.
+         *
+         * @var OrderCache
+         */
+        private $order_cache;
+        /**
+         * The orders cache to use.
+         *
+         * @var FeaturesController
+         */
+        private $features_controller;
+        /**
+         * The backup value of the cache usage enable status, stored while the cache is temporarily disabled.
+         *
+         * @var null|bool
+         */
+        private $orders_cache_usage_backup = null;
+        /**
+         * Class initialization, invoked by the DI container.
+         *
+         * @internal
+         * @param OrderCache $order_cache The order cache engine to use.
+         */
+        public final function init(\Automattic\WooCommerce\Caches\OrderCache $order_cache)
+        {
+        }
+        /**
+         * Whether order cache usage is enabled. Currently, linked to custom orders' table usage.
+         *
+         * @return bool True if the order cache is enabled.
+         */
+        public function orders_cache_usage_is_enabled() : bool
+        {
+        }
+        /**
+         * Temporarily disable the order cache if it's enabled.
+         *
+         * This is a purely in-memory operation: a variable is created with the value
+         * of the current enable status for the feature, and this variable
+         * is checked by orders_cache_usage_is_enabled. In the next request the
+         * feature will be again enabled or not depending on how the feature is set.
+         */
+        public function temporarily_disable_orders_cache_usage() : void
+        {
+        }
+        /**
+         * Check if the order cache has been temporarily disabled.
+         *
+         * @return bool True if the order cache is currently temporarily disabled.
+         */
+        public function orders_cache_usage_is_temporarly_disabled() : bool
+        {
+        }
+        /**
+         * Restore the order cache usage that had been temporarily disabled.
+         */
+        public function maybe_restore_orders_cache_usage() : void
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Caching {
+    /**
      * Interface for cache engines used by objects inheriting from ObjectCache.
      * Here "object" means either an array or an actual PHP object.
      */
@@ -75386,32 +75959,48 @@ namespace Automattic\WooCommerce\Caching {
          * Retrieves an object cached under a given key.
          *
          * @param string $key They key under which the object to retrieve is cached.
+         * @param string $group The group under which the object is cached.
+         *
          * @return array|object|null The cached object, or null if there's no object cached under the passed key.
          */
-        public function get_cached_object(string $key);
+        public function get_cached_object(string $key, string $group = '');
         /**
          * Caches an object under a given key, and with a given expiration.
          *
          * @param string       $key The key under which the object will be cached.
          * @param array|object $object The object to cache.
          * @param int          $expiration Expiration for the cached object, in seconds.
+         * @param string       $group The group under which the object will be cached.
+         *
          * @return bool True if the object is cached successfully, false otherwise.
          */
-        public function cache_object(string $key, $object, int $expiration) : bool;
+        public function cache_object(string $key, $object, int $expiration, string $group = '') : bool;
         /**
          * Removes a cached object from the cache.
          *
          * @param string $key They key under which the object is cached.
+         * @param string $group The group under which the object is cached.
+         *
          * @return bool True if the object is removed from the cache successfully, false otherwise (because the object wasn't cached or for other reason).
          */
-        public function delete_cached_object(string $key) : bool;
+        public function delete_cached_object(string $key, string $group = '') : bool;
         /**
          * Checks if an object is cached under a given key.
          *
          * @param string $key The key to verify.
+         * @param string $group The group under which the object is cached.
+         *
          * @return bool True if there's an object cached under the given key, false otherwise.
          */
-        public function is_cached(string $key) : bool;
+        public function is_cached(string $key, string $group = '') : bool;
+        /**
+         * Deletes all cached objects under a given group.
+         *
+         * @param string $group The group to delete.
+         *
+         * @return bool True if the group is deleted successfully, false otherwise.
+         */
+        public function delete_cache_group(string $group = '') : bool;
     }
     /**
      * Exception thrown by classes derived from ObjectCache.
@@ -75483,270 +76072,67 @@ namespace Automattic\WooCommerce\Caching {
         }
     }
     /**
-     * Base class for caching objects (or associative arrays) that have a unique identifier.
-     * At the very least, derived classes need to implement the 'get_object_type' method,
-     * but usually it will be convenient to override some of the other protected members.
-     *
-     * The actual caching is delegated to an instance of CacheEngine. By default WpCacheEngine is used,
-     * but a different engine can be used by either overriding the get_cache_engine_instance method
-     * or capturing the wc_object_cache_get_engine filter.
-     *
-     * Objects are identified by ids that are either integers or strings. The actual cache keys passed
-     * to the cache engine will be prefixed with the object type and a random string. The 'flush' operation
-     * just forces the generation a new prefix and lets the old cached objects expire.
-     */
-    abstract class ObjectCache
-    {
-        private const CACHE_PREFIX_OPTION_NAME = 'wp_object_cache_key_prefix_';
-        /**
-         * Expiration value to be passed to 'set' to use the value of $default_expiration.
-         */
-        public const DEFAULT_EXPIRATION = -1;
-        /**
-         * Maximum expiration time value, in seconds, that can be passed to 'set'.
-         */
-        public const MAX_EXPIRATION = MONTH_IN_SECONDS;
-        /**
-         * This needs to be set in each derived class.
-         *
-         * @var string
-         */
-        private $object_type;
-        /**
-         * Default value for the duration of the objects in the cache, in seconds
-         * (may not be used depending on the cache engine used WordPress cache implementation).
-         *
-         * @var int
-         */
-        protected $default_expiration = HOUR_IN_SECONDS;
-        /**
-         * Temporarily used when retrieving data in 'get'.
-         *
-         * @var array
-         */
-        private $last_cached_data;
-        /**
-         * The cache engine to use.
-         *
-         * @var CacheEngine
-         */
-        private $cache_engine = null;
-        /**
-         * The prefix to use for cache keys to pass to the cache engine.
-         *
-         * @var string
-         */
-        private $cache_key_prefix = null;
-        /**
-         * The name of the option used to store the cache prefix.
-         *
-         * @var string
-         */
-        private $cache_key_prefix_option_name;
-        /**
-         * Gets an identifier for the types of objects cached by this class.
-         * This identifier will be used to compose the keys passed to the cache engine,
-         * to the name of the option that stores the cache prefix, and the names of the hooks used.
-         * It must be unique for each class inheriting from ObjectCache.
-         *
-         * @return string
-         */
-        public abstract function get_object_type() : string;
-        /**
-         * Creates a new instance of the class.
-         *
-         * @throws CacheException If get_object_type returns null or an empty string.
-         */
-        public function __construct()
-        {
-        }
-        /**
-         * Get the default expiration time for cached objects, in seconds.
-         *
-         * @return int
-         */
-        public function get_default_expiration_value() : int
-        {
-        }
-        /**
-         * Get the cache engine to use and cache it internally.
-         *
-         * @return CacheEngine
-         */
-        private function get_cache_engine() : \Automattic\WooCommerce\Caching\CacheEngine
-        {
-        }
-        /**
-         * Get the current cache prefix to use, generating one if none is in use yet.
-         *
-         * @return string
-         */
-        private function get_cache_key_prefix() : string
-        {
-        }
-        /**
-         * Generate a prefix for the cache keys to use, containing the object type and a random string,
-         * and store it persistently using an option.
-         *
-         * @return string The generated prefix.
-         * @throws CacheException Can't store the generated prefix.
-         */
-        private function create_cache_key_prefix() : string
-        {
-        }
-        /**
-         * Add an object to the cache, or update an already cached object.
-         *
-         * @param int|string|null $id Id of the object to be cached, if null, get_object_id will be used to get it.
-         * @param object|array    $object The object to be cached.
-         * @param int             $expiration Expiration of the cached data in seconds from the current time, or DEFAULT_EXPIRATION to use the default value.
-         * @return bool True on success, false on error.
-         * @throws CacheException Invalid parameter, or null id was passed and get_object_id returns null too.
-         */
-        public function set($id = null, $object, int $expiration = self::DEFAULT_EXPIRATION) : bool
-        {
-        }
-        /**
-         * Check if the given expiration time value is valid, throw an exception if not.
-         *
-         * @param int $expiration Expiration time to check.
-         * @return void
-         * @throws CacheException Expiration time is negative or higher than MAX_EXPIRATION.
-         */
-        private function verify_expiration_value(int $expiration) : void
-        {
-        }
-        /**
-         * Retrieve a cached object, and if no object is cached with the given id,
-         * try to get one via get_from_datastore method or by supplying a callback and then cache it.
-         *
-         * If you want to provide a callable but still use the default expiration value,
-         * pass "ObjectCache::DEFAULT_EXPIRATION" as the second parameter.
-         *
-         * @param int|string    $id The id of the object to retrieve.
-         * @param int           $expiration Expiration of the cached data in seconds from the current time, used if an object is retrieved from datastore and cached.
-         * @param callable|null $get_from_datastore_callback Optional callback to get the object if it's not cached, it must return an object/array or null.
-         * @return object|array|null Cached object, or null if it's not cached and can't be retrieved from datastore or via callback.
-         * @throws CacheException Invalid id parameter.
-         */
-        public function get($id, int $expiration = self::DEFAULT_EXPIRATION, callable $get_from_datastore_callback = null)
-        {
-        }
-        /**
-         * Remove an object from the cache.
-         *
-         * @param int|string $id The id of the object to remove.
-         * @return bool True if the object is removed from the cache successfully, false otherwise (because the object wasn't cached or for other reason).
-         */
-        public function remove($id) : bool
-        {
-        }
-        /**
-         * Remove all the objects from the cache.
-         * This is done by forcing the generation of a new cache key prefix
-         * and leaving the old cached objects to expire.
-         *
-         * @return void
-         */
-        public function flush() : void
-        {
-        }
-        /**
-         * Is a given object cached?
-         *
-         * @param int|string $id The id of the object to check.
-         * @return bool True if there's a cached object with the specified id.
-         */
-        public function is_cached($id) : bool
-        {
-        }
-        /**
-         * Get the id of an object. This is used by 'set' when a null id is passed.
-         * If the object id can't be determined the method must return null.
-         *
-         * @param array|object $object The object to get the id for.
-         * @return int|string|null
-         */
-        protected function get_object_id($object)
-        {
-        }
-        /**
-         * Validate an object before it's cached.
-         *
-         * @param array|object $object Object to validate.
-         * @return array|null An array with validation error messages, null or an empty array if there are no errors.
-         */
-        protected function validate($object) : ?array
-        {
-        }
-        /**
-         * Convert an object to a serialized form suitable for caching.
-         * If a class overrides this method it should override 'deserialize' as well.
-         *
-         * @param array|object $object The object to serialize.
-         * @return array The serialized object.
-         */
-        protected function serialize($object) : array
-        {
-        }
-        /**
-         * Deserializes a set of object data after having been retrieved from the cache.
-         * If a class overrides this method it should override 'serialize' as well.
-         *
-         * @param array $serialized Serialized object data as it was returned by 'validate_and_serialize'.
-         * @return object|array Deserialized object, ready to be returned by 'get'.
-         */
-        protected function deserialize(array $serialized)
-        {
-        }
-        /**
-         * Get an object from an authoritative data store.
-         * This is used by 'get' if the object isn't cached and no custom object retrieval callback is suupplied.
-         *
-         * @param int|string $id The id of the object to get.
-         * @return array|object|null The retrieved object, or null if it's not possible to retrieve an object by the given id.
-         */
-        protected function get_from_datastore($id)
-        {
-        }
-        /**
-         * Get the instance of the cache engine to use.
-         *
-         * @return CacheEngine
-         */
-        protected function get_cache_engine_instance() : \Automattic\WooCommerce\Caching\CacheEngine
-        {
-        }
-        /**
-         * Get a random string to be used to compose the cache key prefix.
-         * It should return a different string each time.
-         *
-         * @return string
-         */
-        protected function get_random_string() : string
-        {
-        }
-    }
-    /**
      * Implementation of CacheEngine that uses the built-in WordPress cache.
      */
-    class WpCacheEngine implements \Automattic\WooCommerce\Caching\CacheEngine
+    class WPCacheEngine implements \Automattic\WooCommerce\Caching\CacheEngine
     {
-        public const CACHE_GROUP_NAME = 'wc-object-cache';
-        // phpcs:disable Squiz.Commenting.FunctionComment.Missing
-        public function get_cached_object(string $key)
+        use \Automattic\WooCommerce\Caching\CacheNameSpaceTrait;
+        /**
+         * Retrieves an object cached under a given key.
+         *
+         * @param string $key They key under which the object to retrieve is cached.
+         * @param string $group The group under which the object is cached.
+         *
+         * @return array|object|null The cached object, or null if there's no object cached under the passed key.
+         */
+        public function get_cached_object(string $key, string $group = '')
         {
         }
-        public function cache_object(string $key, $object, int $expiration) : bool
+        /**
+         * Caches an object under a given key, and with a given expiration.
+         *
+         * @param string       $key The key under which the object will be cached.
+         * @param array|object $object The object to cache.
+         * @param int          $expiration Expiration for the cached object, in seconds.
+         * @param string       $group The group under which the object will be cached.
+         *
+         * @return bool True if the object is cached successfully, false otherwise.
+         */
+        public function cache_object(string $key, $object, int $expiration, string $group = '') : bool
         {
         }
-        public function delete_cached_object(string $key) : bool
+        /**
+         * Removes a cached object from the cache.
+         *
+         * @param string $key They key under which the object is cached.
+         * @param string $group The group under which the object is cached.
+         *
+         * @return bool True if the object is removed from the cache successfully, false otherwise (because the object wasn't cached or for other reason).
+         */
+        public function delete_cached_object(string $key, string $group = '') : bool
         {
         }
-        public function is_cached(string $key) : bool
+        /**
+         * Checks if an object is cached under a given key.
+         *
+         * @param string $key The key to verify.
+         * @param string $group The group under which the object is cached.
+         *
+         * @return bool True if there's an object cached under the given key, false otherwise.
+         */
+        public function is_cached(string $key, string $group = '') : bool
         {
         }
-        // phpcs:enable Squiz.Commenting.FunctionComment.Missing
+        /**
+         * Deletes all cached objects under a given group.
+         *
+         * @param string $group The group to delete.
+         *
+         * @return bool True if the group is deleted successfully, false otherwise.
+         */
+        public function delete_cache_group(string $group = '') : bool
+        {
+        }
     }
 }
 namespace Automattic\WooCommerce\Checkout\Helpers {
@@ -77844,6 +78230,14 @@ namespace Automattic\WooCommerce\Internal\Admin {
          * @return bool Whether merchant email notifications are enabled.
          */
         protected function is_merchant_email_notifications_enabled()
+        {
+        }
+        /**
+         *   Refresh transient for the following DataSourcePollers on wc_admin_daily cron job.
+         *   - PaymentGatewaySuggestionsDataSourcePoller
+         *   - RemoteFreeExtensionsDataSourcePoller
+         */
+        protected function possibly_refresh_data_source_pollers()
         {
         }
     }
@@ -82734,58 +83128,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Schedulers {
         {
         }
         /**
-         * Get all available scheduling actions.
-         * Used to determine action hook names and clear events.
-         *
-         * @internal
-         * @return array
-         */
-        public static function get_scheduler_actions()
-        {
-        }
-        /**
-         * Schedule import.
-         *
-         * @internal
-         * @param int $user_id User ID.
-         * @return void
-         */
-        public static function schedule_import($user_id)
-        {
-        }
-        /**
-         * Schedule an import if the "last active" meta value was changed.
-         * Function expects to be hooked into the `updated_user_meta` action.
-         *
-         * @internal
-         * @param int    $meta_id ID of updated metadata entry.
-         * @param int    $user_id ID of the user being updated.
-         * @param string $meta_key Meta key being updated.
-         */
-        public static function schedule_import_via_last_active($meta_id, $user_id, $meta_key)
-        {
-        }
-        /**
-         * Schedule an action to anonymize a single Order.
-         *
-         * @internal
-         * @param WC_Order $order Order object.
-         * @return void
-         */
-        public static function schedule_anonymize($order)
-        {
-        }
-        /**
-         * Schedule an action to delete a single User.
-         *
-         * @internal
-         * @param int $user_id User ID.
-         * @return void
-         */
-        public static function schedule_user_delete($user_id)
-        {
-        }
-        /**
          * Imports a single customer.
          *
          * @internal
@@ -82803,26 +83145,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Schedulers {
          * @return void
          */
         public static function delete($batch_size)
-        {
-        }
-        /**
-         * Anonymize the customer data for a single order.
-         *
-         * @internal
-         * @param int $order_id Order id.
-         * @return void
-         */
-        public static function anonymize($order_id)
-        {
-        }
-        /**
-         * Delete the customer data for a single user.
-         *
-         * @internal
-         * @param int $user_id User ID.
-         * @return void
-         */
-        public static function delete_user($user_id)
         {
         }
     }
@@ -83500,6 +83822,25 @@ namespace Automattic\WooCommerce\Internal\Admin {
          * @return string Filename.
          */
         private function get_combined_translation_filename($domain, $locale)
+        {
+        }
+        /**
+         * Combines data from translation chunk files based on officially downloaded file format.
+         *
+         * @param array $json_i18n_filenames List of JSON chunk files.
+         * @return array Combined translation chunk data.
+         */
+        private function combine_official_translation_chunks($json_i18n_filenames)
+        {
+        }
+        /**
+         * Combines data from translation chunk files based on user-generated file formats,
+         * such as wp-cli tool or Loco Translate plugin.
+         *
+         * @param array $json_i18n_filenames List of JSON chunk files.
+         * @return array Combined translation chunk data.
+         */
+        private function combine_user_translation_chunks($json_i18n_filenames)
         {
         }
         /**
@@ -84464,6 +84805,18 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          */
         private $features_controller;
         /**
+         * The orders cache object to use.
+         *
+         * @var OrderCache
+         */
+        private $order_cache;
+        /**
+         * The orders cache controller object to use.
+         *
+         * @var OrderCacheController
+         */
+        private $order_cache_controller;
+        /**
          * Class constructor.
          */
         public function __construct()
@@ -84484,8 +84837,10 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @param OrdersTableRefundDataStore $refund_data_store The refund data store to use.
          * @param BatchProcessingController  $batch_processing_controller The batch processing controller to use.
          * @param FeaturesController         $features_controller The features controller instance to use.
+         * @param OrderCache                 $order_cache The order cache engine to use.
+         * @param OrderCacheController       $order_cache_controller The order cache controller to use.
          */
-        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer $data_synchronizer, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableRefundDataStore $refund_data_store, \Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessingController $batch_processing_controller, \Automattic\WooCommerce\Internal\Features\FeaturesController $features_controller)
+        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer $data_synchronizer, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableRefundDataStore $refund_data_store, \Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessingController $batch_processing_controller, \Automattic\WooCommerce\Internal\Features\FeaturesController $features_controller, \Automattic\WooCommerce\Caches\OrderCache $order_cache, \Automattic\WooCommerce\Caches\OrderCacheController $order_cache_controller)
         {
         }
         /**
@@ -84715,6 +85070,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          */
         private $error_logger;
         /**
+         * The order cache controller.
+         *
+         * @var OrderCacheController
+         */
+        private $order_cache_controller;
+        /**
          * Class constructor.
          */
         public function __construct()
@@ -84727,9 +85088,10 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @param DatabaseUtil                     $database_util The database util class to use.
          * @param PostsToOrdersMigrationController $posts_to_cot_migrator The posts to COT migration class to use.
          * @param LegacyProxy                      $legacy_proxy The legacy proxy instance to use.
+         * @param OrderCacheController             $order_cache_controller The order cache controller instance to use.
          * @internal
          */
-        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\Utilities\DatabaseUtil $database_util, \Automattic\WooCommerce\Database\Migrations\CustomOrderTable\PostsToOrdersMigrationController $posts_to_cot_migrator, \Automattic\WooCommerce\Proxies\LegacyProxy $legacy_proxy)
+        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\Utilities\DatabaseUtil $database_util, \Automattic\WooCommerce\Database\Migrations\CustomOrderTable\PostsToOrdersMigrationController $posts_to_cot_migrator, \Automattic\WooCommerce\Proxies\LegacyProxy $legacy_proxy, \Automattic\WooCommerce\Caches\OrderCacheController $order_cache_controller)
         {
         }
         /**
@@ -84999,9 +85361,19 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         /**
          * Get the names of all the tables involved in the custom orders table feature.
          *
+         * See also : get_all_table_names_with_id.
+         *
          * @return string[]
          */
         public function get_all_table_names()
+        {
+        }
+        /**
+         * Similar to get_all_table_names, but also returns the table name along with the items table.
+         *
+         * @return array Names of the tables.
+         */
+        public static function get_all_table_names_with_id()
         {
         }
         /**
@@ -86394,6 +86766,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          */
         private $date_query = null;
         /**
+         * Instance of the OrdersTableDataStore class.
+         *
+         * @var OrdersTableDataStore
+         */
+        private $order_datastore = null;
+        /**
          * Sets up and runs the query after processing arguments.
          *
          * @param array $args Array of query vars.
@@ -86413,10 +86791,11 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * Generates a `WP_Date_Query` compatible query from a given date.
          * YYYY-MM-DD queries have 'day' precision for backwards compatibility.
          *
-         * @param mixed $date The date. Can be a {@see \WC_DateTime}, a timestamp or a string.
+         * @param mixed  $date The date. Can be a {@see \WC_DateTime}, a timestamp or a string.
+         * @param string $timezone The timezone to use for the date.
          * @return array An array with keys 'year', 'month', 'day' and possibly 'hour', 'minute' and 'second'.
          */
-        private function date_to_date_query_arg($date) : array
+        private function date_to_date_query_arg($date, $timezone) : array
         {
         }
         /**
@@ -87092,7 +87471,7 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders 
          *
          * @var string[]
          */
-        protected $provides = array(\Automattic\WooCommerce\Database\Migrations\CustomOrderTable\PostsToOrdersMigrationController::class, \Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable\CLIRunner::class, \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer::class);
+        protected $provides = array(\Automattic\WooCommerce\Database\Migrations\CustomOrderTable\PostsToOrdersMigrationController::class, \Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable\CLIRunner::class);
         /**
          * Use the register method to register items with the container via the
          * protected $this->leagueContainer property or the `getLeagueContainer` method
@@ -87170,7 +87549,7 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders 
          *
          * @var array
          */
-        protected $provides = array(\Automattic\WooCommerce\Caching\WpCacheEngine::class);
+        protected $provides = array(\Automattic\WooCommerce\Caching\WPCacheEngine::class);
         /**
          * Register the classes.
          */
@@ -87262,7 +87641,7 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders 
          *
          * @var array
          */
-        protected $provides = array(\Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer::class, \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::class, \Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable\CLIRunner::class, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStoreMeta::class, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableRefundDataStore::class);
+        protected $provides = array(\Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer::class, \Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore::class, \Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable\CLIRunner::class, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStoreMeta::class, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableRefundDataStore::class, \Automattic\WooCommerce\Caches\OrderCache::class, \Automattic\WooCommerce\Caches\OrderCacheController::class);
         /**
          * Register the classes.
          */
@@ -87298,7 +87677,7 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders 
          *
          * @var array
          */
-        protected $provides = array(\Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Register::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\Sync::class, \Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Admin\SyncUI::class, \Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Admin\UI::class);
+        protected $provides = array(\Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Register::class, \Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Synchronize::class, \Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Admin\SyncUI::class, \Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Admin\UI::class);
         /**
          * Register the classes.
          */
@@ -90318,6 +90697,13 @@ namespace Automattic\WooCommerce\Utilities {
         /**
          * Gets the value for a given key from an array, or a default value if the key doesn't exist in the array.
          *
+         * This is equivalent to "$array[$key] ?? $default" except in one case:
+         * when they key exists, has a null value, and a non-null default is supplied:
+         *
+         * $array = ['key' => null]
+         * $array['key'] ?? 'default' => 'default'
+         * ArrayUtil::get_value_or_default($array, 'key', 'default') => null
+         *
          * @param array  $array The array to get the value from.
          * @param string $key The key to use to retrieve the value.
          * @param null   $default The default value to return if the key doesn't exist in the array.
@@ -90603,6 +90989,14 @@ namespace Automattic\WooCommerce\Utilities {
         {
         }
         /**
+         * Helper function to get whether the orders cache should be used or not.
+         *
+         * @return bool True if the orders cache should be used, false otherwise.
+         */
+        public static function orders_cache_usage_is_enabled() : bool
+        {
+        }
+        /**
          * Checks if posts and order custom table sync is enabled and there are no pending orders.
          *
          * @return bool
@@ -90817,6 +91211,25 @@ namespace Automattic\WooCommerce\Utilities {
          * @return string The name of the plugin in the form 'directory/file.php'.
          */
         public static function plugin_name_from_plugin_file(string $plugin_file_path) : string
+        {
+        }
+        /**
+         * Check if a string is null or is empty.
+         *
+         * @param string|null $value The string to check.
+         * @return bool True if the string is null or is empty.
+         */
+        public static function is_null_or_empty(?string $value)
+        {
+        }
+        /**
+         * Check if a string is null, is empty, or has only whitespace characters
+         * (space, tab, vertical tab, form feed, carriage return, new line)
+         *
+         * @param string|null $value The string to check.
+         * @return bool True if the string is null, is empty, or contains only whitespace characters.
+         */
+        public static function is_null_or_whitespace(?string $value)
         {
         }
     }
@@ -91068,6 +91481,14 @@ namespace {
      * @param WC_Data $data WC_Data object, will be preferred over post object when passed.
      */
     function woocommerce_wp_radio($field, \WC_Data $data = \null)
+    {
+    }
+    /**
+     * Output a note.
+     *
+     * @param array $field Field data.
+     */
+    function woocommerce_wp_note($field)
     {
     }
     /**
@@ -92812,7 +93233,7 @@ namespace {
     }
     /**
      * Get rounding precision for internal WC calculations.
-     * Will increase the precision of wc_get_price_decimals by 2 decimals, unless WC_ROUNDING_PRECISION is set to a higher number.
+     * Will return the value of wc_get_price_decimals increased by 2 decimals, with WC_ROUNDING_PRECISION being the minimum.
      *
      * @since 2.6.3
      * @return int
@@ -92821,14 +93242,15 @@ namespace {
     {
     }
     /**
-     * Add precision to a number and return a number.
+     * Add precision to a number by moving the decimal point to the right as many places as indicated by wc_get_price_decimals().
+     * Optionally the result is rounded so that the total number of digits equals wc_get_rounding_precision() plus one.
      *
      * @since  3.2.0
-     * @param  float $value Number to add precision to.
-     * @param  bool  $round If should round after adding precision.
+     * @param  float|null $value Number to add precision to.
+     * @param  bool       $round If the result should be rounded.
      * @return int|float
      */
-    function wc_add_number_precision(float $value, bool $round = \true)
+    function wc_add_number_precision(?float $value, bool $round = \true)
     {
     }
     /**
@@ -95746,9 +96168,14 @@ namespace {
     {
     }
     /**
-     * Returns the price including or excluding tax, based on the 'woocommerce_tax_display_shop' setting.
+     * Returns the price including or excluding tax.
+     *
+     * By default it's based on the 'woocommerce_tax_display_shop' setting.
+     * Set `$arg['display_context']` to 'cart' to base on the 'woocommerce_tax_display_cart' setting instead.
      *
      * @since  3.0.0
+     * @since  7.6.0 Added `display_context` argument.
+     *
      * @param  WC_Product $product WC_Product object.
      * @param  array      $args Optional arguments to pass product quantity and price.
      * @return float
