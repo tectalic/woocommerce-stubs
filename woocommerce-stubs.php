@@ -1728,6 +1728,18 @@ namespace {
         {
         }
         /**
+         * This method overwrites the base class's clone method to make it a no-op. In base class WC_Data, we are unsetting the meta_id to clone.
+         * It seems like this was done to avoid conflicting the metadata when duplicating products. However, doing that does not seems necessary for orders.
+         * In-fact, when we do that for orders, we lose the capability to clone orders with custom meta data by caching plugins. This is because, when we clone an order object for caching, it will clone the metadata without the ID. Unfortunately, when this cached object with nulled meta ID is retreived, WC_Data will consider it as a new meta and will insert it as a new meta-data causing duplicates.
+         *
+         * Eventually, we should move away from overwriting the __clone method in base class itself, since it's easily possible to still duplicate the product without having to hook into the __clone method.
+         *
+         * @since 7.6.0
+         */
+        public function __clone()
+        {
+        }
+        /**
          * Get internal type.
          *
          * @return string
@@ -84710,6 +84722,8 @@ namespace Automattic\WooCommerce\Internal\DataStores {
          *
          * @param  WC_Data  $object WC_Data object.
          * @param  stdClass $meta (containing at least ->id).
+         *
+         * @return bool
          */
         public function delete_meta(&$object, $meta)
         {
@@ -84729,6 +84743,8 @@ namespace Automattic\WooCommerce\Internal\DataStores {
          *
          * @param  WC_Data  $object WC_Data object.
          * @param  stdClass $meta (containing ->id, ->key and ->value).
+         *
+         * @return bool
          */
         public function update_meta(&$object, $meta)
         {
@@ -86216,6 +86232,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          *
          * @param  WC_Data  $object WC_Data object.
          * @param  stdClass $meta (containing at least ->id).
+         *
+         * @return bool
          */
         public function delete_meta(&$object, $meta)
         {
@@ -86225,7 +86243,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          *
          * @param  WC_Data  $object WC_Data object.
          * @param  stdClass $meta (containing ->key and ->value).
-         * @return int meta ID
+         *
+         * @return int|bool  meta ID or false on failure
          */
         public function add_meta(&$object, $meta)
         {
@@ -86235,6 +86254,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          *
          * @param  WC_Data  $object WC_Data object.
          * @param  stdClass $meta (containing ->id, ->key and ->value).
+         *
+         * @return bool
          */
         public function update_meta(&$object, $meta)
         {

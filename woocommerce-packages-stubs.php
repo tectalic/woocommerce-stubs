@@ -6359,7 +6359,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          *
          * @see $this->register_block_type()
          * @param string $key Data to get, or default to everything.
-         * @return array|string
+         * @return array|string|null
          */
         protected function get_block_type_script($key = null)
         {
@@ -7837,9 +7837,19 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          *
          * @param array $attributes Block attributes.
          *
-         * @return string Label to render on the block
+         * @return string Label to render on the block.
          */
         private function render_label($attributes)
+        {
+        }
+        /**
+         * Get the frontend script handle for this block type.
+         *
+         * @param string $key Data to get, or default to everything.
+         *
+         * @return null This block has no frontend script.
+         */
+        protected function get_block_type_script($key = null)
         {
         }
     }
