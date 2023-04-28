@@ -14759,30 +14759,6 @@ namespace {
         {
         }
         /**
-         * Save attributes and variations via ajax.
-         */
-        public static function add_attributes_and_variations()
-        {
-        }
-        /**
-         * Create product with attributes from POST data.
-         *
-         * @param  array $data Attribute data.
-         * @return mixed Product class.
-         */
-        private static function create_product_with_attributes($data)
-        {
-        }
-        /**
-         * Create all product variations from existing attributes.
-         *
-         * @param mixed $product Product class.
-         * @returns int Number of variations created.
-         */
-        private static function create_all_product_variations($product)
-        {
-        }
-        /**
          * Add variation via ajax function.
          */
         public static function add_variation()
@@ -34122,7 +34098,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '7.6.0';
+        public $version = '7.6.1';
         /**
          * WooCommerce Schema version.
          *
@@ -86826,6 +86802,16 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @throws \Exception When date args are invalid.
          */
         private function process_date_args() : void
+        {
+        }
+        /**
+         * Helper function to map posts and gmt based keys to HPOS keys.
+         *
+         * @param array $query Date query argument.
+         *
+         * @return array|mixed Date query argument with modified keys.
+         */
+        private function map_gmt_and_post_keys_to_hpos_keys($query)
         {
         }
         /**
