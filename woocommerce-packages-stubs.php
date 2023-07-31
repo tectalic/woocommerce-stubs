@@ -9896,16 +9896,6 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         {
         }
         /**
-         * Return the product ids based on the attributes and global query.
-         * This is used to allow the filter blocks to render data that matches with variations. More details here: https://github.com/woocommerce/woocommerce-blocks/issues/7245
-         *
-         * @param array $parsed_block The block being rendered.
-         * @return array
-         */
-        private function get_products_ids_by_attributes($parsed_block)
-        {
-        }
-        /**
          * Merge in the first parameter the keys "post_in", "meta_query" and "tax_query" of the second parameter.
          *
          * @param array[] ...$queries Query arrays to be merged.
@@ -13218,9 +13208,62 @@ namespace Automattic\WooCommerce\StoreApi {
     class Authentication
     {
         /**
-         * Hook into WP lifecycle events.
+         * Hook into WP lifecycle events. This is hooked by the StoreAPI class on `rest_api_init`.
          */
         public function init()
+        {
+        }
+        /**
+         * Add allowed cors headers for store API headers.
+         *
+         * @param array $allowed_headers Allowed headers.
+         * @return array
+         */
+        public function allowed_cors_headers($allowed_headers)
+        {
+        }
+        /**
+         * Add CORS headers to a response object.
+         *
+         * These checks prevent access to the Store API from non-allowed origins. By default, the WordPress REST API allows
+         * access from any origin. Because some Store API routes return PII, we need to add our own CORS headers.
+         *
+         * Allowed origins can be changed using the WordPress `allowed_http_origins` or `allowed_http_origin` filters if
+         * access needs to be granted to other domains.
+         *
+         * Users of valid Cart Tokens are also allowed access from any origin.
+         *
+         * @param bool              $value  Whether the request has already been served.
+         * @param \WP_HTTP_Response $result  Result to send to the client. Usually a `WP_REST_Response`.
+         * @param \WP_REST_Request  $request Request used to generate the response.
+         * @return bool
+         */
+        public function send_cors_headers($value, $result, $request)
+        {
+        }
+        /**
+         * Is the request a preflight request? Checks the request method
+         *
+         * @return boolean
+         */
+        protected function is_preflight()
+        {
+        }
+        /**
+         * Checks if we're using a cart token to access the Store API.
+         *
+         * @param \WP_REST_Request $request Request object.
+         * @return boolean
+         */
+        protected function has_valid_cart_token(\WP_REST_Request $request)
+        {
+        }
+        /**
+         * Gets the secret for the cart token using wp_salt.
+         *
+         * @return string
+         */
+        protected function get_cart_token_secret()
         {
         }
         /**
