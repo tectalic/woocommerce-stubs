@@ -23660,6 +23660,7 @@ namespace {
      */
     class WC_Install
     {
+        use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
         /**
          * DB updates and callbacks that need to be run per version.
          *
@@ -23672,11 +23673,25 @@ namespace {
          *
          * @var array
          */
-        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'));
+        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '8.0.0' => array('wc_update_800_delete_stray_order_records'));
+        /**
+         * Option name used to track new installations of WooCommerce.
+         *
+         * @var string
+         */
+        const NEWLY_INSTALLED_OPTION = 'woocommerce_newly_installed';
         /**
          * Hook in tabs.
          */
         public static function init()
+        {
+        }
+        /**
+         * Trigger `woocommerce_newly_installed` action for new installations.
+         *
+         * @since 8.0.0
+         */
+        private static function newly_installed()
         {
         }
         /**
@@ -26136,7 +26151,7 @@ namespace {
          *
          * @var array
          */
-        protected $legacy_datastore_props = array('_refunded_by', '_refunded_payment');
+        protected $legacy_datastore_props = array('_refund_amount', '_refund_reason', '_refunded_by', '_refunded_payment');
         /**
          * Get internal type (post type.)
          *
@@ -34296,7 +34311,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '7.9.0';
+        public $version = '8.0.0';
         /**
          * WooCommerce Schema version.
          *
@@ -35795,6 +35810,17 @@ namespace {
         {
         }
         /**
+         * Check if an order exists by id.
+         *
+         * @since 8.0.0
+         *
+         * @param int $order_id The order id to check.
+         * @return bool True if an order exists with the given name.
+         */
+        public function order_exists($order_id) : bool
+        {
+        }
+        /**
          * Method to read an order from the database.
          *
          * @param WC_Order $order Order object.
@@ -35802,6 +35828,15 @@ namespace {
          * @throws Exception If passed order is invalid.
          */
         public function read(&$order)
+        {
+        }
+        /**
+         * Set the properties of an object and log the first error found while doing so.
+         *
+         * @param $order WC_Order $order Order object.
+         * @param array          $props The properties to set.
+         */
+        private function set_order_props(&$order, array $props)
         {
         }
         /**
@@ -71965,7 +72000,7 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
         /**
          * Array of all available product blocks.
          */
-        const PRODUCT_BLOCKS = ['woocommerce/conditional', 'woocommerce/product-category-field', 'woocommerce/product-checkbox-field', 'woocommerce/product-collapsible', 'woocommerce/product-description-field', 'woocommerce/product-images-field', 'woocommerce/product-inventory-email-field', 'woocommerce/product-sku-field', 'woocommerce/product-name-field', 'woocommerce/product-pricing-field', 'woocommerce/product-radio-field', 'woocommerce/product-regular-price-field', 'woocommerce/product-sale-price-field', 'woocommerce/product-schedule-sale-fields', 'woocommerce/product-section', 'woocommerce/product-shipping-class-field', 'woocommerce/product-shipping-dimensions-fields', 'woocommerce/product-summary-field', 'woocommerce/product-tab', 'woocommerce/product-inventory-quantity-field', 'woocommerce/product-toggle-field'];
+        const PRODUCT_BLOCKS = ['woocommerce/conditional', 'woocommerce/product-category-field', 'woocommerce/product-checkbox-field', 'woocommerce/product-collapsible', 'woocommerce/product-description-field', 'woocommerce/product-images-field', 'woocommerce/product-inventory-email-field', 'woocommerce/product-sku-field', 'woocommerce/product-name-field', 'woocommerce/product-pricing-field', 'woocommerce/product-radio-field', 'woocommerce/product-regular-price-field', 'woocommerce/product-sale-price-field', 'woocommerce/product-schedule-sale-fields', 'woocommerce/product-section', 'woocommerce/product-shipping-class-field', 'woocommerce/product-shipping-dimensions-fields', 'woocommerce/product-summary-field', 'woocommerce/product-tab', 'woocommerce/product-inventory-quantity-field', 'woocommerce/product-toggle-field', 'woocommerce/product-variations-fields'];
         /**
          * Get a file path for a given block file.
          *
@@ -72496,6 +72531,14 @@ namespace Automattic\WooCommerce\Admin\Marketing {
          * @return array|bool
          */
         protected static function get_mailpoet_extension_data()
+        {
+        }
+        /**
+         * Get Klaviyo extension data.
+         *
+         * @return array|bool
+         */
+        protected static function get_klaviyo_extension_data()
         {
         }
         /**
@@ -78300,16 +78343,42 @@ namespace Automattic\WooCommerce\Database\Migrations {
          *
          * @param array $entity_ids Order ids to migrate.
          * @return array An array containing the keys 'errors' (array of strings) and 'exception' (exception object or null).
+         *
+         * @deprecated 8.0.0 Use `fetch_sanitized_migration_data` and `process_migration_data` instead.
          */
         public function process_migration_batch_for_ids(array $entity_ids) : array
         {
         }
+        // phpcs:disable Squiz.Commenting.FunctionComment.InvalidNoReturn, Squiz.Commenting.FunctionCommentThrowTag.Missing -- Methods are not marked abstract for back compat.
+        /**
+         * Return data to be migrated for a batch of entities.
+         *
+         * @param array $entity_ids Ids of entities to migrate.
+         *
+         * @return array[] Data to be migrated. Would be of the form: array( 'data' => array( ... ), 'errors' => array( ... ) ).
+         */
+        public function fetch_sanitized_migration_data(array $entity_ids)
+        {
+        }
+        /**
+         * Process migration data for a batch of entities.
+         *
+         * @param array $data Data to be migrated. Should be of the form: array( 'data' => array( ... ) ) as returned by the `fetch_sanitized_migration_data` method.
+         *
+         * @return array Array of errors and exception if any.
+         */
+        public function process_migration_data(array $data)
+        {
+        }
+        // phpcs:enable
         /**
          * The core method that actually performs the migration for the supplied batch of order ids.
          * It doesn't need to deal with database errors nor with exceptions.
          *
          * @param array $entity_ids Order ids to migrate.
          * @return void
+         *
+         * @deprecated 8.0.0 Use `fetch_sanitized_migration_data` and `process_migration_data` instead.
          */
         protected abstract function process_migration_batch_for_ids_core(array $entity_ids) : void;
         /**
@@ -78376,11 +78445,31 @@ namespace Automattic\WooCommerce\Database\Migrations {
         {
         }
         /**
+         * Return data to be migrated for a batch of entities.
+         *
+         * @param array $entity_ids Ids of entities to migrate.
+         *
+         * @return array[] Data to be migrated. Would be of the form: array( 'data' => array( ... ), 'errors' => array( ... ) ).
+         */
+        public function fetch_sanitized_migration_data($entity_ids)
+        {
+        }
+        /**
          * Migrate a batch of entities from the posts table to the corresponding table.
          *
          * @param array $entity_ids Ids of entities ro migrate.
          */
         protected function process_migration_batch_for_ids_core(array $entity_ids) : void
+        {
+        }
+        /**
+         * Process migration data for a batch of entities.
+         *
+         * @param array $data Data to be migrated. Should be of the form: array( 'data' => array( ... ) ) as returned by the `fetch_sanitized_migration_data` method.
+         *
+         * @return array Array of errors and exception if any.
+         */
+        public function process_migration_data(array $data)
         {
         }
         /**
@@ -78414,7 +78503,7 @@ namespace Automattic\WooCommerce\Database\Migrations {
          *   ...,
          * )
          */
-        private function fetch_data_for_migration_for_ids(array $entity_ids) : array
+        public function fetch_data_for_migration_for_ids(array $entity_ids) : array
         {
         }
         /**
@@ -78629,6 +78718,16 @@ namespace Automattic\WooCommerce\Database\Migrations {
         {
         }
         /**
+         * Return data to be migrated for a batch of entities.
+         *
+         * @param array $entity_ids Ids of entities to migrate.
+         *
+         * @return array[] Data to be migrated. Would be of the form: array( 'data' => array( ... ), 'errors' => array( ... ) ).
+         */
+        public function fetch_sanitized_migration_data($entity_ids)
+        {
+        }
+        /**
          * Migrate a batch of entities from the posts table to the corresponding table.
          *
          * @param array $entity_ids Ids of entities to migrate.
@@ -78636,6 +78735,16 @@ namespace Automattic\WooCommerce\Database\Migrations {
          * @return void
          */
         protected function process_migration_batch_for_ids_core(array $entity_ids) : void
+        {
+        }
+        /**
+         * Process migration data for a batch of entities.
+         *
+         * @param array $data Data to be migrated. Should be of the form: array( 'data' => array( ... ) ) as returned by the `fetch_sanitized_migration_data` method.
+         *
+         * @return array Array of errors and exception if any.
+         */
+        public function process_migration_data(array $data)
         {
         }
         /**
@@ -79021,7 +79130,7 @@ namespace Automattic\WooCommerce\Database\Migrations\CustomOrderTable {
         /**
          * Array of objects used to perform the migration.
          *
-         * @var array
+         * @var TableMigrator[]
          */
         private $all_migrators;
         /**
@@ -79051,21 +79160,25 @@ namespace Automattic\WooCommerce\Database\Migrations\CustomOrderTable {
         {
         }
         /**
-         * Start a database transaction if the configuration mandates so.
+         * Log migration errors if any.
          *
-         * @return bool|null True if transaction started, false if transactions won't be used, null if transaction failed to start.
+         * @param array           $order_post_ids List of post IDs of the orders to migrate.
+         * @param array           $errors List of errors to log.
+         * @param \Exception|null $exception Exception to log.
+         * @param bool|null       $using_transactions Whether transactions were used.
+         * @param string          $name Name of the migrator.
          */
-        private function maybe_start_transaction() : ?bool
+        private function handle_migration_error(array $order_post_ids, array $errors, ?\Exception $exception, ?bool $using_transactions, string $name)
         {
         }
         /**
-         * Verify that a given database transaction isolation level name is valid, and throw an exception if not.
+         * Start a database transaction if the configuration mandates so.
          *
-         * @param string $transaction_isolation_level Transaction isolation level name to check.
-         * @return void
-         * @throws \Exception Invalid transaction isolation level name.
+         * @return bool|null True if transaction started, false if transactions won't be used, null if transaction failed to start.
+         *
+         * @throws \Exception If the transaction isolation level is invalid.
          */
-        private function verify_transaction_isolation_level(string $transaction_isolation_level) : void
+        private function maybe_start_transaction() : ?bool
         {
         }
         /**
@@ -79087,21 +79200,12 @@ namespace Automattic\WooCommerce\Database\Migrations\CustomOrderTable {
         /**
          * Execute a database query and log any errors.
          *
-         * @param string $query The SQL query to execute.
+         * @param string $query          The SQL query to execute.
+         * @param bool   $supress_errors Whether to suppress errors.
+         *
          * @return bool True if the query succeeded, false if there were errors.
          */
-        private function db_query(string $query) : bool
-        {
-        }
-        /**
-         * Performs one step of the migration for a set of order posts using one given migration class.
-         * All database errors and exceptions are logged.
-         *
-         * @param object $migration_class The migration class to use, must have a `process_migration_batch_for_ids(array of ids)` method.
-         * @param array  $order_post_ids List of post IDs of the orders to migrate.
-         * @return bool True if errors were logged, false otherwise.
-         */
-        private function do_orders_migration_step(object $migration_class, array $order_post_ids) : bool
+        private function db_query(string $query, bool $supress_errors = false) : bool
         {
         }
         /**
@@ -81853,9 +81957,9 @@ namespace Automattic\WooCommerce\Internal\Admin\Notes {
         {
         }
         /**
-         * Things to do on admin_init.
+         * Runs on `admin_head` hook. Checks the connection and refreshes subscription notes on relevant pages.
          */
-        public function admin_init()
+        public function admin_head()
         {
         }
         /**
@@ -82550,6 +82654,12 @@ namespace Automattic\WooCommerce\Internal\Admin\Orders {
          */
         private $message;
         /**
+         * Controller for orders page. Used to determine redirection URLs.
+         *
+         * @var PageController
+         */
+        private $orders_page_controller;
+        /**
          * Hooks all meta-boxes for order edit page. This is static since this may be called by post edit form rendering.
          *
          * @param string $screen_id Screen ID.
@@ -82570,6 +82680,16 @@ namespace Automattic\WooCommerce\Internal\Admin\Orders {
          * Enqueue necessary scripts for order edit page.
          */
         private function enqueue_scripts()
+        {
+        }
+        /**
+         * Returns the PageController for this edit form. This method is protected to allow child classes to overwrite the PageController object and return custom links.
+         *
+         * @since 8.0.0
+         *
+         * @return PageController PageController object.
+         */
+        protected function get_page_controller()
         {
         }
         /**
@@ -82608,6 +82728,16 @@ namespace Automattic\WooCommerce\Internal\Admin\Orders {
          * @return void
          */
         public function handle_order_update()
+        {
+        }
+        /**
+         * Helper method to redirect to order edit page.
+         *
+         * @since 8.0.0
+         *
+         * @param \WC_Order $order Order object.
+         */
+        private function redirect_order(\WC_Order $order)
         {
         }
         /**
@@ -86810,10 +86940,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          */
         public const CUSTOM_ORDERS_TABLE_USAGE_ENABLED_OPTION = 'woocommerce_custom_orders_table_enabled';
         /**
-         * The name of the option that tells that the authoritative table must be flipped once sync finishes.
-         */
-        private const AUTO_FLIP_AUTHORITATIVE_TABLE_ROLES_OPTION = 'woocommerce_auto_flip_authoritative_table_roles';
-        /**
          * The name of the option that tells whether database transactions are to be used or not for data synchronization.
          */
         public const USE_DB_TRANSACTIONS_OPTION = 'woocommerce_use_db_transactions_for_custom_orders_table_data_sync';
@@ -86821,7 +86947,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * The name of the option to store the transaction isolation level to use when database transactions are enabled.
          */
         public const DB_TRANSACTIONS_ISOLATION_LEVEL_OPTION = 'woocommerce_db_transactions_isolation_level_for_custom_orders_table_data_sync';
-        public const DEFAULT_DB_TRANSACTIONS_ISOLATION_LEVEL = 'REPEATABLE READ';
+        public const DEFAULT_DB_TRANSACTIONS_ISOLATION_LEVEL = 'READ UNCOMMITTED';
         /**
          * The data store object to use.
          *
@@ -86865,6 +86991,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          */
         private $order_cache_controller;
         /**
+         * The plugin util object to use.
+         *
+         * @var PluginUtil
+         */
+        private $plugin_util;
+        /**
          * Class constructor.
          */
         public function __construct()
@@ -86887,8 +87019,9 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @param FeaturesController         $features_controller The features controller instance to use.
          * @param OrderCache                 $order_cache The order cache engine to use.
          * @param OrderCacheController       $order_cache_controller The order cache controller to use.
+         * @param PluginUtil                 $plugin_util The plugin util to use.
          */
-        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer $data_synchronizer, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableRefundDataStore $refund_data_store, \Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessingController $batch_processing_controller, \Automattic\WooCommerce\Internal\Features\FeaturesController $features_controller, \Automattic\WooCommerce\Caches\OrderCache $order_cache, \Automattic\WooCommerce\Caches\OrderCacheController $order_cache_controller)
+        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer $data_synchronizer, \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableRefundDataStore $refund_data_store, \Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessingController $batch_processing_controller, \Automattic\WooCommerce\Internal\Features\FeaturesController $features_controller, \Automattic\WooCommerce\Caches\OrderCache $order_cache, \Automattic\WooCommerce\Caches\OrderCacheController $order_cache_controller, \Automattic\WooCommerce\Utilities\PluginUtil $plugin_util)
         {
         }
         /**
@@ -86905,14 +87038,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * This method shouldn't be used anymore, see the FeaturesController class.
          */
         public function show_feature()
-        {
-        }
-        /**
-         * Hides the feature, so that no entries will be added to the debug tools page.
-         *
-         * This method shouldn't be used anymore, see the FeaturesController class.
-         */
-        public function hide_feature()
         {
         }
         /**
@@ -86984,34 +87109,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Get the settings sections for the "Advanced" tab, with a "Custom data stores" section added if appropriate.
-         *
-         * @param array $sections The original settings sections array.
-         * @return array The updated settings sections array.
-         */
-        private function get_settings_sections(array $sections) : array
-        {
-        }
-        /**
-         * Get the settings for the "Custom data stores" section in the "Advanced" tab,
-         * with entries for managing the custom orders tables if appropriate.
-         *
-         * @param array  $settings The original settings array.
-         * @param string $section_id The settings section to get the settings for.
-         * @return array The updated settings array.
-         */
-        private function get_settings(array $settings, string $section_id) : array
-        {
-        }
-        /**
-         * Get the valid database transaction isolation level names.
-         *
-         * @return string[]
-         */
-        public static function get_valid_transaction_isolation_levels()
-        {
-        }
-        /**
          * Handler for the individual setting updated hook.
          *
          * @param string $option Setting name.
@@ -87035,24 +87132,11 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Handler for the synchronization finished hook.
-         * Here we switch the authoritative table if needed.
-         */
-        private function process_sync_finished()
-        {
-        }
-        /**
-         * Is the automatic authoritative table switch setting set?
-         *
-         * @return bool
-         */
-        private function auto_flip_authoritative_table_enabled() : bool
-        {
-        }
-        /**
          * Handler for the all settings updated hook.
+         *
+         * @param string $feature_id Feature ID.
          */
-        private function process_options_updated()
+        private function handle_data_sync_option_changed(string $feature_id)
         {
         }
         /**
@@ -87074,6 +87158,37 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         private function register_post_type_for_order_placeholders() : void
         {
         }
+        /**
+         * Returns the HPOS setting for rendering in Features section of the settings page.
+         *
+         * @param array  $feature_setting HPOS feature value as defined in the feature controller.
+         * @param string $feature_id ID of the feature.
+         *
+         * @return array Feature setting object.
+         */
+        private function get_hpos_feature_setting(array $feature_setting, string $feature_id)
+        {
+        }
+        /**
+         * Returns the HPOS setting for rendering HPOS vs Post setting block in Features section of the settings page.
+         *
+         * @param array $sync_status Details of sync status, includes pending count, and count when sync started.
+         *
+         * @return array Feature setting object.
+         */
+        private function get_hpos_setting_for_feature($sync_status)
+        {
+        }
+        /**
+         * Returns the setting for rendering sync enabling setting block in Features section of the settings page.
+         *
+         * @param array $sync_status Details of sync status, includes pending count, and count when sync started.
+         *
+         * @return array Feature setting object.
+         */
+        private function get_hpos_setting_for_sync($sync_status)
+        {
+        }
     }
     /**
      * This class handles the database structure creation and the data synchronization for the custom orders tables. Its responsibilites are:
@@ -87086,13 +87201,18 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
         public const ORDERS_DATA_SYNC_ENABLED_OPTION = 'woocommerce_custom_orders_table_data_sync_enabled';
         private const INITIAL_ORDERS_PENDING_SYNC_COUNT_OPTION = 'woocommerce_initial_orders_pending_sync_count';
-        public const PENDING_SYNCHRONIZATION_FINISHED_ACTION = 'woocommerce_orders_sync_finished';
         public const PLACEHOLDER_ORDER_POST_TYPE = 'shop_order_placehold';
+        public const DELETED_RECORD_META_KEY = '_deleted_from';
+        public const DELETED_FROM_POSTS_META_VALUE = 'posts_table';
+        public const DELETED_FROM_ORDERS_META_VALUE = 'orders_table';
+        public const ORDERS_TABLE_CREATED = 'woocommerce_custom_orders_table_created';
         private const ORDERS_SYNC_BATCH_SIZE = 250;
         // Allowed values for $type in get_ids_of_orders_pending_sync method.
         public const ID_TYPE_MISSING_IN_ORDERS_TABLE = 0;
         public const ID_TYPE_MISSING_IN_POSTS_TABLE = 1;
         public const ID_TYPE_DIFFERENT_UPDATE_DATE = 2;
+        public const ID_TYPE_DELETED_FROM_ORDERS_TABLE = 3;
+        public const ID_TYPE_DELETED_FROM_POSTS_TABLE = 4;
         /**
          * The data store object to use.
          *
@@ -87200,6 +87320,14 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
+         * Get the meta value for order deletion records based on which table is currently authoritative.
+         *
+         * @return string self::DELETED_FROM_ORDERS_META_VALUE if the orders table is authoritative, self::DELETED_FROM_POSTS_META_VALUE otherwise.
+         */
+        private function get_current_deletion_record_meta_value()
+        {
+        }
+        /**
          * Is the custom orders table the authoritative data source for orders currently?
          *
          * @return bool Whether the custom orders table the authoritative data source for orders currently.
@@ -87215,6 +87343,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * ID_TYPE_MISSING_IN_ORDERS_TABLE: orders that exist in posts table but not in orders table.
          * ID_TYPE_MISSING_IN_POSTS_TABLE: orders that exist in orders table but not in posts table (the corresponding post entries are placeholders).
          * ID_TYPE_DIFFERENT_UPDATE_DATE: orders that exist in both tables but have different last update dates.
+         * ID_TYPE_DELETED_FROM_ORDERS_TABLE: orders deleted from the orders table but not yet from the posts table.
+         * ID_TYPE_DELETED_FROM_POSTS_TABLE: orders deleted from the posts table but not yet from the orders table.
          *
          * @param int $type One of ID_TYPE_MISSING_IN_ORDERS_TABLE, ID_TYPE_MISSING_IN_POSTS_TABLE, ID_TYPE_DIFFERENT_UPDATE_DATE.
          * @param int $limit Maximum number of ids to return.
@@ -87222,6 +87352,16 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @throws \Exception Invalid parameter.
          */
         public function get_ids_of_orders_pending_sync(int $type, int $limit)
+        {
+        }
+        /**
+         * Get the ids of the orders that are marked as deleted in the orders meta table.
+         *
+         * @param bool $deleted_from_orders_table True to get the ids of the orders deleted from the orders table, false o get the ids of the orders deleted from the posts table.
+         * @param int  $limit The maximum count of orders to return.
+         * @return array An array of order ids.
+         */
+        private function get_deleted_order_ids(bool $deleted_from_orders_table, int $limit)
         {
         }
         /**
@@ -87238,6 +87378,17 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @param array $batch Batch details.
          */
         public function process_batch(array $batch) : void
+        {
+        }
+        /**
+         * Take a batch of order ids pending synchronization and process those that were deleted, ignoring the others
+         * (which will be orders that were created or modified) and returning the ids of the orders actually processed.
+         *
+         * @param array $batch Array of ids of order pending synchronization.
+         * @param bool  $custom_orders_table_is_authoritative True if the custom orders table is currently authoritative.
+         * @return array Order ids that have been actually processed.
+         */
+        private function process_deleted_orders(array $batch, bool $custom_orders_table_is_authoritative) : array
         {
         }
         /**
@@ -87371,6 +87522,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @var \WC_Logger
          */
         private $error_logger;
+        /**
+         * The name of the main orders table.
+         *
+         * @var string
+         */
+        private $orders_table_name;
         /**
          * The instance of the LegacyProxy object to use.
          *
@@ -87748,6 +87905,17 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
+         * Check if an order exists by id.
+         *
+         * @since 8.0.0
+         *
+         * @param int $order_id The order id to check.
+         * @return bool True if an order exists with the given name.
+         */
+        public function order_exists($order_id) : bool
+        {
+        }
+        /**
          * Method to read an order from custom tables.
          *
          * @param \WC_Order $order Order object.
@@ -87900,7 +88068,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @param \WC_Abstract_Order $order      The order object.
          * @param object             $order_data A row of order data from the database.
          */
-        private function set_order_props_from_data(&$order, $order_data)
+        protected function set_order_props_from_data(&$order, $order_data)
         {
         }
         /**
@@ -88101,6 +88269,19 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
+         * Handles the deletion of an order from the orders table when sync is disabled:
+         *
+         * If the corresponding row in the posts table is of placeholder type,
+         * it's just deleted; otherwise a "deleted_from" record is created in the meta table
+         * and the sync process will detect these and take care of deleting the appropriate post records.
+         *
+         * @param int $order_id Th id of the order that has been deleted from the orders table.
+         * @return void
+         */
+        protected function handle_order_deletion_with_sync_disabled($order_id) : void
+        {
+        }
+        /**
          * Set the parent id of child orders to the parent order's parent if the post type
          * for the order is hierarchical, just delete the child orders otherwise.
          *
@@ -88108,7 +88289,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          *
          * @return void
          */
-        private function upshift_or_delete_child_orders($order)
+        private function upshift_or_delete_child_orders($order) : void
         {
         }
         /**
@@ -89137,6 +89318,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
     class OrdersTableRefundDataStore extends \Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore
     {
         /**
+         * Data stored in meta keys, but not considered "meta" for refund.
+         *
+         * @var string[]
+         */
+        protected $internal_meta_keys = array('_refund_amount', '_refund_reason', '_refunded_by', '_refunded_payment');
+        /**
          * We do not have and use all the getters and setters from OrderTableDataStore, so we only select the props we actually need.
          *
          * @var \string[][]
@@ -89154,29 +89341,14 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Read a refund object from custom tables.
-         *
-         * @param \WC_Abstract_Order $refund Refund object.
-         *
-         * @return void
-         */
-        public function read(&$refund)
-        {
-        }
-        /**
-         * Read multiple refund objects from custom tables.
-         *
-         * @param \WC_Order $refunds Refund objects.
-         */
-        public function read_multiple(&$refunds)
-        {
-        }
-        /**
          * Helper method to set refund props.
          *
-         * @param \WC_Order $refund Refund object.
+         * @param \WC_Order_Refund $refund Refund object.
+         * @param object           $data   DB data object.
+         *
+         * @since 8.0.0
          */
-        private function set_refund_props($refund)
+        protected function set_order_props_from_data(&$refund, $data)
         {
         }
         /**
@@ -89440,6 +89612,35 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement {
         protected function resolveClass(string $concrete)
         {
         }
+        /**
+         * Invoke methods on resolved instance, including 'init'.
+         *
+         * @param object $instance The concrete to invoke methods on.
+         *
+         * @return object
+         */
+        protected function invokeMethods($instance)
+        {
+        }
+        /**
+         * Invoke the 'init' method on a resolved object.
+         *
+         * Constructor injection causes backwards compatibility problems
+         * so we will rely on method injection via an internal method.
+         *
+         * @param object $instance The resolved object.
+         * @return void
+         */
+        private function invokeInit($instance)
+        {
+        }
+        /**
+         * Forget the cached resolved object, so the next time it's requested
+         * it will be resolved again.
+         */
+        public function forgetResolved()
+        {
+        }
     }
     /**
      * This class extends the original League's Container object by adding some functionality
@@ -89453,6 +89654,12 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement {
          * @var string
          */
         private $woocommerce_namespace = 'Automattic\\WooCommerce\\';
+        /**
+         * Holds the original registrations so that 'reset_replacement' can work, keys are class names and values are the original concretes.
+         *
+         * @var array
+         */
+        private $original_concretes = array();
         /**
          * Whitelist of classes that we can register using the container
          * despite not belonging to the WooCommerce root namespace.
@@ -89480,7 +89687,7 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement {
         {
         }
         /**
-         * Replace an existing registration with a different concrete.
+         * Replace an existing registration with a different concrete. See also 'reset_replacement' and 'reset_all_replacements'.
          *
          * @param string $class_name The class name whose definition will be replaced.
          * @param mixed  $concrete The new concrete (same as "add").
@@ -89489,6 +89696,21 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement {
          * @throws ContainerException Invalid parameters.
          */
         public function replace(string $class_name, $concrete) : \Automattic\WooCommerce\Vendor\League\Container\Definition\DefinitionInterface
+        {
+        }
+        /**
+         * Reset a replaced registration back to its original concrete.
+         *
+         * @param string $class_name The class name whose definition had been replaced.
+         * @return bool True if the registration has been reset, false if no replacement had been made for the specified class name.
+         */
+        public function reset_replacement(string $class_name) : bool
+        {
+        }
+        /**
+         * Reset all the replaced registrations back to their original concretes.
+         */
+        public function reset_all_replacements()
         {
         }
         /**
@@ -90265,6 +90487,20 @@ namespace Automattic\WooCommerce\Internal\Features {
          * looks like '?plugin_status=incompatible_with_feature&feature_id=<feature id>'.
          */
         private function maybe_display_current_feature_filter_description() : bool
+        {
+        }
+        /**
+         * If the 'incompatible with features' plugin list is being rendered, invalidate existing cached plugin data.
+         *
+         * This heads off a problem in which WordPress's `get_plugins()` function may be called much earlier in the request
+         * (by third party code, for example), the results of which are cached, and before WooCommerce can modify the list
+         * to inject useful information of its own.
+         *
+         * @see https://github.com/woocommerce/woocommerce/issues/37343
+         *
+         * @return void
+         */
+        private function maybe_invalidate_cached_plugin_data() : void
         {
         }
         /**
@@ -93416,6 +93652,17 @@ namespace Automattic\WooCommerce\Utilities {
         private function handle_plugin_de_activation() : void
         {
         }
+        /**
+         * Util function to generate warning string for incompatible features based on active plugins.
+         *
+         * @param string $feature_id Feature id.
+         * @param array  $plugin_feature_info Array of plugin feature info. See FeaturesControllers->get_compatible_plugins_for_feature() for details.
+         *
+         * @return string Warning string.
+         */
+        public function generate_incompatible_plugin_feature_warning(string $feature_id, array $plugin_feature_info) : string
+        {
+        }
     }
     /**
      * A class of utilities for dealing with strings.
@@ -93483,6 +93730,27 @@ namespace Automattic\WooCommerce\Utilities {
          * @return bool True if the string is null, is empty, or contains only whitespace characters.
          */
         public static function is_null_or_whitespace(?string $value)
+        {
+        }
+        /**
+         * Convert an array of values to a list suitable for a SQL "IN" statement
+         * (so comma separated and delimited by parenthesis).
+         * e.g.: [1,2,3] --> (1,2,3)
+         *
+         * @param array $values The values to convert.
+         * @return string A parenthesized and comma-separated string generated from the values.
+         * @throws \InvalidArgumentException Empty values array passed.
+         */
+        public static function to_sql_list(array $values)
+        {
+        }
+        /**
+         * Get the name of a class without the namespace.
+         *
+         * @param string $class_name The full class name.
+         * @return string The class name without the namespace.
+         */
+        public static function class_name_without_namespace(string $class_name)
         {
         }
     }
