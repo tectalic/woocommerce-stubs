@@ -5696,13 +5696,14 @@ namespace Automattic\WooCommerce\Blocks\Assets {
          * @since 2.5.0
          * @since 2.6.0 Change src to be relative source.
          *
-         * @param string $handle       Name of the stylesheet. Should be unique.
-         * @param string $relative_src Relative source of the stylesheet to the plugin path.
-         * @param array  $deps         Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
-         * @param string $media        Optional. The media for which this stylesheet has been defined. Default 'all'. Accepts media types like
-         *                             'all', 'print' and 'screen', or media queries like '(orientation: portrait)' and '(max-width: 640px)'.
+         * @param string  $handle       Name of the stylesheet. Should be unique.
+         * @param string  $relative_src Relative source of the stylesheet to the plugin path.
+         * @param array   $deps         Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+         * @param string  $media        Optional. The media for which this stylesheet has been defined. Default 'all'. Accepts media types like
+         *                              'all', 'print' and 'screen', or media queries like '(orientation: portrait)' and '(max-width: 640px)'.
+         * @param boolean $rtl   Optional. Whether or not to register RTL styles.
          */
-        public function register_style($handle, $relative_src, $deps = [], $media = 'all')
+        public function register_style($handle, $relative_src, $deps = [], $media = 'all', $rtl = false)
         {
         }
         /**
@@ -5989,6 +5990,12 @@ namespace Automattic\WooCommerce\Blocks {
          * Register block scripts & styles.
          */
         public function register_assets()
+        {
+        }
+        /**
+         * Register and enqueue assets for exclusive usage within the Site Editor.
+         */
+        public function register_and_enqueue_site_editor_assets()
         {
         }
         /**
@@ -6376,6 +6383,15 @@ namespace Automattic\WooCommerce\Blocks {
         {
         }
         /**
+         * Prepare default page template.
+         *
+         * @param \WP_Post $page Page object.
+         * @return string
+         */
+        protected function get_default_migrate_page_template($page)
+        {
+        }
+        /**
          * Migrates a page to a template if needed.
          *
          * @param string   $page_id Page ID.
@@ -6594,8 +6610,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         /**
          * Get the frontend style handle for this block type.
          *
-         * @see $this->register_block_type()
-         * @return string|null
+         * @return string[]|null
          */
         protected function get_block_type_style()
         {
@@ -6778,6 +6793,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @return array|string|null
          */
         protected function get_block_type_script($key = null)
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
         {
         }
     }
@@ -7030,6 +7053,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         protected function enqueue_data(array $attributes = [])
         {
         }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
+        {
+        }
     }
     /**
      * ActiveFilters class.
@@ -7115,10 +7146,9 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * is clicked.
          *
          * @param string $url The URL to redirect to after the product is added to the cart.
-         * @param object $product The product being added to the cart.
          * @return string The filtered redirect URL.
          */
-        public function add_to_cart_redirect_filter($url, $product)
+        public function add_to_cart_redirect_filter($url)
         {
         }
         /**
@@ -7127,6 +7157,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @param string $key Data to get, or default to everything.
          */
         protected function get_block_type_script($key = null)
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
         {
         }
         /**
@@ -7268,6 +7306,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         protected function enqueue_data(array $attributes = [])
         {
         }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
+        {
+        }
     }
     /**
      * CatalogSorting class.
@@ -7352,6 +7398,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @return array|string
          */
         protected function get_block_type_script($key = null)
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
         {
         }
         /**
@@ -7654,6 +7708,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @return array|string
          */
         protected function get_block_type_script($key = null)
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
         {
         }
         /**
@@ -8090,6 +8152,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         public function filter_products_by_stock($meta_query)
         {
         }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
+        {
+        }
     }
     /**
      * CustomerAccount class.
@@ -8473,6 +8543,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'filter-wrapper';
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
+        {
+        }
     }
     /**
      * HandpickedProducts class.
@@ -8583,6 +8661,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @return array|string
          */
         protected function get_block_type_script($key = null)
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
         {
         }
         /**
@@ -8756,6 +8842,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @return null
          */
         protected function get_block_type_script($key = null)
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
         {
         }
         /**
@@ -9196,6 +9290,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         {
         }
         /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
+        {
+        }
+        /**
          * Initialize this block type.
          *
          * - Hook into WP lifecycle.
@@ -9544,6 +9646,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'product-gallery';
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
+        {
+        }
     }
     /**
      * ProductImage class.
@@ -9758,6 +9868,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         {
         }
         /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
+        {
+        }
+        /**
          * Overwrite parent method to prevent script registration.
          *
          * It is necessary to register and enqueues assets during the render
@@ -9838,6 +9956,15 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * - Hook into pre_render_block to update the query.
          */
         protected function initialize()
+        {
+        }
+        /**
+         * Post Template support for grid view was introduced in Gutenberg 16 / WordPress 6.3
+         * Fixed in:
+         * - https://github.com/woocommerce/woocommerce-blocks/pull/9916
+         * - https://github.com/woocommerce/woocommerce-blocks/pull/10360
+         */
+        private function check_if_post_template_has_support_for_grid_view()
         {
         }
         /**
@@ -10207,6 +10334,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * phase because we want to load assets only if the block has the content.
          */
         protected function register_block_type_assets()
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
         {
         }
         /**
@@ -10757,6 +10892,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         protected function get_block_type_script($key = null)
         {
         }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
+        {
+        }
     }
     /**
      * RelatedProducts class.
@@ -10789,6 +10932,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * It isn't necessary register block assets because it is a server side block.
          */
         protected function register_block_type_assets()
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
         {
         }
         /**
@@ -11046,6 +11197,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         public static function get_stock_status_query_var_values()
         {
         }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return string[]
+         */
+        protected function get_block_type_style()
+        {
+        }
     }
     /**
      * StoreNotices class.
@@ -11076,6 +11235,14 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @param string $key Data to get, or default to everything.
          */
         protected function get_block_type_script($key = null)
+        {
+        }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
         {
         }
     }
@@ -20134,6 +20301,25 @@ namespace Automattic\WooCommerce\Blocks\Utils {
          * @return array
          */
         public static function get_classes_and_styles_by_attributes($attributes, $properties = array())
+        {
+        }
+    }
+    /**
+     * Utils class
+     */
+    class Utils
+    {
+        /**
+         * Compare the current WordPress version with a given version. It's a wrapper around `version-compare`
+         * that additionally takes into account the suffix (like `-RC1`).
+         * For example: version 6.3 is considered lower than 6.3-RC2, so you can do
+         * wp_version_compare( '6.3', '>=' ) and that will return true for 6.3-RC2.
+         *
+         * @param string      $version The version to compare against.
+         * @param string|null $operator Optional. The comparison operator. Defaults to null.
+         * @return bool|int Returns true if the current WordPress version satisfies the comparison, false otherwise.
+         */
+        public static function wp_version_compare($version, $operator = null)
         {
         }
     }

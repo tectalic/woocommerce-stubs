@@ -72091,6 +72091,12 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
         {
         }
         /**
+         * Dequeue conflicting styles.
+         */
+        public function dequeue_conflicting_styles()
+        {
+        }
+        /**
          * Update the edit product links when the new experience is enabled.
          *
          * @param string $link    The edit link.
