@@ -5588,18 +5588,6 @@ namespace Automattic\WooCommerce\Blocks\Assets {
          */
         private $inline_scripts = [];
         /**
-         * Determines if caching is enabled for script data.
-         *
-         * @var boolean
-         */
-        private $disable_cache = false;
-        /**
-         * Stores loaded script data for the current request
-         *
-         * @var array|null
-         */
-        private $script_data = null;
-        /**
          * Reference to the Package instance
          *
          * @var Package
@@ -5643,20 +5631,6 @@ namespace Automattic\WooCommerce\Blocks\Assets {
          * @return string|boolean False if metadata file is not found for the block.
          */
         public function get_block_metadata_path($block_name, $path = '')
-        {
-        }
-        /**
-         * Initialize and load cached script data from the transient cache.
-         *
-         * @return array
-         */
-        private function get_cached_script_data()
-        {
-        }
-        /**
-         * Store all cached script data in the transient cache.
-         */
-        public function update_script_data_cache()
         {
         }
         /**
