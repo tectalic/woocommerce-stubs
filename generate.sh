@@ -14,6 +14,9 @@ else
     echo "Update to $VERSION. commit and push changes."
 fi
 
+git checkout master
+git pull
+
 # Update WooCommerce via Composer.
 if [ "$NEW" = true ]; then
     rm -rf ./woocommerce
