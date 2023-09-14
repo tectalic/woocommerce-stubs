@@ -4,6 +4,9 @@
 #
 set -e
 
+git checkout master
+git pull
+
 # Get version from cli argument.
 VERSION=$1
 NEW=true
@@ -13,9 +16,6 @@ if [ -z "$VERSION" ]; then
 else
     echo "Update to $VERSION. commit and push changes."
 fi
-
-git checkout master
-git pull
 
 # Update WooCommerce via Composer.
 if [ "$NEW" = true ]; then
