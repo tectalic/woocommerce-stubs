@@ -34311,7 +34311,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '8.1.0';
+        public $version = '8.1.1';
         /**
          * WooCommerce Schema version.
          *
@@ -89397,8 +89397,24 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          *
          * @param WC_Abstract_Order $order Order object.
          * @param \WC_Meta_Data     $meta  Metadata object.
+         *
+         * @return bool True if changes were applied, false otherwise.
          */
         protected function after_meta_change(&$order, $meta)
+        {
+        }
+        /**
+         * Helper function to check whether the modified date needs to be updated after a meta save.
+         *
+         * This method prevents order->save() call multiple times in the same request after any meta update by checking if:
+         * 1. Order modified date is already the current date, no updates needed in this case.
+         * 2. If there are changes already queued for order object, then we don't need to update the modified date as it will be updated ina subsequent save() call.
+         *
+         * @param WC_Order $order Order object.
+         *
+         * @return bool Whether the modified date needs to be updated.
+         */
+        private function should_save_after_meta_change($order)
         {
         }
     }
