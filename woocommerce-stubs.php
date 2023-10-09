@@ -88632,16 +88632,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Create the custom orders tables in response to the user pressing the tool button.
-         *
-         * @param bool $verify_nonce True to perform the nonce verification, false to skip it.
-         *
-         * @throws \Exception Can't create the tables.
-         */
-        private function create_custom_orders_tables(bool $verify_nonce = true)
-        {
-        }
-        /**
          * Delete the custom orders tables and any related options and data in response to the user pressing the tool button.
          *
          * @throws \Exception Can't delete the tables.
