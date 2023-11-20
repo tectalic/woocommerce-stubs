@@ -3070,7 +3070,7 @@ namespace {
          * @param  int        $order_id Order ID.
          * @param  float|null $amount Refund amount.
          * @param  string     $reason Refund reason.
-         * @return boolean True or false based on success, or a WP_Error object.
+         * @return bool|\WP_Error True or false based on success, or a WP_Error object.
          */
         public function process_refund($order_id, $amount = \null, $reason = '')
         {
@@ -7831,6 +7831,12 @@ namespace {
     class WC_Admin_Menus
     {
         /**
+         * The CSS classes used to hide the submenu items in navigation.
+         *
+         * @var string
+         */
+        const HIDE_CSS_CLASS = 'hide-if-js';
+        /**
          * Hook in tabs.
          */
         public function __construct()
@@ -8002,6 +8008,35 @@ namespace {
         public function maybe_add_new_product_management_experience()
         {
         }
+        /**
+         * Hide the submenu page based on slug and return the item that was hidden.
+         *
+         * Borrowed from Jetpack's Base_Admin_Menu class.
+         *
+         * Instead of actually removing the submenu item, a safer approach is to hide it and filter it in the API response.
+         * In this manner we'll avoid breaking third-party plugins depending on items that no longer exist.
+         *
+         * A false|array value is returned to be consistent with remove_submenu_page() function
+         *
+         * @param string $menu_slug The parent menu slug.
+         * @param string $submenu_slug The submenu slug that should be hidden.
+         * @return false|array
+         */
+        public function hide_submenu_page($menu_slug, $submenu_slug)
+        {
+        }
+        /**
+         * Apply the hide-if-js CSS class to a submenu item.
+         *
+         * Borrowed from Jetpack's Base_Admin_Menu class.
+         *
+         * @param int    $index The position of a submenu item in the submenu array.
+         * @param string $parent_slug The parent slug.
+         * @param array  $item The submenu item.
+         */
+        public function hide_submenu_element($index, $parent_slug, $item)
+        {
+        }
     }
     /**
      * WC_Admin_Meta_Boxes.
@@ -8109,11 +8144,150 @@ namespace {
         {
         }
     }
+}
+namespace Automattic\WooCommerce\Internal\Traits {
+    /**
+     * This trait allows making private methods of a class accessible from outside.
+     * This is useful to define hook handlers with the [$this, 'method'] or [__CLASS__, 'method'] syntax
+     * without having to make the method public (and thus having to keep it forever for backwards compatibility).
+     *
+     * Example:
+     *
+     * class Foobar {
+     *   use AccessiblePrivateMethods;
+     *
+     *   public function __construct() {
+     *     self::add_action('some_action', [$this, 'handle_some_action']);
+     *   }
+     *
+     *   public static function init() {
+     *     self::add_filter('some_filter', [__CLASS__, 'handle_some_filter']);
+     *   }
+     *
+     *   private function handle_some_action() {
+     *   }
+     *
+     *   private static function handle_some_filter() {
+     *   }
+     * }
+     *
+     * For this to work the callback must be an array and the first element of the array must be either '$this', '__CLASS__',
+     * or another instance of the same class; otherwise the method won't be marked as accessible
+     * (but the corresponding WordPress 'add_action' and 'add_filter' functions will still be called).
+     *
+     * No special procedure is needed to remove hooks set up with these methods, the regular 'remove_action'
+     * and 'remove_filter' functions provided by WordPress can be used as usual.
+     */
+    trait AccessiblePrivateMethods
+    {
+        //phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
+        /**
+         * List of instance methods marked as externally accessible.
+         *
+         * @var array
+         */
+        private $_accessible_private_methods = array();
+        /**
+         * List of static methods marked as externally accessible.
+         *
+         * @var array
+         */
+        private static $_accessible_static_private_methods = array();
+        //phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
+        /**
+         * Register a WordPress action.
+         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
+         *
+         * $callback can be a standard callable, or a string representing the name of a method in this class.
+         *
+         * @param string          $hook_name       The name of the action to add the callback to.
+         * @param callable|string $callback        The callback to be run when the action is called.
+         * @param int             $priority        Optional. Used to specify the order in which the functions
+         *                                         associated with a particular action are executed.
+         *                                         Lower numbers correspond with earlier execution,
+         *                                         and functions with the same priority are executed
+         *                                         in the order in which they were added to the action. Default 10.
+         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
+         */
+        protected static function add_action(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
+        {
+        }
+        /**
+         * Register a WordPress filter.
+         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
+         *
+         * $callback can be a standard callable, or a string representing the name of a method in this class.
+         *
+         * @param string          $hook_name       The name of the filter to add the callback to.
+         * @param callable|string $callback        The callback to be run when the filter is called.
+         * @param int             $priority        Optional. Used to specify the order in which the functions
+         *                                         associated with a particular filter are executed.
+         *                                         Lower numbers correspond with earlier execution,
+         *                                         and functions with the same priority are executed
+         *                                         in the order in which they were added to the filter. Default 10.
+         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
+         */
+        protected static function add_filter(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
+        {
+        }
+        /**
+         * Do the required processing to a callback before invoking the WordPress 'add_action' or 'add_filter' function.
+         *
+         * @param callable $callback The callback to process.
+         * @return void
+         */
+        protected static function process_callback_before_hooking($callback) : void
+        {
+        }
+        /**
+         * Register a private or protected instance method of this class as externally accessible.
+         *
+         * @param string $method_name Method name.
+         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
+         */
+        protected function mark_method_as_accessible(string $method_name) : bool
+        {
+        }
+        /**
+         * Register a private or protected static method of this class as externally accessible.
+         *
+         * @param string $method_name Method name.
+         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
+         */
+        protected static function mark_static_method_as_accessible(string $method_name) : bool
+        {
+        }
+        /**
+         * Undefined/inaccessible instance method call handler.
+         *
+         * @param string $name Called method name.
+         * @param array  $arguments Called method arguments.
+         * @return mixed
+         * @throws \Error The called instance method doesn't exist or is private/protected and not marked as externally accessible.
+         */
+        public function __call($name, $arguments)
+        {
+        }
+        /**
+         * Undefined/inaccessible static method call handler.
+         *
+         * @param string $name Called method name.
+         * @param array  $arguments Called method arguments.
+         * @return mixed
+         * @throws \Error The called static method doesn't exist or is private/protected and not marked as externally accessible.
+         */
+        public static function __callStatic($name, $arguments)
+        {
+        }
+    }
+}
+namespace {
     /**
      * WC_Admin_Notices Class.
      */
     class WC_Admin_Notices
     {
+        use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
         /**
          * Stores notices.
          *
@@ -8168,6 +8342,27 @@ namespace {
         public static function reset_admin_notices()
         {
         }
+        // phpcs:disable Generic.Commenting.Todo.TaskFound
+        /**
+         * Add an admin notice about the removal of the Legacy REST API if the said API is enabled,
+         * and a notice about soon to be unsupported webhooks with Legacy API payload if at least one of these exist.
+         *
+         * TODO: Change this method in WooCommerce 9.0 so that it checks if the Legacy REST API extension is installed, and if not, it points to the extension URL in the WordPress plugins directory.
+         */
+        private static function maybe_add_legacy_api_removal_notice()
+        {
+        }
+        /**
+         * Remove the admin notice about the removal of the Legacy REST API if the said API is disabled
+         * or if the Legacy REST API extension is installed, and remove the notice about Legacy webhooks
+         * if no such webhooks exist anymore or if the Legacy REST API extension is installed.
+         *
+         * TODO: Change this method in WooCommerce 9.0 so that the notice gets removed if the Legacy REST API extension is installed and active.
+         */
+        private static function maybe_remove_legacy_api_removal_notice()
+        {
+        }
+        // phpcs:enable Generic.Commenting.Todo.TaskFound
         /**
          * Show a notice.
          *
@@ -8295,7 +8490,7 @@ namespace {
         }
         /**
          * Notice about WordPress and PHP minimum requirements.
-         * 
+         *
          * @deprecated 8.2.0 WordPress and PHP minimum requirements notices are no longer shown.
          *
          * @since 3.6.5
@@ -22904,7 +23099,7 @@ namespace {
          * @param  string   $version   String specifying script version number, if it has one, which is added to the URL as a query string for cache busting purposes. If version is set to false, a version number is automatically added equal to current installed WordPress version. If set to null, no version is added.
          * @param  boolean  $in_footer Whether to enqueue the script before </body> instead of in the <head>. Default 'false'.
          */
-        private static function register_script($handle, $path, $deps = array('jquery'), $version = \WC_VERSION, $in_footer = \true)
+        private static function register_script($handle, $path, $deps = array('jquery'), $version = \WC_VERSION, $in_footer = array('strategy' => 'defer'))
         {
         }
         /**
@@ -22917,7 +23112,7 @@ namespace {
          * @param  string   $version   String specifying script version number, if it has one, which is added to the URL as a query string for cache busting purposes. If version is set to false, a version number is automatically added equal to current installed WordPress version. If set to null, no version is added.
          * @param  boolean  $in_footer Whether to enqueue the script before </body> instead of in the <head>. Default 'false'.
          */
-        private static function enqueue_script($handle, $path = '', $deps = array('jquery'), $version = \WC_VERSION, $in_footer = \true)
+        private static function enqueue_script($handle, $path = '', $deps = array('jquery'), $version = \WC_VERSION, $in_footer = array('strategy' => 'defer'))
         {
         }
         /**
@@ -23575,144 +23770,6 @@ namespace {
         {
         }
     }
-}
-namespace Automattic\WooCommerce\Internal\Traits {
-    /**
-     * This trait allows making private methods of a class accessible from outside.
-     * This is useful to define hook handlers with the [$this, 'method'] or [__CLASS__, 'method'] syntax
-     * without having to make the method public (and thus having to keep it forever for backwards compatibility).
-     *
-     * Example:
-     *
-     * class Foobar {
-     *   use AccessiblePrivateMethods;
-     *
-     *   public function __construct() {
-     *     self::add_action('some_action', [$this, 'handle_some_action']);
-     *   }
-     *
-     *   public static function init() {
-     *     self::add_filter('some_filter', [__CLASS__, 'handle_some_filter']);
-     *   }
-     *
-     *   private function handle_some_action() {
-     *   }
-     *
-     *   private static function handle_some_filter() {
-     *   }
-     * }
-     *
-     * For this to work the callback must be an array and the first element of the array must be either '$this', '__CLASS__',
-     * or another instance of the same class; otherwise the method won't be marked as accessible
-     * (but the corresponding WordPress 'add_action' and 'add_filter' functions will still be called).
-     *
-     * No special procedure is needed to remove hooks set up with these methods, the regular 'remove_action'
-     * and 'remove_filter' functions provided by WordPress can be used as usual.
-     */
-    trait AccessiblePrivateMethods
-    {
-        //phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
-        /**
-         * List of instance methods marked as externally accessible.
-         *
-         * @var array
-         */
-        private $_accessible_private_methods = array();
-        /**
-         * List of static methods marked as externally accessible.
-         *
-         * @var array
-         */
-        private static $_accessible_static_private_methods = array();
-        //phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
-        /**
-         * Register a WordPress action.
-         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
-         *
-         * $callback can be a standard callable, or a string representing the name of a method in this class.
-         *
-         * @param string          $hook_name       The name of the action to add the callback to.
-         * @param callable|string $callback        The callback to be run when the action is called.
-         * @param int             $priority        Optional. Used to specify the order in which the functions
-         *                                         associated with a particular action are executed.
-         *                                         Lower numbers correspond with earlier execution,
-         *                                         and functions with the same priority are executed
-         *                                         in the order in which they were added to the action. Default 10.
-         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
-         */
-        protected static function add_action(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
-        {
-        }
-        /**
-         * Register a WordPress filter.
-         * If the callback refers to a private or protected instance method in this class, the method is marked as externally accessible.
-         *
-         * $callback can be a standard callable, or a string representing the name of a method in this class.
-         *
-         * @param string          $hook_name       The name of the filter to add the callback to.
-         * @param callable|string $callback        The callback to be run when the filter is called.
-         * @param int             $priority        Optional. Used to specify the order in which the functions
-         *                                         associated with a particular filter are executed.
-         *                                         Lower numbers correspond with earlier execution,
-         *                                         and functions with the same priority are executed
-         *                                         in the order in which they were added to the filter. Default 10.
-         * @param int             $accepted_args   Optional. The number of arguments the function accepts. Default 1.
-         */
-        protected static function add_filter(string $hook_name, $callback, int $priority = 10, int $accepted_args = 1) : void
-        {
-        }
-        /**
-         * Do the required processing to a callback before invoking the WordPress 'add_action' or 'add_filter' function.
-         *
-         * @param callable $callback The callback to process.
-         * @return void
-         */
-        protected static function process_callback_before_hooking($callback) : void
-        {
-        }
-        /**
-         * Register a private or protected instance method of this class as externally accessible.
-         *
-         * @param string $method_name Method name.
-         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
-         */
-        protected function mark_method_as_accessible(string $method_name) : bool
-        {
-        }
-        /**
-         * Register a private or protected static method of this class as externally accessible.
-         *
-         * @param string $method_name Method name.
-         * @return bool True if the method has been marked as externally accessible, false if the method doesn't exist.
-         */
-        protected static function mark_static_method_as_accessible(string $method_name) : bool
-        {
-        }
-        /**
-         * Undefined/inaccessible instance method call handler.
-         *
-         * @param string $name Called method name.
-         * @param array  $arguments Called method arguments.
-         * @return mixed
-         * @throws \Error The called instance method doesn't exist or is private/protected and not marked as externally accessible.
-         */
-        public function __call($name, $arguments)
-        {
-        }
-        /**
-         * Undefined/inaccessible static method call handler.
-         *
-         * @param string $name Called method name.
-         * @param array  $arguments Called method arguments.
-         * @return mixed
-         * @throws \Error The called static method doesn't exist or is private/protected and not marked as externally accessible.
-         */
-        public static function __callStatic($name, $arguments)
-        {
-        }
-    }
-}
-namespace {
     /**
      * WC_Install Class.
      */
@@ -24199,6 +24256,24 @@ namespace {
          * @return void
          */
         public static function page_created($page_id, $page_data)
+        {
+        }
+        /**
+         * Get the Cart block content.
+         *
+         * @since 8.3.0
+         * @return string
+         */
+        protected static function get_cart_block_content()
+        {
+        }
+        /**
+         * Get the Checkout block content.
+         *
+         * @since 8.3.0
+         * @return string
+         */
+        protected static function get_checkout_block_content()
         {
         }
     }
@@ -34385,7 +34460,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '8.2.2';
+        public $version = '8.3.0';
         /**
          * WooCommerce Schema version.
          *
@@ -38782,9 +38857,10 @@ namespace {
          * @todo   Add to interface in 4.0.
          * @param  WC_Product $product Variable product.
          * @param  int        $limit Limit the number of created variations.
+         * @param  array  	  $default_values Key value pairs to set on created variations.
          * @return int        Number of created variations.
          */
-        public function create_all_product_variations($product, $limit = -1)
+        public function create_all_product_variations($product, $limit = -1, $default_values = array())
         {
         }
         /**
@@ -61275,11 +61351,28 @@ namespace Automattic\WooCommerce\Admin\API {
         {
         }
         /**
+         * Get recommended themes.
+         *
+         * @param  WP_REST_Request $request Full details about the request.
+         * @return WP_Error|array Theme activation status.
+         */
+        public function get_recommended_themes($request)
+        {
+        }
+        /**
          * Get the schema, conforming to JSON Schema.
          *
          * @return array
          */
         public function get_item_schema()
+        {
+        }
+        /**
+         * Get the recommended themes schema, conforming to JSON Schema.
+         *
+         * @return array
+         */
+        public function get_recommended_item_schema()
         {
         }
     }
@@ -68406,6 +68499,10 @@ namespace Automattic\WooCommerce\Admin\BlockTemplates {
          */
         public const ATTRIBUTES_KEY = 'attributes';
         /**
+         * Key for the block hide conditions in the block configuration.
+         */
+        public const HIDE_CONDITIONS_KEY = 'hideConditions';
+        /**
          * Get the block name.
          */
         public function get_name() : string;
@@ -68451,6 +68548,26 @@ namespace Automattic\WooCommerce\Admin\BlockTemplates {
          * @return bool True if the block is detached from its parent or root template.
          */
         public function is_detached() : bool;
+        /**
+         * Add a hide condition to the block.
+         *
+         * The hide condition is a JavaScript-like expression that will be evaluated on the client to determine if the block should be hidden.
+         * See [@woocommerce/expression-evaluation](https://github.com/woocommerce/woocommerce/blob/trunk/packages/js/expression-evaluation/README.md) for more details.
+         *
+         * @param string $expression An expression, which if true, will hide the block.
+         * @return string The key of the hide condition, which can be used to remove the hide condition.
+         */
+        public function add_hide_condition(string $expression) : string;
+        /**
+         * Remove a hide condition from the block.
+         *
+         * @param string $key The key of the hide condition to remove.
+         */
+        public function remove_hide_condition(string $key);
+        /**
+         * Get the hide conditions of the block.
+         */
+        public function get_hide_conditions() : array;
         /**
          * Get the block configuration as a formatted template.
          *
@@ -72197,6 +72314,15 @@ namespace Automattic\WooCommerce\Admin\Features\OnboardingTasks\Tasks {
         {
         }
         /**
+         * Check if WooCommerce Payments needs setup.
+         * Errored data or payments not enabled.
+         *
+         * @return bool
+         */
+        public static function is_account_partially_onboarded()
+        {
+        }
+        /**
          * Check if the store is in a supported country.
          *
          * @return bool
@@ -72463,19 +72589,28 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
     class BlockRegistry
     {
         /**
-         * The directory where blocks are stored after build.
+         * Generic blocks directory.
          */
-        const BLOCKS_DIR = 'product-editor/blocks';
+        const GENERIC_BLOCKS_DIR = 'product-editor/blocks/generic';
         /**
-         * Array of all available product blocks.
+         * Product fields blocks directory.
          */
-        const PRODUCT_BLOCKS = ['woocommerce/conditional', 'woocommerce/product-catalog-visibility-field', 'woocommerce/product-checkbox-field', 'woocommerce/product-collapsible', 'woocommerce/product-description-field', 'woocommerce/product-images-field', 'woocommerce/product-inventory-email-field', 'woocommerce/product-sku-field', 'woocommerce/product-name-field', 'woocommerce/product-pricing-field', 'woocommerce/product-radio-field', 'woocommerce/product-regular-price-field', 'woocommerce/product-sale-price-field', 'woocommerce/product-schedule-sale-fields', 'woocommerce/product-section', 'woocommerce/product-shipping-class-field', 'woocommerce/product-shipping-dimensions-fields', 'woocommerce/product-summary-field', 'woocommerce/product-tab', 'woocommerce/product-tag-field', 'woocommerce/product-inventory-quantity-field', 'woocommerce/product-toggle-field', 'woocommerce/product-variation-items-field', 'woocommerce/product-variations-fields', 'woocommerce/product-password-field', 'woocommerce/product-has-variations-notice', 'woocommerce/product-taxonomy-field'];
+        const PRODUCT_FIELDS_BLOCKS_DIR = 'product-editor/blocks/product-fields';
+        /**
+         * Array of all available generic blocks.
+         */
+        const GENERIC_BLOCKS = ['woocommerce/conditional', 'woocommerce/product-checkbox-field', 'woocommerce/product-collapsible', 'woocommerce/product-radio-field', 'woocommerce/product-pricing-field', 'woocommerce/product-section', 'woocommerce/product-tab', 'woocommerce/product-toggle-field', 'woocommerce/product-taxonomy-field', 'woocommerce/product-text-field', 'woocommerce/product-number-field'];
+        /**
+         * Array of all available product fields blocks.
+         */
+        const PRODUCT_FIELDS_BLOCKS = ['woocommerce/product-catalog-visibility-field', 'woocommerce/product-description-field', 'woocommerce/product-downloads-field', 'woocommerce/product-images-field', 'woocommerce/product-inventory-email-field', 'woocommerce/product-sku-field', 'woocommerce/product-name-field', 'woocommerce/product-regular-price-field', 'woocommerce/product-sale-price-field', 'woocommerce/product-schedule-sale-fields', 'woocommerce/product-shipping-class-field', 'woocommerce/product-shipping-dimensions-fields', 'woocommerce/product-summary-field', 'woocommerce/product-tag-field', 'woocommerce/product-inventory-quantity-field', 'woocommerce/product-variation-items-field', 'woocommerce/product-variations-fields', 'woocommerce/product-password-field', 'woocommerce/product-has-variations-notice', 'woocommerce/product-single-variation-notice'];
         /**
          * Get a file path for a given block file.
          *
          * @param string $path File path.
+         * @param string $dir File directory.
          */
-        private function get_file_path($path)
+        private function get_file_path($path, $dir)
         {
         }
         /**
@@ -72510,13 +72645,30 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
         {
         }
         /**
+         * Augment the attributes of a block by adding attributes that are used by the product editor.
+         *
+         * @param array $attributes Block attributes.
+         */
+        private function augment_attributes($attributes)
+        {
+        }
+        /**
+         * Augment the uses_context of a block by adding attributes that are used by the product editor.
+         *
+         * @param array $uses_context Block uses_context.
+         */
+        private function augment_uses_context($uses_context)
+        {
+        }
+        /**
          * Register a single block.
          *
          * @param string $block_name Block name.
+         * @param string $block_dir Block directory.
          *
          * @return WP_Block_Type|false The registered block type on success, or false on failure.
          */
-        private function register_block($block_name)
+        private function register_block($block_name, $block_dir)
         {
         }
     }
@@ -72585,6 +72737,15 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
         {
         }
         /**
+         * Enables variation post type in REST API.
+         *
+         * @param array $args Array of post type arguments.
+         * @return array Array of post type arguments.
+         */
+        public function enable_rest_api_for_product_variation($args)
+        {
+        }
+        /**
          * Adds fields so that we can store user preferences for the variations block.
          *
          * @param array $user_data_fields User data fields.
@@ -72639,10 +72800,33 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTempla
 }
 namespace Automattic\WooCommerce\Internal\Admin\BlockTemplates {
     /**
+     * Trait for block formatted template.
+     */
+    trait BlockFormattedTemplateTrait
+    {
+        /**
+         * Get the block configuration as a formatted template.
+         *
+         * @return array The block configuration as a formatted template.
+         */
+        public function get_formatted_template() : array
+        {
+        }
+        /**
+         * Get the block hide conditions formatted for inclusion in a formatted template.
+         */
+        private function get_formatted_hide_conditions() : array
+        {
+        }
+    }
+    /**
      * Trait for block containers.
      */
     trait BlockContainerTrait
     {
+        use \Automattic\WooCommerce\Internal\Admin\BlockTemplates\BlockFormattedTemplateTrait {
+            get_formatted_template as get_block_formatted_template;
+        }
         /**
          * The inner blocks.
          *
@@ -72904,19 +73088,19 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTempla
         }
     }
     /**
-     * Interface for block containers.
+     * Interface for group containers, which contain sections and blocks.
      */
     interface GroupInterface extends \Automattic\WooCommerce\Admin\BlockTemplates\BlockContainerInterface
     {
         /**
-         * Adds a new section block.
+         * Adds a new section to the group
          *
          * @param array $block_config block config.
          * @return SectionInterface new block section.
          */
         public function add_section(array $block_config) : \Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTemplates\SectionInterface;
         /**
-         * Adds a new block to the section block.
+         * Adds a new block to the group.
          *
          * @param array $block_config block config.
          */
@@ -72929,6 +73113,7 @@ namespace Automattic\WooCommerce\Internal\Admin\BlockTemplates {
      */
     class AbstractBlock implements \Automattic\WooCommerce\Admin\BlockTemplates\BlockInterface
     {
+        use \Automattic\WooCommerce\Internal\Admin\BlockTemplates\BlockFormattedTemplateTrait;
         /**
          * The block name.
          *
@@ -72953,6 +73138,18 @@ namespace Automattic\WooCommerce\Internal\Admin\BlockTemplates {
          * @var array
          */
         private $attributes = [];
+        /**
+         * The block hide conditions.
+         *
+         * @var array
+         */
+        private $hide_conditions = [];
+        /**
+         * The block hide conditions counter.
+         *
+         * @var int
+         */
+        private $hide_conditions_counter = 0;
         /**
          * The block template that this block belongs to.
          *
@@ -73058,11 +73255,28 @@ namespace Automattic\WooCommerce\Internal\Admin\BlockTemplates {
         {
         }
         /**
-         * Get the block configuration as a formatted template.
+         * Add a hide condition to the block.
          *
-         * @return array The block configuration as a formatted template.
+         * The hide condition is a JavaScript-like expression that will be evaluated on the client to determine if the block should be hidden.
+         * See [@woocommerce/expression-evaluation](https://github.com/woocommerce/woocommerce/blob/trunk/packages/js/expression-evaluation/README.md) for more details.
+         *
+         * @param string $expression An expression, which if true, will hide the block.
          */
-        public function get_formatted_template() : array
+        public function add_hide_condition(string $expression) : string
+        {
+        }
+        /**
+         * Remove a hide condition from the block.
+         *
+         * @param string $key The key of the hide condition to remove.
+         */
+        public function remove_hide_condition(string $key)
+        {
+        }
+        /**
+         * Get the hide conditions of the block.
+         */
+        public function get_hide_conditions() : array
         {
         }
     }
@@ -73113,19 +73327,87 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTempla
         }
     }
     /**
-     * Interface for block containers.
+     * Simple Product Template.
+     */
+    class ProductVariationTemplate extends \Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTemplates\AbstractProductFormTemplate implements \Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTemplates\ProductFormTemplateInterface
+    {
+        /**
+         * The context name used to identify the editor.
+         */
+        const GROUP_IDS = array('GENERAL' => 'general', 'PRICING' => 'pricing', 'INVENTORY' => 'inventory', 'SHIPPING' => 'shipping');
+        /**
+         * The option name used check whether the single variation notice has been dismissed.
+         */
+        const SINGLE_VARIATION_NOTICE_DISMISSED_OPTION = 'woocommerce_single_variation_notice_dismissed';
+        /**
+         * SimpleProductTemplate constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Get the template ID.
+         */
+        public function get_id() : string
+        {
+        }
+        /**
+         * Get the template title.
+         */
+        public function get_title() : string
+        {
+        }
+        /**
+         * Get the template description.
+         */
+        public function get_description() : string
+        {
+        }
+        /**
+         * Adds the group blocks to the template.
+         */
+        private function add_group_blocks()
+        {
+        }
+        /**
+         * Adds the general group blocks to the template.
+         */
+        private function add_general_group_blocks()
+        {
+        }
+        /**
+         * Adds the pricing group blocks to the template.
+         */
+        private function add_pricing_group_blocks()
+        {
+        }
+        /**
+         * Adds the inventory group blocks to the template.
+         */
+        private function add_inventory_group_blocks()
+        {
+        }
+        /**
+         * Adds the shipping group blocks to the template.
+         */
+        private function add_shipping_group_blocks()
+        {
+        }
+    }
+    /**
+     * Interface for section containers, which contain sub-sections and blocks.
      */
     interface SectionInterface extends \Automattic\WooCommerce\Admin\BlockTemplates\BlockContainerInterface
     {
         /**
-         * Adds a new section block.
+         * Adds a new sub-section to the section.
          *
          * @param array $block_config block config.
          * @return SectionInterface new block section.
          */
         public function add_section(array $block_config) : \Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTemplates\SectionInterface;
         /**
-         * Adds a new block to the section block.
+         * Adds a new block to the section.
          *
          * @param array $block_config block config.
          */
@@ -74674,26 +74956,6 @@ namespace Automattic\WooCommerce\Admin\Notes {
          * @var string
          */
         protected static $facade_over_classname = 'Automattic\\WooCommerce\\Internal\\Admin\\Notes\\SellingOnlineCourses';
-        /**
-         * The version that this class was deprecated in.
-         *
-         * @var string
-         */
-        protected static $deprecated_in_version = '4.8.0';
-    }
-    /**
-     * WC_Admin_Notes_Test_Checkout.
-     *
-     * @deprecated since 4.8.0, use TestCheckout
-     */
-    class WC_Admin_Notes_Test_Checkout extends \Automattic\WooCommerce\Admin\DeprecatedClassFacade
-    {
-        /**
-         * The name of the non-deprecated class that this facade covers.
-         *
-         * @var string
-         */
-        protected static $facade_over_classname = 'Automattic\\WooCommerce\\Internal\\Admin\\Notes\\TestCheckout';
         /**
          * The version that this class was deprecated in.
          *
@@ -81486,7 +81748,7 @@ namespace Automattic\WooCommerce\Internal\Admin {
          *
          * @var array
          */
-        private static $note_classes_to_added_or_updated = array(\Automattic\WooCommerce\Internal\Admin\Notes\AddFirstProduct::class, \Automattic\WooCommerce\Internal\Admin\Notes\ChoosingTheme::class, \Automattic\WooCommerce\Internal\Admin\Notes\CustomizeStoreWithBlocks::class, \Automattic\WooCommerce\Internal\Admin\Notes\CustomizingProductCatalog::class, \Automattic\WooCommerce\Internal\Admin\Notes\EditProductsOnTheMove::class, \Automattic\WooCommerce\Internal\Admin\Notes\EUVATNumber::class, \Automattic\WooCommerce\Internal\Admin\Notes\FirstProduct::class, \Automattic\WooCommerce\Internal\Admin\Notes\LaunchChecklist::class, \Automattic\WooCommerce\Internal\Admin\Notes\MagentoMigration::class, \Automattic\WooCommerce\Internal\Admin\Notes\ManageOrdersOnTheGo::class, \Automattic\WooCommerce\Internal\Admin\Notes\MarketingJetpack::class, \Automattic\WooCommerce\Internal\Admin\Notes\MigrateFromShopify::class, \Automattic\WooCommerce\Internal\Admin\Notes\MobileApp::class, \Automattic\WooCommerce\Internal\Admin\Notes\NewSalesRecord::class, \Automattic\WooCommerce\Internal\Admin\Notes\OnboardingPayments::class, \Automattic\WooCommerce\Internal\Admin\Notes\OnlineClothingStore::class, \Automattic\WooCommerce\Internal\Admin\Notes\PaymentsMoreInfoNeeded::class, \Automattic\WooCommerce\Internal\Admin\Notes\PaymentsRemindMeLater::class, \Automattic\WooCommerce\Internal\Admin\Notes\PerformanceOnMobile::class, \Automattic\WooCommerce\Internal\Admin\Notes\PersonalizeStore::class, \Automattic\WooCommerce\Internal\Admin\Notes\RealTimeOrderAlerts::class, \Automattic\WooCommerce\Internal\Admin\Notes\TestCheckout::class, \Automattic\WooCommerce\Internal\Admin\Notes\TrackingOptIn::class, \Automattic\WooCommerce\Internal\Admin\Notes\WooCommercePayments::class, \Automattic\WooCommerce\Internal\Admin\Notes\WooCommerceSubscriptions::class);
+        private static $note_classes_to_added_or_updated = array(\Automattic\WooCommerce\Internal\Admin\Notes\AddFirstProduct::class, \Automattic\WooCommerce\Internal\Admin\Notes\ChoosingTheme::class, \Automattic\WooCommerce\Internal\Admin\Notes\CustomizeStoreWithBlocks::class, \Automattic\WooCommerce\Internal\Admin\Notes\CustomizingProductCatalog::class, \Automattic\WooCommerce\Internal\Admin\Notes\EditProductsOnTheMove::class, \Automattic\WooCommerce\Internal\Admin\Notes\EUVATNumber::class, \Automattic\WooCommerce\Internal\Admin\Notes\FirstProduct::class, \Automattic\WooCommerce\Internal\Admin\Notes\LaunchChecklist::class, \Automattic\WooCommerce\Internal\Admin\Notes\MagentoMigration::class, \Automattic\WooCommerce\Internal\Admin\Notes\ManageOrdersOnTheGo::class, \Automattic\WooCommerce\Internal\Admin\Notes\MarketingJetpack::class, \Automattic\WooCommerce\Internal\Admin\Notes\MigrateFromShopify::class, \Automattic\WooCommerce\Internal\Admin\Notes\MobileApp::class, \Automattic\WooCommerce\Internal\Admin\Notes\NewSalesRecord::class, \Automattic\WooCommerce\Internal\Admin\Notes\OnboardingPayments::class, \Automattic\WooCommerce\Internal\Admin\Notes\OnlineClothingStore::class, \Automattic\WooCommerce\Internal\Admin\Notes\PaymentsMoreInfoNeeded::class, \Automattic\WooCommerce\Internal\Admin\Notes\PaymentsRemindMeLater::class, \Automattic\WooCommerce\Internal\Admin\Notes\PerformanceOnMobile::class, \Automattic\WooCommerce\Internal\Admin\Notes\PersonalizeStore::class, \Automattic\WooCommerce\Internal\Admin\Notes\RealTimeOrderAlerts::class, \Automattic\WooCommerce\Internal\Admin\Notes\TrackingOptIn::class, \Automattic\WooCommerce\Internal\Admin\Notes\WooCommercePayments::class, \Automattic\WooCommerce\Internal\Admin\Notes\WooCommerceSubscriptions::class);
         /**
          * The other note classes that are added in other places.
          *
@@ -82083,10 +82345,10 @@ namespace Automattic\WooCommerce\Internal\Admin\Marketing {
         /**
          * Load knowledge base posts from WooCommerce.com
          *
-         * @param string|null $term Term of posts to retrieve.
+         * @param string|null $topic The topic of marketing knowledgebase to retrieve.
          * @return array
          */
-        public function get_knowledge_base_posts(?string $term) : array
+        public function get_knowledge_base_posts(?string $topic) : array
         {
         }
     }
@@ -83242,38 +83504,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Notes {
          * Get the note.
          *
          * @return Note
-         */
-        public static function get_note()
-        {
-        }
-    }
-    /**
-     * Test_Checkout
-     */
-    class TestCheckout
-    {
-        /**
-         * Note traits.
-         */
-        use \Automattic\WooCommerce\Admin\Notes\NoteTraits;
-        /**
-         * Name of the note for use in the database.
-         */
-        const NOTE_NAME = 'wc-admin-test-checkout';
-        /**
-         * Completed tasks option name.
-         */
-        const TASK_LIST_TRACKED_TASKS = 'woocommerce_task_list_tracked_completed_tasks';
-        /**
-         * Constructor.
-         */
-        public function __construct()
-        {
-        }
-        /**
-         * Get the note.
-         *
-         * @return Note|null
          */
         public static function get_note()
         {
@@ -86914,6 +87144,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Schedulers {
          * @param int $order_id Post ID.
          *
          * @internal
+         * @returns int The order id
          */
         public static function possibly_schedule_import($order_id)
         {
@@ -88492,6 +88723,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
     class CustomOrdersTableController
     {
         use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
+        private const SYNC_QUERY_ARG = 'wc_hpos_sync_now';
         /**
          * The name of the option for enabling the usage of the custom orders tables
          */
@@ -88663,21 +88895,21 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Handler for the all settings updated hook.
+         * Callback to trigger a sync immediately by clicking a button on the Features screen.
          *
-         * @param string $feature_id Feature ID.
+         * @return void
          */
-        private function handle_data_sync_option_changed(string $feature_id)
+        private function sync_now()
         {
         }
         /**
-         * Handle the 'woocommerce_feature_enabled_changed' action,
-         * if the custom orders table feature is enabled create the database tables if they don't exist.
+         * Tell WP Admin to remove the sync query arg from the URL.
          *
-         * @param string $feature_id The id of the feature that is being enabled or disabled.
-         * @param bool   $is_enabled True if the feature is being enabled, false if it's being disabled.
+         * @param array $query_args The query args that are removable.
+         *
+         * @return array
          */
-        private function handle_feature_enabled_changed($feature_id, $is_enabled) : void
+        private function register_removable_query_arg($query_args)
         {
         }
         /**
@@ -88690,34 +88922,29 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Returns the HPOS setting for rendering in Features section of the settings page.
+         * Add the definition for the HPOS feature.
          *
-         * @param array  $feature_setting HPOS feature value as defined in the feature controller.
-         * @param string $feature_id ID of the feature.
+         * @param FeaturesController $features_controller The instance of FeaturesController.
          *
-         * @return array Feature setting object.
+         * @return void
          */
-        private function get_hpos_feature_setting(array $feature_setting, string $feature_id)
+        private function add_feature_definition($features_controller)
         {
         }
         /**
          * Returns the HPOS setting for rendering HPOS vs Post setting block in Features section of the settings page.
          *
-         * @param array $sync_status Details of sync status, includes pending count, and count when sync started.
-         *
          * @return array Feature setting object.
          */
-        private function get_hpos_setting_for_feature($sync_status)
+        private function get_hpos_setting_for_feature()
         {
         }
         /**
          * Returns the setting for rendering sync enabling setting block in Features section of the settings page.
          *
-         * @param array $sync_status Details of sync status, includes pending count, and count when sync started.
-         *
          * @return array Feature setting object.
          */
-        private function get_hpos_setting_for_sync($sync_status)
+        private function get_hpos_setting_for_sync()
         {
         }
     }
@@ -88744,6 +88971,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         public const ID_TYPE_DIFFERENT_UPDATE_DATE = 2;
         public const ID_TYPE_DELETED_FROM_ORDERS_TABLE = 3;
         public const ID_TYPE_DELETED_FROM_POSTS_TABLE = 4;
+        public const BACKGROUND_SYNC_MODE_OPTION = 'woocommerce_custom_orders_table_background_sync_mode';
+        public const BACKGROUND_SYNC_INTERVAL_OPTION = 'woocommerce_custom_orders_table_background_sync_interval';
+        public const BACKGROUND_SYNC_MODE_INTERVAL = 'interval';
+        public const BACKGROUND_SYNC_MODE_CONTINUOUS = 'continuous';
+        public const BACKGROUND_SYNC_MODE_OFF = 'off';
+        public const BACKGROUND_SYNC_EVENT_HOOK = 'woocommerce_custom_orders_table_background_sync';
         /**
          * The data store object to use.
          *
@@ -88775,6 +89008,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          */
         private $order_cache_controller;
         /**
+         * The batch processing controller.
+         *
+         * @var BatchProcessingController
+         */
+        private $batch_processing_controller;
+        /**
          * Class constructor.
          */
         public function __construct()
@@ -88788,9 +89027,10 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @param PostsToOrdersMigrationController $posts_to_cot_migrator The posts to COT migration class to use.
          * @param LegacyProxy                      $legacy_proxy The legacy proxy instance to use.
          * @param OrderCacheController             $order_cache_controller The order cache controller instance to use.
+         * @param BatchProcessingController        $batch_processing_controller The batch processing controller to use.
          * @internal
          */
-        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\Utilities\DatabaseUtil $database_util, \Automattic\WooCommerce\Database\Migrations\CustomOrderTable\PostsToOrdersMigrationController $posts_to_cot_migrator, \Automattic\WooCommerce\Proxies\LegacyProxy $legacy_proxy, \Automattic\WooCommerce\Caches\OrderCacheController $order_cache_controller)
+        public final function init(\Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore $data_store, \Automattic\WooCommerce\Internal\Utilities\DatabaseUtil $database_util, \Automattic\WooCommerce\Database\Migrations\CustomOrderTable\PostsToOrdersMigrationController $posts_to_cot_migrator, \Automattic\WooCommerce\Proxies\LegacyProxy $legacy_proxy, \Automattic\WooCommerce\Caches\OrderCacheController $order_cache_controller, \Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessingController $batch_processing_controller)
         {
         }
         /**
@@ -88810,7 +89050,9 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Create the custom orders database tables.
+         * Create the custom orders database tables and log an error if that's not possible.
+         *
+         * @return bool True if all the tables were successfully created, false otherwise.
          */
         public function create_database_tables()
         {
@@ -88822,11 +89064,100 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Is the data sync between old and new tables currently enabled?
+         * Is the real-time data sync between old and new tables currently enabled?
          *
          * @return bool
          */
         public function data_sync_is_enabled() : bool
+        {
+        }
+        /**
+         * Get the current background data sync mode.
+         *
+         * @return string
+         */
+        public function get_background_sync_mode() : string
+        {
+        }
+        /**
+         * Is the background data sync between old and new tables currently enabled?
+         *
+         * @return bool
+         */
+        public function background_sync_is_enabled() : bool
+        {
+        }
+        /**
+         * Process an option change for specific keys.
+         *
+         * @param string $option_key The option key.
+         * @param string $old_value  The previous value.
+         * @param string $new_value  The new value.
+         *
+         * @return void
+         */
+        private function process_updated_option($option_key, $old_value, $new_value)
+        {
+        }
+        /**
+         * Process an option change when the key didn't exist before.
+         *
+         * @param string $option_key The option key.
+         * @param string $value      The new value.
+         *
+         * @return void
+         */
+        private function process_added_option($option_key, $value)
+        {
+        }
+        /**
+         * Process an option deletion for specific keys.
+         *
+         * @param string $option_key The option key.
+         *
+         * @return void
+         */
+        private function process_deleted_option($option_key)
+        {
+        }
+        /**
+         * Get the time interval, in seconds, between background syncs.
+         *
+         * @return int
+         */
+        public function get_background_sync_interval() : int
+        {
+        }
+        /**
+         * Schedule an event to run background sync when the mode is set to interval.
+         *
+         * @return void
+         */
+        private function schedule_background_sync()
+        {
+        }
+        /**
+         * Remove any pending background sync events.
+         *
+         * @return void
+         */
+        private function unschedule_background_sync()
+        {
+        }
+        /**
+         * Callback to check for pending syncs and enqueue the background data sync processor when in interval mode.
+         *
+         * @return void
+         */
+        private function handle_interval_background_sync()
+        {
+        }
+        /**
+         * Callback to keep the background data sync processor enqueued when in continuous mode.
+         *
+         * @return void
+         */
+        private function handle_continuous_background_sync()
         {
         }
         /**
@@ -90113,11 +90444,12 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * 1. Order modified date is already the current date, no updates needed in this case.
          * 2. If there are changes already queued for order object, then we don't need to update the modified date as it will be updated ina subsequent save() call.
          *
-         * @param WC_Order $order Order object.
+         * @param WC_Order           $order Order object.
+         * @param \WC_Meta_Data|null $meta  Metadata object.
          *
          * @return bool Whether the modified date needs to be updated.
          */
-        private function should_save_after_meta_change($order)
+        private function should_save_after_meta_change($order, $meta = null)
         {
         }
     }
@@ -91840,25 +92172,19 @@ namespace Automattic\WooCommerce\Internal\Features {
          *
          * @var array[]
          */
-        private $features;
+        private $features = array();
         /**
          * The registered compatibility info for WooCommerce plugins, with plugin names as keys.
          *
          * @var array
          */
-        private $compatibility_info_by_plugin;
-        /**
-         * Ids of the legacy features (they existed before the features engine was implemented).
-         *
-         * @var array
-         */
-        private $legacy_feature_ids;
+        private $compatibility_info_by_plugin = array();
         /**
          * The registered compatibility info for WooCommerce plugins, with feature ids as keys.
          *
          * @var array
          */
-        private $compatibility_info_by_feature;
+        private $compatibility_info_by_feature = array();
         /**
          * The LegacyProxy instance to use.
          *
@@ -91892,11 +92218,51 @@ namespace Automattic\WooCommerce\Internal\Features {
         {
         }
         /**
-         * Initialize the class according to the existing features.
+         * Register a feature.
          *
-         * @param array $features Information about the existing features.
+         * This should be called during the `woocommerce_register_feature_definitions` action hook.
+         *
+         * @param string $slug The ID slug of the feature.
+         * @param string $name The name of the feature that will appear on the Features screen and elsewhere.
+         * @param array  $args {
+         *     Optional. Properties that make up the feature definition. Each of these properties can also be set as a
+         *     callback function, as long as that function returns the specified type.
+         *
+         *     @type array[] $additional_settings An array of definitions for additional settings controls related to
+         *                                        the feature that will display on the Features screen. See the Settings API
+         *                                        for the schema of these props.
+         *     @type string  $description         A brief description of the feature, used as an input label if the feature
+         *                                        setting is a checkbox.
+         *     @type bool    $disabled            True to disable the setting field for this feature on the Features screen,
+         *                                        so it can't be changed.
+         *     @type bool    $disable_ui          Set to true to hide the setting field for this feature on the
+         *                                        Features screen. Defaults to false.
+         *     @type bool    $enabled_by_default  Set to true to have this feature by opt-out instead of opt-in.
+         *                                        Defaults to false.
+         *     @type bool    $is_experimental     Set to true to display this feature under the "Experimental" heading on
+         *                                        the Features screen. Features set to experimental are also omitted from
+         *                                        the features list in some cases. Defaults to true.
+         *     @type bool    $is_legacy           Set to true if this feature existed before the FeaturesController class
+         *                                        was introduced. Features set to legacy also do not produce warnings about
+         *                                        incompatible plugins. Defaults to false.
+         *     @type string  $option_key          The key name for the option that enables/disables the feature.
+         *     @type int     $order               The order that the feature will appear in the list on the Features screen.
+         *                                        Higher number = higher in the list. Defaults to 10.
+         *     @type array   $setting             The properties used by the Settings API to render the setting control on
+         *                                        the Features screen. See the Settings API for the schema of these props.
+         * }
+         *
+         * @return void
          */
-        private function init_features(array $features)
+        public function add_feature_definition($slug, $name, array $args = array())
+        {
+        }
+        /**
+         * Generate and cache the feature definitions.
+         *
+         * @return array[]
+         */
+        private function get_feature_definitions()
         {
         }
         /**
@@ -92016,9 +92382,12 @@ namespace Automattic\WooCommerce\Internal\Features {
         }
         /**
          * Get the name of the option that enables/disables a given feature.
-         * Note that it doesn't check if the feature actually exists.
          *
-         * @param string $feature_id The id of the feature.
+         * Note that it doesn't check if the feature actually exists. Instead it
+         * defaults to "woocommerce_feature_{$feature_id}_enabled" if a different
+         * name isn't specified in the feature registration.
+         *
+         * @param  string $feature_id The id of the feature.
          * @return string The option that enables or disables the feature.
          */
         public function feature_enable_option_name(string $feature_id) : string
@@ -92064,9 +92433,11 @@ namespace Automattic\WooCommerce\Internal\Features {
          *
          * It fires FEATURE_ENABLED_CHANGED_ACTION when a feature is enabled or disabled.
          *
-         * @param string $option The option that has been modified.
+         * @param string $option    The option that has been modified.
          * @param mixed  $old_value The old value of the option.
-         * @param mixed  $value The new value of the option.
+         * @param mixed  $value     The new value of the option.
+         *
+         * @return void
          */
         private function process_updated_option(string $option, $old_value, $value)
         {
@@ -92100,10 +92471,9 @@ namespace Automattic\WooCommerce\Internal\Features {
          *
          * @param string $feature_id The feature id.
          * @param array  $feature The feature parameters, as returned by get_features.
-         * @param bool   $admin_features_disabled True if admin features have been disabled via 'woocommerce_admin_disabled' filter.
          * @return array The parameters to add to the settings array.
          */
-        private function get_setting_for_feature(string $feature_id, array $feature, bool $admin_features_disabled) : array
+        private function get_setting_for_feature(string $feature_id, array $feature) : array
         {
         }
         /**
@@ -92188,7 +92558,7 @@ namespace Automattic\WooCommerce\Internal\Features {
          *
          * @return string
          */
-        private function get_features_page_url() : string
+        public function get_features_page_url() : string
         {
         }
         /**
@@ -94580,6 +94950,14 @@ namespace Automattic\WooCommerce\Internal\Utilities {
          * @return int[] Array of webhook ids.
          */
         private function get_webhook_ids_for_user(int $user_id) : array
+        {
+        }
+        /**
+         * Gets the count of webhooks that are configured to use the Legacy REST API to compose their payloads.
+         *
+         * @return int
+         */
+        public function get_legacy_webhooks_count() : int
         {
         }
     }
