@@ -12,6 +12,7 @@ VERSION=$1
 NEW=true
 if [ -z "$VERSION" ]; then
     echo "Version argument missing. Regenerate current."
+    VERSION=$(git describe --tags)
     NEW=false
 else
     echo "Update to $VERSION. commit and push changes."
@@ -49,8 +50,7 @@ test -d "woocommerce"
 
 # There are no WC functions to read these constants.
 # See define_constants() in includes/class-woocommerce.php
-#printf '\n%s\n' "define('WC_VERSION', '0.0.0');" >>"$FILE"
-printf '\nnamespace {\n%s\n}\n' "define('WC_VERSION', '0.0.0');" >>"$FILE"
+printf '\nnamespace {\n    %s\n}\n' "define('WC_VERSION', '$VERSION');" >>"$FILE"
 
 # Packages.
 "$(dirname "$0")/vendor/bin/generate-stubs" \
