@@ -1,7 +1,7 @@
 <?php
 
 return \StubsGenerator\Finder::create()
-    ->in(['woocommerce/packages/*/src'])
+    ->in(['woocommerce/packages'])
     // Action Scheduler.
     ->append(
         \StubsGenerator\Finder::create()
