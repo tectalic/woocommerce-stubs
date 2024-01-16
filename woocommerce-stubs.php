@@ -17027,6 +17027,16 @@ namespace {
         {
         }
         /**
+         * Find a cookie by name in an array of cookies.
+         *
+         * @param  string $cookie_name Name of the cookie to find.
+         * @param  array  $cookies     Array of cookies to search.
+         * @return mixed               Key of the cookie if found, false if not.
+         */
+        private function find_cookie_by_name($cookie_name, $cookies)
+        {
+        }
+        /**
          * Sets the php session data for the cart and coupons.
          */
         public function set_session()
@@ -34882,7 +34892,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '8.5.0';
+        public $version = '8.5.1';
         /**
          * WooCommerce Schema version.
          *
@@ -88849,23 +88859,6 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         {
         }
         /**
-         * Replaces core notice templates with those from blocks.
-         *
-         * The new notice templates match block components with matching icons and styling. The only difference is that core
-         * only has notices for info, success, and error notices, whereas blocks has notices for info, success, error,
-         * warning, and a default notice type.
-         *
-         * @param string $template Located template path.
-         * @param string $template_name Template name.
-         * @param array  $args Template arguments.
-         * @param string $template_path Template path.
-         * @param string $default_path Default path.
-         * @return string
-         */
-        public function get_notices_template($template, $template_name, $args, $template_path, $default_path)
-        {
-        }
-        /**
          * Replaces all notices with the new block based notices.
          *
          * @return void
@@ -105528,10 +105521,21 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         /**
          * Get unpaid orders last updated before the specified date.
          *
-         * @param  int $date Timestamp.
-         * @return array
+         * @param  int $date This timestamp is expected in the timezone in WordPress settings for legacy reason, even though it's not a good practice.
+         *
+         * @return array Array of order IDs.
          */
         public function get_unpaid_orders($date)
+        {
+        }
+        /**
+         * Get unpaid orders last updated before the specified GMT date.
+         *
+         * @param int $gmt_timestamp GMT timestamp.
+         *
+         * @return array Array of order IDs.
+         */
+        public function get_unpaid_orders_gmt($gmt_timestamp)
         {
         }
         /**
@@ -126576,5 +126580,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '8.5.0');
+    define('WC_VERSION', '8.5.1');
 }
