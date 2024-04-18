@@ -35463,7 +35463,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '8.8.0';
+        public $version = '8.8.1';
         /**
          * WooCommerce Schema version.
          *
@@ -83477,6 +83477,21 @@ namespace Automattic\WooCommerce\Blocks {
         {
         }
         /**
+         * Update the product archive title to "Shop".
+         *
+         * Attention: this method is run in classic themes as well, so it
+         * can't be moved to the ProductCatalogTemplate class. See:
+         * https://github.com/woocommerce/woocommerce/pull/46429
+         *
+         * @param string $post_type_name Post type 'name' label.
+         * @param string $post_type      Post type.
+         *
+         * @return string
+         */
+        public function update_product_archive_title($post_type_name, $post_type)
+        {
+        }
+        /**
          * Remove the template panel from the Sidebar of the Shop page because
          * the Site Editor handles it.
          *
@@ -94597,17 +94612,6 @@ namespace Automattic\WooCommerce\Blocks\Templates {
          * Renders the default block template from Woo Blocks if no theme templates exist.
          */
         public function render_block_template()
-        {
-        }
-        /**
-         * Update the product archive title to "Shop".
-         *
-         * @param string $post_type_name Post type 'name' label.
-         * @param string $post_type      Post type.
-         *
-         * @return string
-         */
-        public function update_product_archive_title($post_type_name, $post_type)
         {
         }
     }
@@ -131963,5 +131967,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '8.8.0');
+    define('WC_VERSION', '8.8.1');
 }
