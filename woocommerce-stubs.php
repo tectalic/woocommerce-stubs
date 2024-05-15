@@ -8008,14 +8008,14 @@ namespace {
         {
         }
         /**
-         * Return the markup for a menu item bubble with a given text and optional additional attributes.
+         * Return the markup for a menu item bubble with a given text.
          *
-         * @param string $bubble_text Text of bubble.
-         * @param array  $attributes Optional. Additional attributes for the bubble, such as class or style.
+         * @param string $menu_item_text Text of menu item we want to change.
+         * @param string $bubble_text    Text of bubble.
          *
          * @return string
          */
-        private static function append_bubble($bubble_text, $attributes = array())
+        private static function append_bubble(string $menu_item_text, string $bubble_text) : string
         {
         }
         /**
@@ -8576,7 +8576,7 @@ namespace {
          * or if the Legacy REST API extension is installed, and remove the notice about Legacy webhooks
          * if no such webhooks exist anymore or if the Legacy REST API extension is installed.
          *
-         * TODO: Change this method in WooCommerce 9.0 so that the notice gets removed if the Legacy REST API extension is installed and active.
+         * TODO: Change this method in WooCommerce 9.0 so that the notice get removed if the Legacy REST API extension is installed and active.
          */
         private static function maybe_remove_legacy_api_removal_notice()
         {
@@ -11065,6 +11065,14 @@ namespace {
         {
         }
         /**
+         * Runs on in_plugin_update_message-{file-name}, show a message to connect to woocommerce.com for unconnected stores
+         *
+         * @return void.
+         */
+        public static function add_connect_woocom_plugin_message()
+        {
+        }
+        /**
          * Runs on in_plugin_update_message-{file-name}, show a message to install the Woo Marketplace plugin, on plugin update notification,
          * if the Woo Marketplace plugin isn't already installed.
          *
@@ -11135,6 +11143,17 @@ namespace {
          * @return int
          */
         public static function get_updates_count_based_on_site_status()
+        {
+        }
+        /**
+         * Get the type of woo connect notice to be shown in the WC Settings and Marketplace pages.
+         * - If a store is connected to woocommerce.com or has no installed woo plugins, return 'none'.
+         * - If a store has installed woo plugins but no updates, return 'short'.
+         * - If a store has an installed woo plugin with update, return 'long'.
+         *
+         * @return string The notice type, 'none', 'short', or 'long'.
+         */
+        public static function get_woo_connect_notice_type()
         {
         }
         /**
@@ -15350,6 +15369,26 @@ namespace {
          * Handles output of the shipping class settings screen.
          */
         protected function output_shipping_class_screen()
+        {
+        }
+    }
+    /**
+     * WC_Settings_Advanced.
+     */
+    class WC_Settings_Site_Visibility extends \WC_Settings_Page
+    {
+        /**
+         * Constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Get settings for the default section.
+         *
+         * @return array
+         */
+        protected function get_settings_for_default_section()
         {
         }
     }
@@ -24618,7 +24657,7 @@ namespace {
          *
          * @var array
          */
-        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'));
+        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'), '8.9.0' => array('wc_update_890_update_connect_to_woocommerce_note', 'wc_update_890_update_paypal_standard_load_eligibility'));
         /**
          * Option name used to track new installations of WooCommerce.
          *
@@ -35478,7 +35517,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '8.8.3';
+        public $version = '8.9.0';
         /**
          * WooCommerce Schema version.
          *
@@ -35648,12 +35687,6 @@ namespace {
          * or group assignment for Remote Spec Engines.
          */
         public function add_woocommerce_remote_variant()
-        {
-        }
-        /**
-         * Set default option values for launch your store task.
-         */
-        public function add_lys_default_values()
         {
         }
         /**
@@ -36962,6 +36995,7 @@ namespace {
         {
         }
     }
+    // phpcs:disable Squiz.Classes.ClassFileName.NoMatch, Squiz.Classes.ValidClassName.NotCamelCaps -- Backward compatibility.
     /**
      * Abstract Order Data Store: Stored in CPT.
      *
@@ -39920,10 +39954,11 @@ namespace {
          * @todo   Add to interface in 4.0.
          * @param  WC_Product $product Variable product.
          * @param  int        $limit Limit the number of created variations.
-         * @param  array  	  $default_values Key value pairs to set on created variations.
+         * @param  array      $default_values Key value pairs to set on created variations.
+         * @param  array      $metadata Key value pairs to set as meta data on created variations.
          * @return int        Number of created variations.
          */
-        public function create_all_product_variations($product, $limit = -1, $default_values = array())
+        public function create_all_product_variations($product, $limit = -1, $default_values = array(), $metadata = array())
         {
         }
         /**
@@ -43874,6 +43909,14 @@ namespace {
          * @return bool Whether PayPal Standard should be loaded.
          */
         public function should_load()
+        {
+        }
+        /**
+         * Checks if the store has at least one PayPal Standand order.
+         *
+         * @return bool
+         */
+        public function has_paypal_orders()
         {
         }
     }
@@ -54096,6 +54139,16 @@ namespace {
         {
         }
         /**
+         * Duplicate a product and returns the duplicated product.
+         * The product status is set to "draft" and the name includes a "(copy)" at the end by default.
+         *
+         * @param WP_REST_Request $request Request data.
+         * @return WP_REST_Response|WP_Error
+         */
+        public function duplicate_product($request)
+        {
+        }
+        /**
          * Get the images for a product or product variation.
          *
          * @param WC_Product|WC_Product_Variation $product Product instance.
@@ -61877,6 +61930,48 @@ namespace Automattic\WooCommerce\Admin\API {
         }
     }
     /**
+     * Launch Your Store controller.
+     *
+     * @internal
+     */
+    class LaunchYourStore
+    {
+        /**
+         * Endpoint namespace.
+         *
+         * @var string
+         */
+        protected $namespace = 'wc-admin';
+        /**
+         * Route base.
+         *
+         * @var string
+         */
+        protected $rest_base = 'launch-your-store';
+        /**
+         * Register routes.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * User must be either shop_manager or administrator.
+         *
+         * @return bool
+         */
+        public function must_be_shop_manager_or_admin()
+        {
+        }
+        /**
+         * Initializes options for coming soon. Does not override if options exist.
+         *
+         * @return bool|void
+         */
+        public function initialize_coming_soon()
+        {
+        }
+    }
+    /**
      * Leaderboards controller.
      *
      * @internal
@@ -67675,11 +67770,183 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Orders {
         {
         }
     }
+}
+namespace Automattic\WooCommerce\Internal\Traits {
+    /**
+     * Trait OrderAttributionMeta
+     *
+     * @since 8.5.0
+     *
+     * phpcs:disable Generic.Commenting.DocComment.MissingShort
+     */
+    trait OrderAttributionMeta
+    {
+        /**
+         * The default fields and their sourcebuster accesors,
+         * to show in the source data metabox.
+         *
+         * @var string[]
+         * */
+        private $default_fields = array(
+            // main fields.
+            'source_type' => 'current.typ',
+            'referrer' => 'current_add.rf',
+            // utm fields.
+            'utm_campaign' => 'current.cmp',
+            'utm_source' => 'current.src',
+            'utm_medium' => 'current.mdm',
+            'utm_content' => 'current.cnt',
+            'utm_id' => 'current.id',
+            'utm_term' => 'current.trm',
+            // additional fields.
+            'session_entry' => 'current_add.ep',
+            'session_start_time' => 'current_add.fd',
+            'session_pages' => 'session.pgs',
+            'session_count' => 'udata.vst',
+            'user_agent' => 'udata.uag',
+        );
+        /** @var array */
+        private $fields = array();
+        /**
+         * Cached `array_keys( $fields )`.
+         *
+         * @var array
+         * */
+        private $field_names = array();
+        /** @var string */
+        private $field_prefix = '';
+        /**
+         * Get the device type based on the other meta fields.
+         *
+         * @param array $values The meta values.
+         *
+         * @return string The device type.
+         */
+        protected function get_device_type(array $values) : string
+        {
+        }
+        /**
+         * Set the fields and the field prefix.
+         *
+         * @return void
+         */
+        private function set_fields_and_prefix()
+        {
+        }
+        /**
+         * Set the meta prefix for our fields.
+         *
+         * @return void
+         */
+        private function set_field_prefix() : void
+        {
+        }
+        /**
+         * Filter an order's meta data to only the keys that we care about.
+         *
+         * Sets the origin value based on the source type.
+         *
+         * @param WC_Meta_Data[] $meta The meta data.
+         *
+         * @return array
+         */
+        private function filter_meta_data(array $meta) : array
+        {
+        }
+        /**
+         * Get the field name with the appropriate prefix.
+         *
+         * @param string $name Field name.
+         *
+         * @return string The prefixed field name.
+         */
+        private function get_prefixed_field_name($name) : string
+        {
+        }
+        /**
+         * Get the field name with the meta prefix.
+         *
+         * @param string $name The field name.
+         *
+         * @return string The prefixed field name.
+         */
+        private function get_meta_prefixed_field_name(string $name) : string
+        {
+        }
+        /**
+         * Remove the meta prefix from the field name.
+         *
+         * @param string $name The prefixed fieldname .
+         *
+         * @return string
+         */
+        private function unprefix_meta_field_name(string $name) : string
+        {
+        }
+        /**
+         * Get the order object with HPOS compatibility.
+         *
+         * @param WC_Order|WP_Post|int $post_or_order The post ID or object.
+         *
+         * @return WC_Order The order object
+         * @throws Exception When the order isn't found.
+         */
+        private function get_hpos_order_object($post_or_order)
+        {
+        }
+        /**
+         * Map posted, prefixed values to field values.
+         * Used for the classic forms.
+         *
+         * @param array $raw_values The raw values from the POST form.
+         *
+         * @return array
+         */
+        private function get_unprefixed_field_values(array $raw_values = array()) : array
+        {
+        }
+        /**
+         * Map submitted values to meta values.
+         *
+         * @param array $raw_values The raw (unprefixed) values from the submitted data.
+         *
+         * @return array
+         */
+        private function get_source_values(array $raw_values = array()) : array
+        {
+        }
+        /**
+         * Get the label for the Order origin with placeholder where appropriate. Can be
+         * translated (for DB / display) or untranslated (for Tracks).
+         *
+         * @param string $source_type The source type.
+         * @param string $source      The source.
+         * @param bool   $translated  Whether the label should be translated.
+         *
+         * @return string
+         */
+        private function get_origin_label(string $source_type, string $source, bool $translated = true) : string
+        {
+        }
+        /**
+         * Get the description for the order attribution field.
+         *
+         * @param string $field_name The field name.
+         *
+         * @return string
+         */
+        private function get_field_description(string $field_name) : string
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Admin\API\Reports\Orders {
     /**
      * API\Reports\Orders\DataStore.
      */
     class DataStore extends \Automattic\WooCommerce\Admin\API\Reports\DataStore implements \Automattic\WooCommerce\Admin\API\Reports\DataStoreInterface
     {
+        use \Automattic\WooCommerce\Internal\Traits\OrderAttributionMeta;
         /**
          * Dynamically sets the date column name based on configuration
          */
@@ -67795,6 +68062,15 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Orders {
          * @return array
          */
         protected function get_coupons_by_order_ids($order_ids)
+        {
+        }
+        /**
+         * Get order attributions data from order IDs.
+         *
+         * @param array $order_ids Array of order IDs.
+         * @return array
+         */
+        protected function get_order_attributions_by_order_ids($order_ids)
         {
         }
         /**
@@ -71527,6 +71803,7 @@ namespace Automattic\WooCommerce\Admin\Features {
      */
     class LaunchYourStore
     {
+        const BANNER_DISMISS_USER_META_KEY = 'woocommerce_coming_soon_banner_dismissed';
         /**
          * Constructor.
          */
@@ -71539,6 +71816,51 @@ namespace Automattic\WooCommerce\Admin\Features {
          * @return void
          */
         public function save_site_visibility_options()
+        {
+        }
+        /**
+         * Preload settings for Site Visibility.
+         *
+         * @param array $settings settings array.
+         *
+         * @return mixed
+         */
+        public function preload_settings($settings)
+        {
+        }
+        /**
+         * User must be an admin or editor.
+         *
+         * @return bool
+         */
+        private function is_manager_or_admin()
+        {
+        }
+        /**
+         * Add 'coming soon' banner on the frontend when the following conditions met.
+         *
+         * - User must be either an admin or store editor (must be logged in).
+         * - 'woocommerce_coming_soon' option value must be 'yes'
+         * - The page must not be the Coming soon page itself.
+         */
+        public function maybe_add_coming_soon_banner_on_frontend()
+        {
+        }
+        /**
+         * Register user meta fields for Launch Your Store.
+         */
+        public function register_launch_your_store_user_meta_fields()
+        {
+        }
+        /**
+         * Reset 'woocommerce_coming_soon_banner_dismissed' user meta to 'no'.
+         *
+         * Runs when a user logs-in successfully.
+         *
+         * @param string $user_login user login.
+         * @param object $user user object.
+         */
+        public function reset_woocommerce_coming_soon_banner_dismissed($user_login, $user)
         {
         }
     }
@@ -74077,6 +74399,14 @@ namespace Automattic\WooCommerce\Admin\Features\OnboardingTasks\Tasks {
     class LaunchYourStore extends \Automattic\WooCommerce\Admin\Features\OnboardingTasks\Task
     {
         /**
+         * Constructor
+         *
+         * @param TaskList $task_list Parent task list.
+         */
+        public function __construct($task_list)
+        {
+        }
+        /**
          * ID.
          *
          * @return string
@@ -74109,6 +74439,14 @@ namespace Automattic\WooCommerce\Admin\Features\OnboardingTasks\Tasks {
         {
         }
         /**
+         * Action URL.
+         *
+         * @return string
+         */
+        public function get_action_url()
+        {
+        }
+        /**
          * Task completion.
          *
          * @return bool
@@ -74122,6 +74460,14 @@ namespace Automattic\WooCommerce\Admin\Features\OnboardingTasks\Tasks {
          * @return bool
          */
         public function can_view()
+        {
+        }
+        /**
+         * Hide the WP admin bar when the user is previewing the site.
+         *
+         * @param bool $show Whether to show the admin bar.
+         */
+        public function possibly_hide_wp_admin_bar($show)
         {
         }
     }
@@ -74570,6 +74916,68 @@ namespace Automattic\WooCommerce\Admin\Features\OnboardingTasks\Tasks {
          * @return bool
          */
         private static function is_selling_digital_type_only()
+        {
+        }
+    }
+    /**
+     * Connect store to WooCommerce.com Task
+     */
+    class StoreConnect extends \Automattic\WooCommerce\Admin\Features\OnboardingTasks\Task
+    {
+        /**
+         * ID.
+         *
+         * @return string
+         */
+        public function get_id()
+        {
+        }
+        /**
+         * Title.
+         *
+         * @return string
+         */
+        public function get_title()
+        {
+        }
+        /**
+         * Content.
+         *
+         * @return string
+         */
+        public function get_content()
+        {
+        }
+        /**
+         * Time.
+         *
+         * @return string
+         */
+        public function get_time()
+        {
+        }
+        /**
+         * Task completion.
+         *
+         * @return bool
+         */
+        public function is_complete()
+        {
+        }
+        /**
+         * Always dismissable.
+         *
+         * @return bool
+         */
+        public function is_dismissable()
+        {
+        }
+        /**
+         * Action URL.
+         *
+         * @return string
+         */
+        public function get_action_url()
         {
         }
     }
@@ -75489,6 +75897,20 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
         public function register_user_metas()
         {
         }
+        /**
+         * Registers the metadata block attribute for all block types.
+         * This is a fallback/temporary solution until
+         * the Gutenberg core version registers the metadata attribute.
+         *
+         * @see https://github.com/WordPress/gutenberg/blob/6aaa3686ae67adc1a6a6b08096d3312859733e1b/lib/compat/wordpress-6.5/blocks.php#L27-L47
+         * To do: Remove this method once the Gutenberg core version registers the metadata attribute.
+         *
+         * @param array $args Array of arguments for registering a block type.
+         * @return array $args
+         */
+        public function register_metadata_attribute($args)
+        {
+        }
     }
     /**
      * The Product Template that represents the relation between the Product and
@@ -75540,6 +75962,12 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
          * @var string
          */
         private $icon = null;
+        /**
+         * If the template is directly selectable through the UI.
+         *
+         * @var boolean
+         */
+        private $is_selectable_by_user = true;
         /**
          * ProductTemplate constructor
          *
@@ -75628,6 +76056,14 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
          * @return int The order.
          */
         public function get_order()
+        {
+        }
+        /**
+         * Get the selectable attribute.
+         *
+         * @return boolean Selectable.
+         */
+        public function get_is_selectable_by_user()
         {
         }
         /**
@@ -78651,6 +79087,30 @@ namespace Automattic\WooCommerce\Admin {
          * @return array Array of action data.
          */
         public static function get_activation_status($job_id = null)
+        {
+        }
+        /**
+         * Show notices to connect to woocommerce.com for unconnected store in the plugin list.
+         *
+         * @return void
+         */
+        public static function maybe_show_connect_notice_in_plugin_list()
+        {
+        }
+        /**
+         * Enqueue scripts for connect notice in WooCommerce settings page.
+         *
+         * @return void
+         */
+        public static function maybe_enqueue_scripts_for_connect_notice()
+        {
+        }
+        /**
+         * Enqueue scripts for connect notice in plugin list page.
+         *
+         * @return void
+         */
+        public static function maybe_enqueue_scripts_for_connect_notice_in_plugins()
         {
         }
     }
@@ -81961,7 +82421,6 @@ namespace Automattic\WooCommerce\Admin {
          *
          * Store pages are defined as:
          *
-         * - My Account
          * - Shop
          * - Cart
          * - Checkout
@@ -82105,6 +82564,7 @@ namespace Automattic\WooCommerce\Blocks\AI {
     class Connection
     {
         const TEXT_COMPLETION_API_URL = 'https://public-api.wordpress.com/wpcom/v2/text-completion';
+        const MODEL = 'gpt-3.5-turbo-1106';
         /**
          * The post request.
          *
@@ -83506,19 +83966,6 @@ namespace Automattic\WooCommerce\Blocks {
         public function update_product_archive_title($post_type_name, $post_type)
         {
         }
-        /**
-         * Remove the template panel from the Sidebar of the Shop page because
-         * the Site Editor handles it.
-         *
-         * @see https://github.com/woocommerce/woocommerce-gutenberg-products-block/issues/6278
-         *
-         * @param bool $is_support Whether the active theme supports block templates.
-         *
-         * @return bool
-         */
-        public function remove_block_template_support_for_shop_page($is_support)
-        {
-        }
     }
     /**
      * BlockTemplatesRegistry class.
@@ -84658,6 +85105,36 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'cart-order-summary-block';
+        /**
+         * Get the contents of the given inner block.
+         *
+         * @param string $block_name Name of the order summary inner block.
+         * @param string $content    The content to search.
+         * @return array|bool
+         */
+        private function get_inner_block_content($block_name, $content)
+        {
+        }
+        /**
+         * Get the regex that will return an inner block.
+         *
+         * @param string $block_name Name of the order summary inner block.
+         * @return string Regex pattern.
+         */
+        private function inner_block_regex($block_name)
+        {
+        }
+        /**
+         * Render the Cart Order Summary block.
+         *
+         * @param array  $attributes Block attributes.
+         * @param string $content    Block content.
+         * @param object $block      Block object.
+         * @return string Rendered block.
+         */
+        protected function render($attributes, $content, $block)
+        {
+        }
     }
     /**
      * CartOrderSummaryCouponFormBlock class.
@@ -84742,6 +85219,18 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'cart-order-summary-taxes-block';
+    }
+    /**
+     * CartOrderSummaryTotalsBlock class.
+     */
+    class CartOrderSummaryTotalsBlock extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractInnerBlock
+    {
+        /**
+         * Block name.
+         *
+         * @var string
+         */
+        protected $block_name = 'cart-order-summary-totals-block';
     }
     /**
      * CartTotalsBlock class.
@@ -84883,6 +85372,25 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @return boolean
          */
         protected function is_checkout_endpoint()
+        {
+        }
+        /**
+         * Update the local pickup title in WooCommerce Settings when the checkout page containing a Checkout block is saved.
+         *
+         * @param int      $post_id The post ID.
+         * @param \WP_Post $post    The post object.
+         * @return void
+         */
+        public function update_local_pickup_title($post_id, $post)
+        {
+        }
+        /**
+         * Recurse through the blocks to find the shipping methods block, then get the value of the localPickupText attribute from it.
+         *
+         * @param array $blocks The block(s) to search for the local pickup text.
+         * @return null|string  The local pickup text if found, otherwise void.
+         */
+        private function find_local_pickup_text_in_checkout_block($blocks)
         {
         }
         /**
@@ -85039,6 +85547,36 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'checkout-order-summary-block';
+        /**
+         * Get the contents of the given inner block.
+         *
+         * @param string $block_name Name of the order summary inner block.
+         * @param string $content    The content to search.
+         * @return array|bool
+         */
+        private function get_inner_block_content($block_name, $content)
+        {
+        }
+        /**
+         * Get the regex that will return an inner block.
+         *
+         * @param string $block_name Name of the order summary inner block.
+         * @return string Regex pattern.
+         */
+        private function inner_block_regex($block_name)
+        {
+        }
+        /**
+         * Render the Checkout Order Summary block.
+         *
+         * @param array  $attributes Block attributes.
+         * @param string $content    Block content.
+         * @param object $block      Block object.
+         * @return string Rendered block.
+         */
+        protected function render($attributes, $content, $block)
+        {
+        }
     }
     /**
      * CheckoutOrderSummaryCartItemsBlock class.
@@ -85123,6 +85661,18 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'checkout-order-summary-taxes-block';
+    }
+    /**
+     * CheckoutOrderSummaryTotalsBlock class.
+     */
+    class CheckoutOrderSummaryTotalsBlock extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractInnerBlock
+    {
+        /**
+         * Block name.
+         *
+         * @var string
+         */
+        protected $block_name = 'checkout-order-summary-totals-block';
     }
     /**
      * CheckoutPaymentBlock class.
@@ -85374,10 +85924,106 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         }
     }
     /**
+     * ComingSoon class.
+     */
+    class ComingSoon extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock
+    {
+        /**
+         * Block name.
+         *
+         * @var string
+         */
+        protected $block_name = 'coming-soon';
+        /**
+         * It is necessary to register and enqueue assets during the render phase because we want to load assets only if the block has the content.
+         */
+        protected function register_block_type_assets()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blocks\Utils {
+    /**
+     * BlockHooksTrait
+     *
+     * Shared functionality for using the Block Hooks API with WooCommerce Blocks.
+     */
+    trait BlockHooksTrait
+    {
+        /**
+         * Callback for `hooked_block_types` to auto-inject the mini-cart block into headers after navigation.
+         *
+         * @param array                             $hooked_blocks An array of block slugs hooked into a given context.
+         * @param string                            $position      Position of the block insertion point.
+         * @param string                            $anchor_block  The block acting as the anchor for the inserted block.
+         * @param array|\WP_Post|\WP_Block_Template $context       Where the block is embedded.
+         * @since 8.5.0
+         * @return array An array of block slugs hooked into a given context.
+         */
+        public function register_hooked_block($hooked_blocks, $position, $anchor_block, $context)
+        {
+        }
+        /**
+         * Checks if the provided context contains a the block already.
+         *
+         * @param array|\WP_Block_Template $context Where the block is embedded.
+         * @return boolean
+         */
+        protected function has_block_in_content($context)
+        {
+        }
+        /**
+         * Given a provided context, returns the content of the context.
+         *
+         * @param array|\WP_Post|\WP_Block_Template $context Where the block is embedded.
+         * @since 8.5.0
+         * @return string
+         */
+        protected function get_context_content($context)
+        {
+        }
+        /**
+         * Given a provided context, returns whether the context refers to header content.
+         *
+         * @param array|\WP_Post|\WP_Block_Template $context Where the block is embedded.
+         * @param string                            $area The area to check against before inserting.
+         * @since 8.5.0
+         * @return boolean
+         */
+        protected function is_template_part_or_pattern($context, $area)
+        {
+        }
+        /**
+         * Given a provided context, returns whether the context refers to the target area and isn't marked as excluded.
+         *
+         * @param array|\WP_Post|\WP_Block_Template $context the context to check.
+         * @param string                            $area The area to check against before inserting.
+         * @since 8.5.0
+         * @return boolean
+         */
+        protected function is_target_area($context, $area)
+        {
+        }
+        /**
+         * Returns whether the pattern is excluded or not
+         *
+         * @since 8.5.0
+         *
+         * @param array|\WP_Block_Template $context Where the block is embedded.
+         * @return boolean
+         */
+        protected function pattern_is_excluded($context)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blocks\BlockTypes {
+    /**
      * CustomerAccount class.
      */
     class CustomerAccount extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock
     {
+        use \Automattic\WooCommerce\Blocks\Utils\BlockHooksTrait;
         const TEXT_ONLY = 'text_only';
         const ICON_ONLY = 'icon_only';
         const DISPLAY_ALT = 'alt';
@@ -85387,6 +86033,45 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          * @var string
          */
         protected $block_name = 'customer-account';
+        /**
+         * Block Hook API placements.
+         *
+         * @var array
+         */
+        protected $hooked_block_placements = array(array('position' => 'after', 'anchor' => 'core/navigation', 'area' => 'header', 'callback' => 'should_unhook_block'));
+        /**
+         * Initialize this block type.
+         */
+        protected function initialize()
+        {
+        }
+        /**
+         * Callback for the Block Hooks API to modify the attributes of the hooked block.
+         *
+         * @param array|null                      $parsed_hooked_block The parsed block array for the given hooked block type, or null to suppress the block.
+         * @param string                          $hooked_block_type   The hooked block type name.
+         * @param string                          $relative_position   The relative position of the hooked block.
+         * @param array                           $parsed_anchor_block The anchor block, in parsed block array format.
+         * @param WP_Block_Template|WP_Post|array $context             The block template, template part, `wp_navigation` post type,
+         *                                                             or pattern that the anchor block belongs to.
+         * @return array|null
+         */
+        public function modify_hooked_block_attributes($parsed_hooked_block, $hooked_block_type, $relative_position, $parsed_anchor_block, $context)
+        {
+        }
+        /**
+         * Callback for the Block Hooks API to determine if the block should be auto-inserted.
+         *
+         * @param array                             $hooked_blocks An array of block slugs hooked into a given context.
+         * @param string                            $position      Position of the block insertion point.
+         * @param string                            $anchor_block  The block acting as the anchor for the inserted block.
+         * @param array|\WP_Post|\WP_Block_Template $context       Where the block is embedded.
+         *
+         * @return array
+         */
+        protected function should_unhook_block($hooked_blocks, $position, $anchor_block, $context)
+        {
+        }
         /**
          * Render the block.
          *
@@ -85412,11 +86097,9 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         /**
          * Gets the label to render depending on the displayStyle.
          *
-         * @param array $attributes Block attributes.
-         *
          * @return string Label to render on the block.
          */
-        private function render_label($attributes)
+        private function render_label()
         {
         }
         /**
@@ -85800,83 +86483,6 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
         {
         }
     }
-}
-namespace Automattic\WooCommerce\Blocks\Utils {
-    /**
-     * BlockHooksTrait
-     *
-     * Shared functionality for using the Block Hooks API with WooCommerce Blocks.
-     */
-    trait BlockHooksTrait
-    {
-        /**
-         * Callback for `hooked_block_types` to auto-inject the mini-cart block into headers after navigation.
-         *
-         * @param array                             $hooked_blocks An array of block slugs hooked into a given context.
-         * @param string                            $position      Position of the block insertion point.
-         * @param string                            $anchor_block  The block acting as the anchor for the inserted block.
-         * @param array|\WP_Post|\WP_Block_Template $context       Where the block is embedded.
-         * @since 8.5.0
-         * @return array An array of block slugs hooked into a given context.
-         */
-        public function register_hooked_block($hooked_blocks, $position, $anchor_block, $context)
-        {
-        }
-        /**
-         * Checks if the provided context contains a the block already.
-         *
-         * @param array|\WP_Block_Template $context Where the block is embedded.
-         * @return boolean
-         */
-        protected function has_block_in_content($context)
-        {
-        }
-        /**
-         * Given a provided context, returns the content of the context.
-         *
-         * @param array|\WP_Post|\WP_Block_Template $context Where the block is embedded.
-         * @since 8.5.0
-         * @return string
-         */
-        protected function get_context_content($context)
-        {
-        }
-        /**
-         * Given a provided context, returns whether the context refers to header content.
-         *
-         * @param array|\WP_Post|\WP_Block_Template $context Where the block is embedded.
-         * @param string                            $area The area to check against before inserting.
-         * @since 8.5.0
-         * @return boolean
-         */
-        protected function is_template_part_or_pattern($context, $area)
-        {
-        }
-        /**
-         * Given a provided context, returns whether the context refers to the target area and isn't marked as excluded.
-         *
-         * @param array|\WP_Post|\WP_Block_Template $context the context to check.
-         * @param string                            $area The area to check against before inserting.
-         * @since 8.5.0
-         * @return boolean
-         */
-        protected function is_target_area($context, $area)
-        {
-        }
-        /**
-         * Returns whether the pattern is excluded or not
-         *
-         * @since 8.5.0
-         *
-         * @param array|\WP_Block_Template $context Where the block is embedded.
-         * @return boolean
-         */
-        protected function pattern_is_excluded($context)
-        {
-        }
-    }
-}
-namespace Automattic\WooCommerce\Blocks\BlockTypes {
     /**
      * Mini-Cart class.
      *
@@ -87073,32 +87679,6 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          *                           not in the post content on editor load.
          */
         protected function enqueue_data(array $attributes = [])
-        {
-        }
-    }
-    /**
-     * ProductAddToCart class.
-     */
-    class ProductAddToCart extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock
-    {
-        /**
-         * Block name.
-         *
-         * @var string
-         */
-        protected $block_name = 'product-add-to-cart';
-        /**
-         * API version name.
-         *
-         * @var string
-         */
-        protected $api_version = '2';
-        /**
-         * Register script and style assets for the block type before it is registered.
-         *
-         * This registers the scripts; it does not enqueue them.
-         */
-        protected function register_block_type_assets()
         {
         }
     }
@@ -90847,7 +91427,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          *
          * @var array
          */
-        private $additional_fields = array();
+        private $additional_fields = [];
         /**
          * Fields locations.
          *
@@ -90861,6 +91441,12 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          */
         private $supported_field_types = ['text', 'select', 'checkbox'];
         /**
+         * Groups of fields to be saved.
+         *
+         * @var array
+         */
+        protected $groups = ['billing', 'shipping', 'other'];
+        /**
          * Instance of the asset data registry.
          *
          * @var AssetDataRegistry
@@ -90871,19 +91457,26 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          *
          * @var string
          */
-        const BILLING_FIELDS_KEY = '_additional_billing_fields';
+        const BILLING_FIELDS_PREFIX = '_wc_billing/';
         /**
          * Shipping fields meta key.
          *
          * @var string
          */
-        const SHIPPING_FIELDS_KEY = '_additional_shipping_fields';
+        const SHIPPING_FIELDS_PREFIX = '_wc_shipping/';
         /**
          * Additional fields meta key.
          *
          * @var string
+         * @deprecated 8.9.0 Use OTHER_FIELDS_PREFIX instead.
          */
-        const ADDITIONAL_FIELDS_KEY = '_additional_fields';
+        const ADDITIONAL_FIELDS_PREFIX = '_wc_additional/';
+        /**
+         * Other fields meta key.
+         *
+         * @var string
+         */
+        const OTHER_FIELDS_PREFIX = '_wc_other/';
         /**
          * Sets up core fields.
          *
@@ -90961,7 +91554,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * @param array $options The options supplied during field registration.
          * @return bool false if an error was encountered, true otherwise.
          */
-        private function validate_options($options)
+        private function validate_options(&$options)
         {
         }
         /**
@@ -91055,7 +91648,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         {
         }
         /**
-         * Returns an array of fields keys for the address group.
+         * Returns an array of fields keys for the address location.
          *
          * @return array An array of fields keys.
          */
@@ -91063,7 +91656,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         {
         }
         /**
-         * Returns an array of fields keys for the contact group.
+         * Returns an array of fields keys for the contact location.
          *
          * @return array An array of fields keys.
          */
@@ -91071,17 +91664,26 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         {
         }
         /**
-         * Returns an array of fields keys for the additional area group.
+         * Returns an array of fields keys for the additional area location.
          *
          * @return array An array of fields keys.
+         * @deprecated 8.9.0 Use get_order_fields_keys instead.
          */
         public function get_additional_fields_keys()
         {
         }
         /**
-         * Returns an array of fields for a given group.
+         * Returns an array of fields keys for the additional area group.
          *
-         * @param string $location The location to get fields for (address|contact|additional).
+         * @return array An array of fields keys.
+         */
+        public function get_order_fields_keys()
+        {
+        }
+        /**
+         * Returns an array of fields for a given location.
+         *
+         * @param string $location The location to get fields for (address|contact|order).
          * @return array An array of fields definitions.
          */
         public function get_fields_for_location($location)
@@ -91091,11 +91693,11 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * Validates a set of fields for a given location against custom validation rules.
          *
          * @param array  $fields Array of key value pairs of field values to validate.
-         * @param string $location The location being validated (address|contact|additional).
-         * @param string $group The group to get the field value for (shipping|billing|'') in which '' refers to the additional group.
+         * @param string $location The location being validated (address|contact|order).
+         * @param string $group The group to get the field value for (shipping|billing|other).
          * @return WP_Error
          */
-        public function validate_fields_for_location($fields, $location, $group = '')
+        public function validate_fields_for_location($fields, $location, $group = 'other')
         {
         }
         /**
@@ -91105,11 +91707,21 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          *
          * @param string $key The field key.
          * @param mixed  $value The field value.
-         * @param string $location The location to validate the field for (address|contact|additional).
+         * @param string $location The location to validate the field for (address|contact|order).
          *
          * @return true|WP_Error True if the field is valid, a WP_Error otherwise.
          */
         public function validate_field_for_location($key, $value, $location)
+        {
+        }
+        /**
+         * Returns all fields key for a given group.
+         *
+         * @param string $group The group to get the key for (shipping|billing|other).
+         *
+         * @return string[] Field keys.
+         */
+        public function get_fields_for_group($group = 'other')
         {
         }
         /**
@@ -91123,16 +91735,29 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         {
         }
         /**
+         * Returns true if the given key is a valid customer field.
+         *
+         * Customer fields are fields saved to the customer data, like address and contact fields.
+         *
+         * @param string $key The field key.
+         *
+         * @return bool True if the field is valid, false otherwise.
+         */
+        public function is_customer_field($key)
+        {
+        }
+        /**
          * Persists a field value for a given order. This would also optionally set the field value on the customer object if the order is linked to a registered customer.
          *
          * @param string   $key The field key.
          * @param mixed    $value The field value.
          * @param WC_Order $order The order to persist the field for.
+         * @param string   $group The group to persist the field for (shipping|billing|other).
          * @param bool     $set_customer Whether to set the field value on the customer or not.
          *
          * @return void
          */
-        public function persist_field_for_order($key, $value, $order, $set_customer = true)
+        public function persist_field_for_order(string $key, $value, \WC_Order $order, string $group = 'other', bool $set_customer = true)
         {
         }
         /**
@@ -91141,10 +91766,11 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * @param string      $key The field key.
          * @param mixed       $value The field value.
          * @param WC_Customer $customer The customer to persist the field for.
+         * @param string      $group The group to persist the field for (shipping|billing|other).
          *
          * @return void
          */
-        public function persist_field_for_customer($key, $value, $customer)
+        public function persist_field_for_customer(string $key, $value, \WC_Customer $customer, string $group = 'other')
         {
         }
         /**
@@ -91152,100 +91778,64 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          *
          * @param string               $key The field key.
          * @param mixed                $value The field value.
-         * @param WC_Customer|WC_Order $object The object to set the field value for.
+         * @param WC_Customer|WC_Order $wc_object The object to set the field value for.
+         * @param string               $group The group to set the field value for (shipping|billing|other).
          *
          * @return void
          */
-        private function set_array_meta($key, $value, $object)
-        {
-        }
-        /**
-         * Returns a field value for a given object.
-         *
-         * @param string      $key The field key.
-         * @param WC_Customer $customer The customer to get the field value for.
-         * @param string      $group The group to get the field value for (shipping|billing|'') in which '' refers to the additional group.
-         *
-         * @return mixed The field value.
-         */
-        public function get_field_from_customer($key, $customer, $group = '')
-        {
-        }
-        /**
-         * Returns a field value for a given order.
-         *
-         * @param string   $field The field key.
-         * @param WC_Order $order The order to get the field value for.
-         * @param string   $group The group to get the field value for (shipping|billing|'') in which '' refers to the additional group.
-         *
-         * @return mixed The field value.
-         */
-        public function get_field_from_order($field, $order, $group = '')
+        private function set_array_meta(string $key, $value, \WC_Data $wc_object, string $group)
         {
         }
         /**
          * Returns a field value for a given object.
          *
          * @param string               $key The field key.
-         * @param WC_Customer|WC_Order $object The customer to get the field value for.
-         * @param string               $group The group to get the field value for (shipping|billing|'') in which '' refers to the additional group.
+         * @param WC_Customer|WC_Order $wc_object The customer or order to get the field value for.
+         * @param string               $group The group to get the field value for (shipping|billing|other).
          *
          * @return mixed The field value.
          */
-        private function get_field_from_object($key, $object, $group = '')
+        public function get_field_from_object(string $key, \WC_Data $wc_object, string $group = 'other')
         {
         }
         /**
-         * Returns an array of all fields values for a given customer.
+         * Returns an array of all fields values for a given object in a group.
          *
-         * @param WC_Customer $customer The customer to get the fields for.
-         * @param bool        $all Whether to return all fields or only the ones that are still registered. Default false.
+         * @param WC_Data $wc_object The object or order to get the fields for.
+         * @param string  $group The group to get the fields for (shipping|billing|other).
+         * @param bool    $all Whether to return all fields or only the ones that are still registered. Default false.
          *
          * @return array An array of fields.
          */
-        public function get_all_fields_from_customer($customer, $all = false)
+        public function get_all_fields_from_object(\WC_Data $wc_object, string $group = 'other', bool $all = false)
         {
         }
         /**
-         * Returns an array of all fields values for a given order.
+         * Copies additional fields from an order to a customer.
          *
-         * @param WC_Order $order The order to get the fields for.
-         * @param bool     $all Whether to return all fields or only the ones that are still registered. Default false.
-         *
-         * @return array An array of fields.
+         * @param WC_Order    $order The order to sync the fields for.
+         * @param WC_Customer $customer The customer to sync the fields for.
          */
-        public function get_all_fields_from_order($order, $all = false)
+        public function sync_customer_additional_fields_with_order(\WC_Order $order, \WC_Customer $customer)
         {
         }
         /**
-         * Returns an array of all fields values for a given meta object. It would add the billing or shipping prefix to the keys.
+         * Copies additional fields from a customer to an order.
          *
-         * @param array $meta The meta data to format.
-         * @param bool  $all Whether to return all fields or only the ones that are still registered. Default false.
-         *
-         * @return array An array of fields.
+         * @param WC_Order    $order The order to sync the fields for.
+         * @param WC_Customer $customer The customer to sync the fields for.
          */
-        private function format_meta_data($meta, $all = false)
-        {
-        }
-        /**
-         * From a set of fields, returns only the ones that should be saved to the customer.
-         * For now, this only supports fields in address location.
-         *
-         * @param array $fields The fields to filter.
-         * @return array The filtered fields.
-         */
-        public function filter_fields_for_customer($fields)
+        public function sync_order_additional_fields_with_customer(\WC_Order $order, \WC_Customer $customer)
         {
         }
         /**
          * From a set of fields, returns only the ones for a given location.
          *
          * @param array  $fields The fields to filter.
-         * @param string $location The location to validate the field for (address|contact|additional).
+         * @param string $location The location to validate the field for (address|contact|order).
          * @return array The filtered fields.
          */
-        public function filter_fields_for_location($fields, $location)
+        public function filter_fields_for_location(array $fields, string $location)
         {
         }
         /**
@@ -91261,12 +91851,12 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * Get additional fields for an order.
          *
          * @param WC_Order $order Order object.
-         * @param string   $location The location to get fields for (address|contact|additional).
-         * @param string   $group The group to get the field value for (shipping|billing|'') in which '' refers to the additional group.
+         * @param string   $location The location to get fields for (address|contact|order).
+         * @param string   $group The group to get the field value for (shipping|billing|other).
          * @param string   $context The context to get the field value for (edit|view).
          * @return array An array of fields definitions as well as their values formatted for display.
          */
-        public function get_order_additional_fields_with_values($order, $location, $group = '', $context = 'edit')
+        public function get_order_additional_fields_with_values(\WC_Order $order, string $location, string $group = 'other', string $context = 'edit')
         {
         }
         /**
@@ -91277,6 +91867,24 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * @return string
          */
         public function format_additional_field_value($value, $field)
+        {
+        }
+        /**
+         * Returns a group meta prefix based on its name.
+         *
+         * @param string $group_name The group name (billing|shipping|other).
+         * @return string The group meta prefix.
+         */
+        public static function get_group_key($group_name)
+        {
+        }
+        /**
+         * Returns a group name based on passed group key.
+         *
+         * @param string $group_key The group name (_wc_billing|_wc_shipping|_wc_other).
+         * @return string The group meta prefix.
+         */
+        public static function get_group_name($group_key)
         {
         }
     }
@@ -91355,7 +91963,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * @param string            $context The context to show the fields for.
          * @return array
          */
-        public function admin_additional_fields($fields, $order = null, $context = 'edit')
+        public function admin_order_fields($fields, $order = null, $context = 'edit')
         {
         }
     }
@@ -91416,7 +92024,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          *
          * @param WC_Order $order Order object.
          */
-        public function render_order_additional_fields($order)
+        public function render_order_other_fields($order)
         {
         }
         /**
@@ -91951,7 +92559,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          *
          * @var array
          */
-        protected $cached_store_notices = [];
+        protected $cached_store_notices = array();
         /**
          * Constructor.
          *
@@ -91968,6 +92576,29 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * @return array Response data.
          */
         public function get_rest_api_response_data($path = '')
+        {
+        }
+        /**
+         * Helper method to generate GET response from a controller. Also fires the `rest_request_after_callbacks` for backward compatibility.
+         *
+         * @param string $controller_class Controller class FQN that will respond to the request.
+         * @param string $path             Request path regex.
+         *
+         * @return false|mixed|null Response
+         */
+        private function get_response_from_controller($controller_class, $path)
+        {
+        }
+        /**
+         * Inspired from WP core's `match_request_to_handler`, this matches a given path from available route regexes.
+         * However, unlike WP core, this does not check against query params, request method etc.
+         *
+         * @param string $path The path to match.
+         * @param array  $available_routes Available routes in { $regex1 => $contoller_class1, ... } format.
+         *
+         * @return string|null
+         */
+        private function match_route_to_handler($path, $available_routes)
         {
         }
         /**
@@ -93729,22 +94360,13 @@ namespace Automattic\WooCommerce\Blocks\Shipping {
         {
         }
         /**
-         * Force shipping to be enabled if the Checkout block is in use on the Checkout page.
-         *
-         * @param boolean $enabled Whether shipping is currently enabled.
-         * @return boolean Whether shipping should continue to be enabled/disabled.
-         */
-        public function force_shipping_enabled($enabled)
-        {
-        }
-        /**
          * Inject collection details onto the order received page.
          *
-         * @param string    $return Return value.
+         * @param string    $return_value Return value.
          * @param \WC_Order $order Order object.
          * @return string
          */
-        public function show_local_pickup_details($return, $order)
+        public function show_local_pickup_details($return_value, $order)
         {
         }
         /**
@@ -94447,6 +95069,52 @@ namespace Automattic\WooCommerce\Blocks\Templates {
         }
     }
     /**
+     * ComingSoonTemplate class.
+     *
+     * @internal
+     */
+    class ComingSoonTemplate extends \Automattic\WooCommerce\Blocks\Templates\AbstractPageTemplate
+    {
+        /**
+         * The slug of the template.
+         *
+         * @var string
+         */
+        const SLUG = 'coming-soon';
+        /**
+         * Returns the title of the template.
+         *
+         * @return string
+         */
+        public function get_template_title()
+        {
+        }
+        /**
+         * Returns the description of the template.
+         *
+         * @return string
+         */
+        public function get_template_description()
+        {
+        }
+        /**
+         * Returns the page object assigned to this template/page.
+         *
+         * @return \WP_Post|null Post object or null.
+         */
+        protected function get_placeholder_page()
+        {
+        }
+        /**
+         * True when viewing the coming soon page.
+         *
+         * @return boolean
+         */
+        protected function is_active_template()
+        {
+        }
+    }
+    /**
      * MiniCartTemplate class.
      *
      * @internal
@@ -94652,6 +95320,19 @@ namespace Automattic\WooCommerce\Blocks\Templates {
         public function render_block_template()
         {
         }
+        /**
+         * Remove the template panel from the Sidebar of the Shop page because
+         * the Site Editor handles it.
+         *
+         * @see https://github.com/woocommerce/woocommerce-gutenberg-products-block/issues/6278
+         *
+         * @param bool $is_support Whether the active theme supports block templates.
+         *
+         * @return bool
+         */
+        public function remove_block_template_support_for_shop_page($is_support)
+        {
+        }
     }
     /**
      * ProductCategoryTemplate class.
@@ -94806,7 +95487,7 @@ namespace Automattic\WooCommerce\Blocks\Templates {
         }
     }
     /**
-     * SingleProductTemplae class.
+     * SingleProductTemplate class.
      *
      * @internal
      */
@@ -95136,10 +95817,10 @@ namespace Automattic\WooCommerce\Blocks\Utils {
         /**
          * Finds all nested template part file paths in a theme's directory.
          *
-         * @param string $base_directory The theme's file path.
+         * @param string $template_type wp_template or wp_template_part.
          * @return array $path_list A list of paths to all template part files.
          */
-        public static function get_template_paths($base_directory)
+        public static function get_template_paths($template_type)
         {
         }
         /**
@@ -95332,21 +96013,29 @@ namespace Automattic\WooCommerce\Blocks\Utils {
         {
         }
         /**
-         * Returns whether the passed `$template` has a title, and it's different from the slug.
-         *
-         * @param object $template The template object.
-         * @return boolean
-         */
-        public static function template_has_title($template)
-        {
-        }
-        /**
          * Returns whether the passed `$template` has the legacy template block.
          *
          * @param object $template The template object.
          * @return boolean
          */
         public static function template_has_legacy_template_block($template)
+        {
+        }
+        /**
+         * Updates the title, description and area of a template to the correct values and to make them more user-friendly.
+         * For example, instead of:
+         * - Title: `Tag (product_tag)`
+         * - Description: `Displays taxonomy: Tag.`
+         * we display:
+         * - Title: `Products by Tag`
+         * - Description: `Displays products filtered by a tag.`.
+         *
+         * @param WP_Block_Template $template The template object.
+         * @param string            $template_type wp_template or wp_template_part.
+         *
+         * @return WP_Block_Template
+         */
+        public static function update_template_data($template, $template_type)
         {
         }
         /**
@@ -96532,7 +97221,7 @@ namespace Automattic\WooCommerce {
          *
          * @var string[]
          */
-        private $service_providers = array(\Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AssignDefaultCategoryServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\DownloadPermissionsAdjusterServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OptionSanitizerServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrdersDataStoreServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductAttributesLookupServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductDownloadsServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductImageBySKUServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductReviewsServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProxiesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\RestockRefundedItemsAdjusterServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\UtilsClassesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrdersControllersServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderAttributionServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ObjectCacheServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\BatchProcessingServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderMetaBoxServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderAdminServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\FeaturesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\MarketingServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\MarketplaceServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\LayoutTemplatesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\LoggingServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\EnginesServiceProvider::class);
+        private $service_providers = array(\Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AssignDefaultCategoryServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\DownloadPermissionsAdjusterServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OptionSanitizerServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrdersDataStoreServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductAttributesLookupServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductDownloadsServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductImageBySKUServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductReviewsServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProxiesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\RestockRefundedItemsAdjusterServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\UtilsClassesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrdersControllersServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderAttributionServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ObjectCacheServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\BatchProcessingServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderMetaBoxServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderAdminServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\FeaturesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\MarketingServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\MarketplaceServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\LayoutTemplatesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\LoggingServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\EnginesServiceProvider::class, \Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ComingSoonServiceProvider::class);
         /**
          * The underlying container.
          *
@@ -96635,7 +97324,7 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
          *
          * ## EXAMPLES
          *
-         *     wp wc cot count_unmigrated
+         *     wp wc hpos count_unmigrated
          *
          * @param array $args Positional arguments passed to the command.
          *
@@ -96659,7 +97348,7 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
          *
          * ## EXAMPLES
          *
-         *     wp wc cot sync --batch-size=500
+         *     wp wc hpos sync --batch-size=500
          *
          * @param array $args Positional arguments passed to the command.
          * @param array $assoc_args Associative arguments (options) passed to the command.
@@ -96668,7 +97357,7 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
         {
         }
         /**
-         * [Deprecated] Use `wp wc cot sync` instead.
+         * [Deprecated] Use `wp wc hpos sync` instead.
          * Copy order data into the postmeta table.
          *
          * Note that this could dramatically increase the size of your postmeta table, but is recommended
@@ -96690,7 +97379,7 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
          * @param array $args Positional arguments passed to the command.
          * @param array $assoc_args Associative arguments (options) passed to the command.
          */
-        public function migrate($args = array(), $assoc_args = array())
+        public function migrate(array $args = array(), array $assoc_args = array())
         {
         }
         /**
@@ -96734,7 +97423,7 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
          * ## EXAMPLES
          *
          *     # Verify migrated order data, 500 orders at a time.
-         *     wp wc cot verify_cot_data --batch-size=500 --start-from=0 --end-at=10000
+         *     wp wc hpos verify_cot_data --batch-size=500 --start-from=0 --end-at=10000
          *
          * @param array $args Positional arguments passed to the command.
          * @param array $assoc_args Associative arguments (options) passed to the command.
@@ -96796,7 +97485,7 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
          * ### EXAMPLES
          *
          *      # Enable HPOS on new shops.
-         *      wp wc cot enable --for-new-shop
+         *      wp wc hpos enable --for-new-shop
          *
          * @param array $args Positional arguments passed to the command.
          * @param array $assoc_args Associative arguments (options) passed to the command.
@@ -96820,7 +97509,7 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
          * ### EXAMPLES
          *
          *  # Disable HPOS.
-         *  wp wc cot disable
+         *  wp wc hpos disable
          *
          * @param array $args Positional arguments passed to the command.
          * @param array $assoc_args Associative arguments (options) passed to the command.
@@ -100011,8 +100700,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
         /**
          * Check if the file represented by the class instance is a file and is readable.
          *
-         * @global WP_Filesystem_Direct $wp_filesystem
-         *
          * @return bool
          */
         public function is_readable() : bool
@@ -100020,8 +100707,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
         }
         /**
          * Check if the file represented by the class instance is a file and is writable.
-         *
-         * @global WP_Filesystem_Direct $wp_filesystem
          *
          * @return bool
          */
@@ -100106,8 +100791,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
         /**
          * Get the time of the last modification of the file, as a Unix timestamp. Or false if the file isn't readable.
          *
-         * @global WP_Filesystem_Direct $wp_filesystem
-         *
          * @return int|false
          */
         public function get_modified_timestamp()
@@ -100115,8 +100798,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
         }
         /**
          * Get the size of the file in bytes. Or false if the file isn't readable.
-         *
-         * @global WP_Filesystem_Direct $wp_filesystem
          *
          * @return int|false
          */
@@ -100151,8 +100832,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
         }
         /**
          * Delete the file from the filesystem.
-         *
-         * @global WP_Filesystem_Direct $wp_filesystem
          *
          * @return bool True on success, false on failure.
          */
@@ -104244,177 +104923,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Orders\MetaBoxes {
         {
         }
     }
-}
-namespace Automattic\WooCommerce\Internal\Traits {
-    /**
-     * Trait OrderAttributionMeta
-     *
-     * @since 8.5.0
-     *
-     * phpcs:disable Generic.Commenting.DocComment.MissingShort
-     */
-    trait OrderAttributionMeta
-    {
-        /**
-         * The default fields and their sourcebuster accesors,
-         * to show in the source data metabox.
-         *
-         * @var string[]
-         * */
-        private $default_fields = array(
-            // main fields.
-            'source_type' => 'current.typ',
-            'referrer' => 'current_add.rf',
-            // utm fields.
-            'utm_campaign' => 'current.cmp',
-            'utm_source' => 'current.src',
-            'utm_medium' => 'current.mdm',
-            'utm_content' => 'current.cnt',
-            'utm_id' => 'current.id',
-            'utm_term' => 'current.trm',
-            // additional fields.
-            'session_entry' => 'current_add.ep',
-            'session_start_time' => 'current_add.fd',
-            'session_pages' => 'session.pgs',
-            'session_count' => 'udata.vst',
-            'user_agent' => 'udata.uag',
-        );
-        /** @var array */
-        private $fields = array();
-        /**
-         * Cached `array_keys( $fields )`.
-         *
-         * @var array
-         * */
-        private $field_names = array();
-        /** @var string */
-        private $field_prefix = '';
-        /**
-         * Get the device type based on the other meta fields.
-         *
-         * @param array $values The meta values.
-         *
-         * @return string The device type.
-         */
-        protected function get_device_type(array $values) : string
-        {
-        }
-        /**
-         * Set the fields and the field prefix.
-         *
-         * @return void
-         */
-        private function set_fields_and_prefix()
-        {
-        }
-        /**
-         * Set the meta prefix for our fields.
-         *
-         * @return void
-         */
-        private function set_field_prefix() : void
-        {
-        }
-        /**
-         * Filter an order's meta data to only the keys that we care about.
-         *
-         * Sets the origin value based on the source type.
-         *
-         * @param WC_Meta_Data[] $meta The meta data.
-         *
-         * @return array
-         */
-        private function filter_meta_data(array $meta) : array
-        {
-        }
-        /**
-         * Get the field name with the appropriate prefix.
-         *
-         * @param string $name Field name.
-         *
-         * @return string The prefixed field name.
-         */
-        private function get_prefixed_field_name($name) : string
-        {
-        }
-        /**
-         * Get the field name with the meta prefix.
-         *
-         * @param string $name The field name.
-         *
-         * @return string The prefixed field name.
-         */
-        private function get_meta_prefixed_field_name(string $name) : string
-        {
-        }
-        /**
-         * Remove the meta prefix from the field name.
-         *
-         * @param string $name The prefixed fieldname .
-         *
-         * @return string
-         */
-        private function unprefix_meta_field_name(string $name) : string
-        {
-        }
-        /**
-         * Get the order object with HPOS compatibility.
-         *
-         * @param WC_Order|WP_Post|int $post_or_order The post ID or object.
-         *
-         * @return WC_Order The order object
-         * @throws Exception When the order isn't found.
-         */
-        private function get_hpos_order_object($post_or_order)
-        {
-        }
-        /**
-         * Map posted, prefixed values to field values.
-         * Used for the classic forms.
-         *
-         * @param array $raw_values The raw values from the POST form.
-         *
-         * @return array
-         */
-        private function get_unprefixed_field_values(array $raw_values = array()) : array
-        {
-        }
-        /**
-         * Map submitted values to meta values.
-         *
-         * @param array $raw_values The raw (unprefixed) values from the submitted data.
-         *
-         * @return array
-         */
-        private function get_source_values(array $raw_values = array()) : array
-        {
-        }
-        /**
-         * Get the label for the Order origin with placeholder where appropriate. Can be
-         * translated (for DB / display) or untranslated (for Tracks).
-         *
-         * @param string $source_type The source type.
-         * @param string $source      The source.
-         * @param bool   $translated  Whether the label should be translated.
-         *
-         * @return string
-         */
-        private function get_origin_label(string $source_type, string $source, bool $translated = true) : string
-        {
-        }
-        /**
-         * Get the description for the order attribution field.
-         *
-         * @param string $field_name The field name.
-         *
-         * @return string
-         */
-        private function get_field_description(string $field_name) : string
-        {
-        }
-    }
-}
-namespace Automattic\WooCommerce\Internal\Admin\Orders\MetaBoxes {
     /**
      * Class OrderAttribution
      *
@@ -107907,6 +108415,124 @@ namespace Automattic\WooCommerce\Internal\BatchProcessing {
         public function get_default_batch_size() : int;
     }
 }
+namespace Automattic\WooCommerce\Internal\ComingSoon {
+    /**
+     * Adds hooks to invalidate caches when the coming soon settings are changed.
+     */
+    class ComingSoonCacheInvalidator
+    {
+        /**
+         * Sets up the hooks.
+         *
+         * @internal
+         */
+        public final function init()
+        {
+        }
+        /**
+         * Invalidate the WordPress object cache and other known caches.
+         *
+         * @internal
+         */
+        public function invalidate_caches()
+        {
+        }
+    }
+    /**
+     * Provides helper methods for coming soon functionality.
+     */
+    class ComingSoonHelper
+    {
+        /**
+         * Returns true when the entire site is live.
+         */
+        public function is_site_live() : bool
+        {
+        }
+        /**
+         * Returns true when the entire site is coming soon mode.
+         */
+        public function is_site_coming_soon() : bool
+        {
+        }
+        /**
+         * Returns true when only the store pages are in coming soon mode.
+         */
+        public function is_store_coming_soon() : bool
+        {
+        }
+        /**
+         * Returns true when the provided URL is behind a coming soon screen.
+         *
+         * @param string $url The URL to check.
+         */
+        public function is_url_coming_soon(string $url) : bool
+        {
+        }
+        /**
+         * Builds the relative URL from the WP instance.
+         *
+         * @internal
+         * @link https://wordpress.stackexchange.com/a/274572
+         * @param \WP $wp WordPress environment instance.
+         */
+        public function get_url_from_wp(\WP $wp)
+        {
+        }
+    }
+    /**
+     * Handles the parse_request hook to determine whether the current page needs
+     * to be replaced with a comiing soon screen.
+     */
+    class ComingSoonRequestHandler
+    {
+        /**
+         * Coming soon helper.
+         *
+         * @var ComingSoonHelper
+         */
+        private $coming_soon_helper = null;
+        /**
+         * Sets up the hook.
+         *
+         * @internal
+         *
+         * @param ComingSoonHelper $coming_soon_helper Dependency.
+         */
+        public final function init(\Automattic\WooCommerce\Internal\ComingSoon\ComingSoonHelper $coming_soon_helper)
+        {
+        }
+        /**
+         * Deregisters unnecessary styles for the coming soon page.
+         *
+         * @return void
+         */
+        public function deregister_unnecessary_styles()
+        {
+        }
+        /**
+         * Replaces the page template with a 'coming soon' when the site is in coming soon mode.
+         *
+         * @internal
+         *
+         * @param string $template The path to the previously determined template.
+         * @return string|null The path to the 'coming soon' template or null to prevent further template loading in FSE themes.
+         */
+        public function handle_template_include($template)
+        {
+        }
+        /**
+         * Determines whether the coming soon screen should be shown.
+         *
+         * @param \WP $wp Current WordPress environment instance.
+         *
+         * @return bool
+         */
+        private function should_show_coming_soon(\WP &$wp)
+        {
+        }
+    }
+}
 namespace Automattic\WooCommerce\Internal\DataStores {
     /**
      * Implements functions similar to WP's add_metadata(), get_metadata(), and friends using a custom table.
@@ -111134,7 +111760,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         /**
          * Limits the search to a specific field.
          *
-         * @var string
+         * @var string[]
          */
         private $search_filters;
         /**
@@ -111638,6 +112264,24 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders 
          * from the ContainerAwareTrait.
          *
          * @return void
+         */
+        public function register()
+        {
+        }
+    }
+    /**
+     * Service provider for the Coming Soon mode.
+     */
+    class ComingSoonServiceProvider extends \Automattic\WooCommerce\Internal\DependencyManagement\AbstractServiceProvider
+    {
+        /**
+         * The classes/interfaces that are serviced by this service provider.
+         *
+         * @var array
+         */
+        protected $provides = array(\Automattic\WooCommerce\Internal\ComingSoon\ComingSoonCacheInvalidator::class, \Automattic\WooCommerce\Internal\ComingSoon\ComingSoonHelper::class, \Automattic\WooCommerce\Internal\ComingSoon\ComingSoonRequestHandler::class);
+        /**
+         * Register the classes.
          */
         public function register()
         {
@@ -112718,31 +113362,31 @@ namespace Automattic\WooCommerce\Internal\Features\ProductBlockEditor\ProductTem
         /**
          * Adds the group blocks to the template.
          */
-        private function add_group_blocks()
+        protected function add_group_blocks()
         {
         }
         /**
          * Adds the general group blocks to the template.
          */
-        private function add_general_group_blocks()
+        protected function add_general_group_blocks()
         {
         }
         /**
          * Adds the pricing group blocks to the template.
          */
-        private function add_pricing_group_blocks()
+        protected function add_pricing_group_blocks()
         {
         }
         /**
          * Adds the inventory group blocks to the template.
          */
-        private function add_inventory_group_blocks()
+        protected function add_inventory_group_blocks()
         {
         }
         /**
          * Adds the shipping group blocks to the template.
          */
-        private function add_shipping_group_blocks()
+        protected function add_shipping_group_blocks()
         {
         }
     }
@@ -116175,6 +116819,29 @@ namespace Automattic\WooCommerce\Internal\Utilities {
         }
     }
     /**
+     * FilesystemUtil class.
+     */
+    class FilesystemUtil
+    {
+        /**
+         * Wrapper to retrieve the class instance contained in the $wp_filesystem global, after initializing if necessary.
+         *
+         * @return WP_Filesystem_Base
+         * @throws Exception Thrown when the filesystem fails to initialize.
+         */
+        public static function get_wp_filesystem() : \WP_Filesystem_Base
+        {
+        }
+        /**
+         * Wrapper to initialize the WP filesystem with defined credentials if they are available.
+         *
+         * @return bool True if the $wp_filesystem global was successfully initialized.
+         */
+        protected static function initialize_wp_filesystem() : bool
+        {
+        }
+    }
+    /**
      * Utility for re-using WP Kses-based sanitization rules.
      */
     class HtmlSanitizer
@@ -116183,6 +116850,17 @@ namespace Automattic\WooCommerce\Internal\Utilities {
          * Rules for allowing minimal HTML (breaks, images, paragraphs and spans) without any links.
          */
         public const LOW_HTML_BALANCED_TAGS_NO_LINKS = array('pre_processors' => array('stripslashes', 'force_balance_tags'), 'wp_kses_rules' => array('br' => true, 'img' => array('alt' => true, 'class' => true, 'src' => true, 'title' => true), 'p' => array('class' => true), 'span' => array('class' => true, 'title' => true)));
+        /**
+         * Sanitizes a chunk of HTML, by following the same rules as `wp_kses_post()` but also allowing
+         * the style element to be supplied.
+         *
+         * @param string $html The HTML to be sanitized.
+         *
+         * @return string
+         */
+        public function styled_post_content(string $html) : string
+        {
+        }
         /**
          * Sanitizes the HTML according to the provided rules.
          *
@@ -117831,6 +118509,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1\AI {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -117872,6 +118558,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1\AI {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -117938,6 +118632,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1\AI {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -117994,6 +118696,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1\AI {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118037,6 +118747,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1\AI {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -118096,6 +118814,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1\AI {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118151,6 +118877,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1\AI {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -118462,6 +119196,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118504,6 +119246,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118538,6 +119288,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -118576,6 +119334,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -118620,6 +119386,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -118697,6 +119471,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118751,6 +119533,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118792,6 +119582,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -118869,6 +119667,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118937,6 +119743,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -118973,6 +119787,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119022,6 +119844,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -119060,6 +119890,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119126,6 +119964,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119267,6 +120113,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119508,6 +120362,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -119605,6 +120467,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -119639,6 +120509,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119694,6 +120572,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -119734,6 +120620,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119781,6 +120675,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -119821,6 +120723,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119868,6 +120778,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119919,6 +120837,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -119976,6 +120902,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -120016,6 +120950,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -120080,6 +121022,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
          * Get method arguments for this REST route.
          *
          * @return array An array of endpoints.
@@ -120121,6 +121071,14 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @return string
          */
         public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
         {
         }
         /**
@@ -120178,6 +121136,12 @@ namespace Automattic\WooCommerce\StoreApi {
          */
         protected $routes = [];
         /**
+         * Namespace for the API.
+         *
+         * @var string
+         */
+        private static $api_namespace = 'wc/store';
+        /**
          * Constructor.
          *
          * @param SchemaController $schema_controller Schema controller class passed to each route.
@@ -120202,6 +121166,21 @@ namespace Automattic\WooCommerce\StoreApi {
          * @return AbstractRoute
          */
         public function get($name, $version = 'v1')
+        {
+        }
+        /**
+         * Get a route path without instantiating the corresponding RoutesController object.
+         *
+         * @throws \Exception If the schema does not exist.
+         *
+         * @param string $version API Version being requested.
+         * @param string $controller Whether to return controller name. If false, returns empty array. Note:
+         * When $controller param is true, the output should not be used directly in front-end code, to prevent class names from leaking. It's not a security issue necessarily, but it's not a good practice.
+         * When $controller param is false, it currently returns and empty array. But it can be modified in future to return include more details about the route info that can be used in frontend.
+         *
+         * @return string[] List of route paths.
+         */
+        public function get_all_routes($version = 'v1', $controller = false)
         {
         }
         /**
@@ -122458,6 +123437,17 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         public static function natural_language_join($array, $enclose_items_with_quotes = false)
         {
         }
+        /**
+         * Check if a string contains any of the items in an array.
+         *
+         * @param string $needle The string to check.
+         * @param array  $haystack  The array of items to check for.
+         *
+         * @return bool true if the string contains any of the items in the array, false otherwise.
+         */
+        public static function string_contains_array($needle, $haystack)
+        {
+        }
     }
     /**
      * Woo Cart Controller class.
@@ -122936,6 +123926,14 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
     class LocalPickupUtils
     {
         /**
+         * Gets the local pickup location settings.
+         *
+         * @param string $context The context for the settings. Defaults to 'view'.
+         */
+        public static function get_local_pickup_settings($context = 'view')
+        {
+        }
+        /**
          * Checks if WC Blocks local pickup is enabled.
          *
          * @return bool True if local pickup is enabled.
@@ -123402,34 +124400,13 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         {
         }
         /**
-         * Get terms list for a given taxonomy.
+         * Get attribute counts for the current products.
          *
-         * @param string $taxonomy Taxonomy name.
-         *
-         * @return array
+         * @param \WP_REST_Request $request The request object.
+         * @param array            $attributes Attributes to count, either names or ids.
+         * @return array termId=>count pairs.
          */
-        public function get_terms_list(string $taxonomy)
-        {
-        }
-        /**
-         * Get the empty terms list for a given taxonomy.
-         *
-         * @param string $taxonomy Taxonomy name.
-         *
-         * @return array
-         */
-        public function get_empty_terms_list(string $taxonomy)
-        {
-        }
-        /**
-         * Get attribute and meta counts.
-         *
-         * @param WP_REST_Request $request Request data.
-         * @param string          $filtered_attribute The attribute to count.
-         *
-         * @return array
-         */
-        public function get_attribute_counts($request, $filtered_attribute)
+        public function get_attribute_counts($request, $attributes = [])
         {
         }
         /**
@@ -123439,28 +124416,6 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * @return array rating=>count pairs.
          */
         public function get_rating_counts($request)
-        {
-        }
-        /**
-         * Gets product by metas.
-         *
-         * @since TBD
-         * @param array $metas Array of metas to query.
-         * @return array $results
-         */
-        public function get_product_by_metas($metas = array())
-        {
-        }
-        /**
-         * Gets product by filtered terms.
-         *
-         * @since TBD
-         * @param string $taxonomy Taxonomy name.
-         * @param array  $term_ids Term IDs.
-         * @param string $query_type or | and.
-         * @return array Product IDs.
-         */
-        public function get_product_by_filtered_terms($taxonomy = '', $term_ids = array(), $query_type = 'or')
         {
         }
     }
@@ -124387,7 +125342,10 @@ namespace Automattic\WooCommerce\Utilities {
         {
         }
         /**
-         * Util function to generate warning string for incompatible features based on active plugins.
+         * Utility method to generate warning string for incompatible features based on active plugins.
+         *
+         * Additionally, this method will manually print a warning message on the HPOS feature if both
+         * the Legacy REST API and HPOS are active.
          *
          * @param string $feature_id Feature id.
          * @param array  $plugin_feature_info Array of plugin feature info. See FeaturesControllers->get_compatible_plugins_for_feature() for details.
@@ -129828,6 +130786,15 @@ namespace {
     {
     }
     /**
+     * Returns true if the current REST request is from the product editor.
+     *
+     * @since 8.9.0
+     * @return bool
+     */
+    function wc_rest_is_from_product_editor()
+    {
+    }
+    /**
      * Update a product's stock amount.
      *
      * Uses queries rather than update_post_meta so we can do this in one query (to avoid stock issues).
@@ -131893,6 +132860,16 @@ namespace {
      * @param array $options Field arguments. See CheckoutFields::register_checkout_field() for details.
      * @throws \Exception If field registration fails.
      */
+    function woocommerce_register_additional_checkout_field($options)
+    {
+    }
+    /**
+     * Register a checkout field.
+     *
+     * @param array $options Field arguments. See CheckoutFields::register_checkout_field() for details.
+     * @throws \Exception If field registration fails.
+     * @deprecated 5.6.0 Use woocommerce_register_additional_checkout_field() instead.
+     */
     function __experimental_woocommerce_blocks_register_checkout_field($options)
     {
     }
@@ -132005,5 +132982,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '8.8.3');
+    define('WC_VERSION', '8.9.0');
 }
