@@ -35517,7 +35517,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '8.9.1';
+        public $version = '8.9.2';
         /**
          * WooCommerce Schema version.
          *
@@ -35728,6 +35728,14 @@ namespace {
          * @return bool
          */
         public function is_rest_api_request()
+        {
+        }
+        /**
+         * Returns true if the request is a store REST API request.
+         *
+         * @return bool
+         */
+        public function is_store_api_request()
         {
         }
         /**
@@ -132982,5 +132990,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '8.9.1');
+    define('WC_VERSION', '8.9.2');
 }
