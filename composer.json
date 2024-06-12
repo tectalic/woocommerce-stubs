@@ -1,6 +1,7 @@
 {
     "name": "om4/woocommerce-stubs",
     "description": "WooCommerce function and class declaration stubs for static analysis.",
+    "type": "phpstan-extension",
     "keywords": [
         "woocommerce",
         "wordpress",
@@ -16,15 +17,14 @@
         }
     ],
     "require-dev": {
-        "php": ">=7.2",
+        "php": "^8.0",
         "composer/installers": "~2.0",
         "om4/woocommerce-dist": "8.9.2",
         "php-stubs/generator": "^0.8.3",
         "php-stubs/wordpress-stubs": "^5.3 || ^6.0"
     },
     "suggest": {
-        "szepeviktor/phpstan-wordpress": "WordPress extensions for PHPStan",
-        "symfony/polyfill-php73": "Symfony polyfill backporting some PHP 7.3+ features to lower PHP versions"
+        "szepeviktor/phpstan-wordpress": "WordPress extensions for PHPStan"
     },
     "minimum-stability": "stable",
     "extra": {
@@ -36,6 +36,11 @@
             ],
             "woocommerce/": [
                 "om4/woocommerce-dist"
+            ]
+        },
+        "phpstan": {
+            "includes": [
+                "extension.neon"
             ]
         }
     },

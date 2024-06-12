@@ -1,0 +1,4 @@
+parameters:
+	scanFiles:
+		- woocommerce-stubs.php
+		- woocommerce-packages-stubs.php
