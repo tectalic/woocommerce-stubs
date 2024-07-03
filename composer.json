@@ -1,5 +1,5 @@
 {
-    "name": "om4/woocommerce-stubs",
+    "name": "tectalic/woocommerce-stubs",
     "description": "WooCommerce function and class declaration stubs for static analysis.",
     "type": "phpstan-extension",
     "keywords": [
@@ -8,18 +8,18 @@
         "static analysis",
         "phpstan"
     ],
-    "homepage": "https://github.com/om4/woocommerce-stubs",
+    "homepage": "https://github.com/tectalic/woocommerce-stubs",
     "license": "MIT",
     "repositories": [
         {
             "type": "git",
-            "url": "git@github.com:OM4/woocommerce-dist.git"
+            "url": "git@github.com:tectalic/woocommerce-dist.git"
         }
     ],
     "require-dev": {
         "php": "^8.0",
         "composer/installers": "~2.0",
-        "om4/woocommerce-dist": "9.0.2",
+        "tectalic/woocommerce-dist": "9.0.2",
         "php-stubs/generator": "^0.8.3",
         "php-stubs/wordpress-stubs": "^5.3 || ^6.0"
     },
@@ -35,7 +35,7 @@
                 "woocommerce/woocommerce-admin"
             ],
             "woocommerce/": [
-                "om4/woocommerce-dist"
+                "tectalic/woocommerce-dist"
             ]
         },
         "phpstan": {

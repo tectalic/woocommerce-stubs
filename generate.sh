@@ -21,12 +21,12 @@ fi
 # Update WooCommerce via Composer.
 if [ "$NEW" = true ]; then
     rm -rf ./woocommerce
-    composer require om4/woocommerce-dist:"$VERSION" --dev
+    composer require tectalic/woocommerce-dist:"$VERSION" --dev
 fi
 composer update
 
 # Collect sttubs.
-HEADER=$'/**\n * Generated stub declarations for WooCommerce.\n * @see https://woocommerce.com\n * @see https://github.com/om4/woocommerce-stubs\n */'
+HEADER=$'/**\n * Generated stub declarations for WooCommerce.\n * @see https://woocommerce.com\n * @see https://github.com/tectalic/woocommerce-stubs\n */'
 
 FILE="woocommerce-stubs.php"
 FILE_PKGS="woocommerce-packages-stubs.php"

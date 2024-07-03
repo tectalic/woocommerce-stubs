@@ -4,7 +4,7 @@
 
 This package provides stub declarations for [WooCommerce](https://woocommerce.com/) functions, classes, and interfaces. These stubs can help plugin and theme developers leverage static analysis tools like [PHPStan](https://github.com/phpstan/phpstan), which is not able to parse WooCommerce as it is not clean OOP code.
 
-Stubs are generated from the [`woocommerce-dist`](https://github.com/OM4/woocommerce-dist) repo using [`php-stubs/generator`](https://github.com/php-stubs/generator).
+Stubs are generated from the [`woocommerce-dist`](https://github.com/tectalic/woocommerce-dist) repo using [`php-stubs/generator`](https://github.com/php-stubs/generator).
 
 ## Dev Requirements
 
@@ -15,7 +15,7 @@ Stubs are generated from the [`woocommerce-dist`](https://github.com/OM4/woocomm
 Require this package as a development dependency with [Composer](https://getcomposer.org).
 
 ```bash
-composer require --dev om4/woocommerce-stubs
+composer require --dev tectalic/woocommerce-stubs
 ```
 
 Alternatively, you may download the `woocommerce-stubs.php` and `woocommerce-packages-stubs.php` files directly.
@@ -33,13 +33,13 @@ Or manually include it in your `phpstan.neon`.
 ```yaml
 parameters:
     bootstrapFiles:
-        - vendor/om4/woocommerce-stubs/woocommerce-stubs.php
+        - vendor/tectalic/woocommerce-stubs/woocommerce-stubs.php
         # Optionally
-        - vendor/om4/woocommerce-stubs/woocommerce-packages-stubs.php
+        - vendor/tectalic/woocommerce-stubs/woocommerce-packages-stubs.php
 ```
 
 ## Generate new version
 
-1. Make sure the new version has already been added to the [`woocommerce-dist`](https://github.com/OM4/woocommerce-dist) repo.
-2. Update [Private Packagist](https://packagist.com/orgs/om4/packages/3389306) if needed.
+1. Make sure the new version has already been added to the [`woocommerce-dist`](https://github.com/tectalic/woocommerce-dist) repo.
+2. Update [Private Packagist](https://packagist.com/orgs/tectalic/packages/3389306) if needed.
 3. Run the `./generate.sh` script with the new version, e.g., `./generate.sh 7.0.0-beta.1`.
