@@ -2,7 +2,7 @@
 /**
  * Generated stub declarations for WooCommerce.
  * @see https://woocommerce.com
- * @see https://github.com/om4/woocommerce-stubs
+ * @see https://github.com/tectalic/woocommerce-stubs
  */
 
 namespace {
@@ -133170,5 +133170,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '9.0.2');
+    define('WC_VERSION', '9.0.2-1-gc5c57d3');
 }
