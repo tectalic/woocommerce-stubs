@@ -11261,8 +11261,11 @@ namespace {
         {
         }
         /**
-         * Get the connected user's subscription list data.
-         * This is used by the My Subscriptions page.
+         * Get the connected user's subscription list data. Here, we merge connected
+         * subscriptions with locally installed Woo plugins and themes. We also
+         * add in information about available updates.
+         *
+         * Used by the My Subscriptions page.
          *
          * @return array
          */
@@ -11440,6 +11443,14 @@ namespace {
          * @return string
          */
         public static function get_install_base_url()
+        {
+        }
+        /**
+         * Retrieve notice for connected store.
+         *
+         * @return array An array containing notice data.
+         */
+        public static function get_notices()
         {
         }
     }
@@ -23191,7 +23202,7 @@ namespace {
         {
         }
         /**
-         * Renders any additional fields captured during block based checkout.
+         * Renders any additional fields captured during block-based checkout.
          *
          * @param WC_Order $order         Order instance.
          * @param bool     $sent_to_admin If email is sent to admin.
@@ -23201,7 +23212,7 @@ namespace {
         {
         }
         /**
-         * Renders any additional address fields captured during block based checkout.
+         * Renders any additional address fields captured during block-based checkout.
          *
          * @param string   $address_type Address type.
          * @param WC_Order $order         Order instance.
@@ -24219,7 +24230,7 @@ namespace {
          *
          * @var array
          */
-        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'), '8.9.0' => array('wc_update_890_update_connect_to_woocommerce_note', 'wc_update_890_update_paypal_standard_load_eligibility'), '8.9.1' => array('wc_update_891_create_plugin_autoinstall_history_option'), '9.0.0' => array('wc_update_900_add_launch_your_store_tour_option'));
+        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'), '8.9.0' => array('wc_update_890_update_connect_to_woocommerce_note', 'wc_update_890_update_paypal_standard_load_eligibility'), '8.9.1' => array('wc_update_891_create_plugin_autoinstall_history_option'), '9.1.0' => array('wc_update_910_add_launch_your_store_tour_option', 'wc_update_910_remove_obsolete_user_meta'));
         /**
          * Option name used to track new installations of WooCommerce.
          *
@@ -30560,7 +30571,7 @@ namespace {
         |--------------------------------------------------------------------------
         */
         /**
-         * Sync a variable product with it's children. These sync functions sync
+         * Sync a variable product with its children. These sync functions sync
          * upwards (from child to parent) when the variation is saved.
          *
          * @param WC_Product|int $product Product object or ID for which you wish to sync.
@@ -31813,6 +31824,15 @@ namespace {
          */
         protected $auth_method = '';
         /**
+         * Provides access to the global WC_REST_Authentication instance.
+         *
+         * @internal
+         * @return self
+         */
+        public static function instance() : self
+        {
+        }
+        /**
          * Initialize authentication actions.
          */
         public function __construct()
@@ -32021,9 +32041,16 @@ namespace {
         {
         }
         /**
-         * Updated API Key last access datetime.
+         * Updates the `last_access` field for the API key associated with the current request.
+         *
+         * This method tries to disambiguate 'primary' API requests from any programmatic REST
+         * API requests made internally.
+         *
+         * @param WP_REST_Request $request The request currently being processed.
+         *
+         * @return void
          */
-        private function update_last_access()
+        private function update_last_access($request)
         {
         }
         /**
@@ -35085,7 +35112,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '9.0.2';
+        public $version = '9.1.0';
         /**
          * WooCommerce Schema version.
          *
@@ -37048,6 +37075,20 @@ namespace {
          * @throws Exception If invalid coupon.
          */
         public function read(&$coupon)
+        {
+        }
+        /**
+         * Get a metadata value that is stored as either a string consisting of a comma-separated list of values
+         * or as a serialized array.
+         *
+         * WooCommerce always stores the coupon product ids as a comma-separated string, but it seems that
+         * some plugins mistakenly change these to an array.
+         *
+         * @param int    $coupon_id The coupon id.
+         * @param string $meta_key The meta key to get.
+         * @return array The metadata value as an array, with empty values removed.
+         */
+        private function get_coupon_meta_as_array($coupon_id, string $meta_key)
         {
         }
         /**
@@ -41044,6 +41085,16 @@ namespace {
         {
         }
         /**
+         * Returns CSS styles that should be included with all HTML e-mails, regardless of theme specific customizations.
+         *
+         * @since 9.1.0
+         *
+         * @return string
+         */
+        protected function get_must_use_css_styles() : string
+        {
+        }
+        /**
          * Return if emogrifier library is supported.
          *
          * @version 4.0.0
@@ -42140,17 +42191,6 @@ namespace {
          * @return string
          */
         public function get_default_additional_content()
-        {
-        }
-        /**
-         * Return content from the additional_content field.
-         *
-         * Displayed above the footer.
-         *
-         * @since 3.7.0
-         * @return string
-         */
-        public function get_additional_content()
         {
         }
         /**
@@ -53572,6 +53612,21 @@ namespace {
          * @var string
          */
         protected $namespace = 'wc/v3';
+        /**
+         * Register the routes for product reviews.
+         */
+        public function register_routes()
+        {
+        }
+        /**
+         * Callback fuction for the slug-suggestion endpoint.
+         *
+         * @param  WP_REST_Request $request Full details about the request.
+         * @return string          The suggested slug.
+         */
+        public function suggest_slug($request)
+        {
+        }
     }
     /**
      * REST API Product Tags controller class.
@@ -57149,13 +57204,11 @@ namespace {
         /**
          * Send a Tracks event when a product is published.
          *
-         * @param int          $post_id     Post ID.
-         * @param WP_Post      $post        Post object.
-         * @param bool         $update      Whether this is an existing post being updated.
-         * @param null|WP_Post $post_before Null for new posts, the WP_Post object prior
-         *                                  to the update for updated posts.
+         * @param int        $product_id  Product ID.
+         * @param WC_Product $product     Product object.
+         * @param array      $changes     Product changes.
          */
-        public function track_product_published($post_id, $post, $update, $post_before)
+        public function track_product_published($product_id, $product, $changes = \null)
         {
         }
         /**
@@ -57213,6 +57266,14 @@ namespace {
          * @param string $hook Page hook.
          */
         public function possibly_add_tag_tracking_scripts($hook)
+        {
+        }
+        /**
+         * Check if the current process is importing products.
+         *
+         * @return bool True if importing, false otherwise.
+         */
+        private function is_importing()
         {
         }
     }
@@ -61657,6 +61718,22 @@ namespace Automattic\WooCommerce\Admin\API {
         {
         }
         /**
+         * Count the test orders created during Woo Payments test mode.
+         *
+         * @return \WP_REST_Response
+         */
+        public function get_woopay_test_orders_count()
+        {
+        }
+        /**
+         * Delete WooPayments test orders.
+         *
+         * @return \WP_REST_Response
+         */
+        public function delete_woopay_test_orders()
+        {
+        }
+        /**
          * Update woocommerce_admin_launch_your_store_survey_completed to yes or no
          *
          * @param \WP_REST_Request $request WP_REST_Request object.
@@ -61664,6 +61741,14 @@ namespace Automattic\WooCommerce\Admin\API {
          * @return \WP_REST_Response
          */
         public function update_survey_status(\WP_REST_Request $request)
+        {
+        }
+        /**
+         * Return woocommerce_admin_launch_your_store_survey_completed option.
+         *
+         * @return \WP_REST_Response
+         */
+        public function has_survey_completed()
         {
         }
     }
@@ -71389,7 +71474,7 @@ namespace Automattic\WooCommerce\Admin\Features {
          *
          * @var array
          */
-        protected static $beta_features = array('navigation', 'new-product-management-experience', 'settings');
+        protected static $beta_features = array('navigation', 'settings');
         /**
          * Get class instance.
          */
@@ -72411,44 +72496,6 @@ namespace Automattic\WooCommerce\Admin\Features\Navigation {
     }
 }
 namespace Automattic\WooCommerce\Admin\Features {
-    /**
-     * Loads assets related to the new product management experience page.
-     */
-    class NewProductManagementExperience
-    {
-        /**
-         * Option name used to toggle this feature.
-         */
-        const TOGGLE_OPTION_NAME = 'woocommerce_new_product_management_enabled';
-        /**
-         * Constructor
-         */
-        public function __construct()
-        {
-        }
-        /**
-         * Maybe show disabled notice.
-         */
-        public function maybe_show_disabled_notice()
-        {
-        }
-        /**
-         * Enqueue styles needed for the rich text editor.
-         */
-        public function enqueue_styles()
-        {
-        }
-        /**
-         * Update the edit product links when the new experience is enabled.
-         *
-         * @param string $link    The edit link.
-         * @param int    $post_id Post ID.
-         * @return string
-         */
-        public function update_edit_product_link($link, $post_id)
-        {
-        }
-    }
     /**
      * Contains backend logic for the onboarding profile and checklist feature.
      *
@@ -75524,6 +75571,61 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
         }
     }
     /**
+     * Utils for block templates.
+     */
+    class BlockTemplateUtils
+    {
+        /**
+         * Directory which contains all templates
+         *
+         * @var string
+         */
+        const TEMPLATES_ROOT_DIR = 'templates';
+        /**
+         * Directory names.
+         *
+         * @var array
+         */
+        const DIRECTORY_NAMES = array('TEMPLATES' => 'product-form', 'TEMPLATE_PARTS' => 'product-form/parts');
+        /**
+         * Gets the directory where templates of a specific template type can be found.
+         *
+         * @param string $template_type wp_template or wp_template_part.
+         * @return string
+         */
+        private static function get_templates_directory($template_type = 'wp_template')
+        {
+        }
+        /**
+         * Return the path to a block template file.
+         * Otherwise, False.
+         *
+         * @param string $slug - Template slug.
+         * @return string|bool   Path to the template file or false.
+         */
+        public static function get_block_template_path($slug)
+        {
+        }
+        /**
+         * Get the template data from the headers.
+         *
+         * @param string $file_path - File path.
+         * @return array              Template data.
+         */
+        public static function get_template_file_data($file_path)
+        {
+        }
+        /**
+         * Get the template content from the file.
+         *
+         * @param string $file_path - File path.
+         * @return string Content.
+         */
+        public static function get_template_content($file_path)
+        {
+        }
+    }
+    /**
      * Loads assets related to the product block editor.
      */
     class Init
@@ -75554,6 +75656,15 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
          * Constructor
          */
         public function __construct()
+        {
+        }
+        /**
+         * Adds the product template ID to the product if it doesn't exist.
+         *
+         * @param WP_REST_Response $response The response object.
+         * @param WC_Product       $product The product.
+         */
+        public function possibly_add_template_id($response, $product)
         {
         }
         /**
@@ -75671,6 +75782,45 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor {
          * @return array
          */
         public function get_block_types($block_types)
+        {
+        }
+    }
+    /**
+     * Handle retrieval of product forms.
+     */
+    class ProductFormsController
+    {
+        /**
+         * Product form templates.
+         *
+         * @var array
+         */
+        private $product_form_templates = array('simple');
+        /**
+         * Set up the product forms controller.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Migrate form templates after WooCommerce plugin update.
+         *
+         * @param \WP_Upgrader $upgrader The WP_Upgrader instance.
+         * @param array        $hook_extra Extra arguments passed to hooked filters.
+         * @return void
+         */
+        public function migrate_templates_when_plugin_updated(\WP_Upgrader $upgrader, array $hook_extra)
+        {
+        }
+        /**
+         * Create ot update a product_form post for each product form template.
+         * If the post already exists, it will be updated.
+         * If the post does not exist, it will be created even if the action is `update`.
+         *
+         * @param string $action - The action to perform. `insert` | `update`.
+         * @return void
+         */
+        public function migrate_product_form_posts($action)
         {
         }
     }
@@ -83532,8 +83682,8 @@ namespace Automattic\WooCommerce\Blocks {
         }
     }
     /**
-     * Registers patterns under the `./patterns/` directory and updates their content.
-     * Each pattern is defined as a PHP file and defines its metadata using plugin-style headers.
+     * Registers patterns under the `./patterns/` directory and from the PTK API and updates their content.
+     * Each pattern from core is defined as a PHP file and defines its metadata using plugin-style headers.
      * The minimum required definition is:
      *
      *     /**
@@ -83558,90 +83708,59 @@ namespace Automattic\WooCommerce\Blocks {
      */
     class BlockPatterns
     {
-        const SLUG_REGEX = '/^[A-z0-9\\/_-]+$/';
-        const COMMA_SEPARATED_REGEX = '/[\\s,]+/';
-        const PATTERNS_AI_DATA_POST_TYPE = 'patterns_ai_data';
         /**
-         * Path to the patterns directory.
+         * Path to the patterns' directory.
          *
          * @var string $patterns_path
          */
-        private $patterns_path;
+        private string $patterns_path;
+        /**
+         * PatternRegistry instance.
+         *
+         * @var PatternRegistry $pattern_registry
+         */
+        private \Automattic\WooCommerce\Blocks\Patterns\PatternRegistry $pattern_registry;
+        /**
+         * Patterns dictionary
+         *
+         * @var array|WP_Error
+         */
+        private $dictionary;
+        /**
+         * PTKPatternsStore instance.
+         *
+         * @var PTKPatternsStore $ptk_patterns_store
+         */
+        private \Automattic\WooCommerce\Blocks\Patterns\PTKPatternsStore $ptk_patterns_store;
         /**
          * Constructor for class
          *
-         * @param Package $package An instance of Package.
+         * @param Package          $package An instance of Package.
+         * @param PatternRegistry  $pattern_registry An instance of PatternRegistry.
+         * @param PTKPatternsStore $ptk_patterns_store An instance of PTKPatternsStore.
          */
-        public function __construct(\Automattic\WooCommerce\Blocks\Domain\Package $package)
+        public function __construct(\Automattic\WooCommerce\Blocks\Domain\Package $package, \Automattic\WooCommerce\Blocks\Patterns\PatternRegistry $pattern_registry, \Automattic\WooCommerce\Blocks\Patterns\PTKPatternsStore $ptk_patterns_store)
         {
         }
         /**
-         * Make sure the 'woocommerce_blocks_allow_ai_connection' option is set to true if the site is connected to AI.
+         * Register block patterns from core.
          *
-         * @param string $option The option name.
-         * @param string $value The option value.
-         *
-         * @return bool
-         */
-        public function update_ai_connection_allowed_option($option, $value) : bool
-        {
-        }
-        /**
-         * Registers the block patterns and categories under `./patterns/`.
+         * @return void
          */
         public function register_block_patterns()
         {
         }
         /**
-         * Update the patterns content when the store description is changed.
+         * Register patterns from the Patterns Toolkit.
          *
-         * @param string $option The option name.
-         * @param string $value The option value.
+         * @return void
          */
-        public function schedule_on_option_update($option, $value)
-        {
-        }
-        /**
-         * Update the patterns content when the WooCommerce Blocks plugin is updated.
-         *
-         * @param \WP_Upgrader $upgrader_object  WP_Upgrader instance.
-         * @param array        $options  Array of bulk item update data.
-         */
-        public function schedule_on_plugin_update($upgrader_object, $options)
-        {
-        }
-        /**
-         * Update the patterns content when the store description is changed.
-         *
-         * @param string $business_description The business description.
-         */
-        public function schedule_patterns_content_update($business_description)
-        {
-        }
-        /**
-         * Update the patterns content.
-         *
-         * @param string $value The new value saved for the add_option_woo_ai_describe_store_description option.
-         *
-         * @return bool|string|\WP_Error
-         */
-        public function update_patterns_content($value)
-        {
-        }
-        /**
-         * Filter the patterns dictionary to get the pattern data corresponding to the pattern slug.
-         *
-         * @param array  $dictionary The patterns dictionary.
-         * @param string $slug The pattern slug.
-         *
-         * @return array|null
-         */
-        private function get_pattern_from_dictionary($dictionary, $slug)
+        public function register_ptk_patterns()
         {
         }
     }
     /**
-     * BlockTypesController class.
+     * BlockTemplatesController class.
      *
      * @internal
      */
@@ -83793,21 +83912,6 @@ namespace Automattic\WooCommerce\Blocks {
          * @return boolean
          */
         public function block_template_is_available($template_name, $template_type = 'wp_template')
-        {
-        }
-        /**
-         * Update the product archive title to "Shop".
-         *
-         * Attention: this method is run in classic themes as well, so it
-         * can't be moved to the ProductCatalogTemplate class. See:
-         * https://github.com/woocommerce/woocommerce/pull/46429
-         *
-         * @param string $post_type_name Post type 'name' label.
-         * @param string $post_type      Post type.
-         *
-         * @return string
-         */
-        public function update_product_archive_title($post_type_name, $post_type)
         {
         }
     }
@@ -88982,13 +89086,44 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes {
          */
         protected $block_name = 'product-filters';
         /**
-         *  Register the context
+         * Register the context.
          *
          * @return string[]
          */
         protected function get_block_type_uses_context()
         {
         }
+        /**
+         * Get the frontend style handle for this block type.
+         *
+         * @return null
+         */
+        protected function get_block_type_style()
+        {
+        }
+        /**
+         * Include and render the block.
+         *
+         * @param array    $attributes Block attributes. Default empty array.
+         * @param string   $content    Block content. Default empty string.
+         * @param WP_Block $block      Block instance.
+         * @return string Rendered block type output.
+         */
+        protected function render($attributes, $content, $block)
+        {
+        }
+    }
+    /**
+     * ProductFiltersOverlay class.
+     */
+    class ProductFiltersOverlay extends \Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock
+    {
+        /**
+         * Block name.
+         *
+         * @var string
+         */
+        protected $block_name = 'product-filters-overlay';
         /**
          * Get the frontend style handle for this block type.
          *
@@ -91115,6 +91250,17 @@ namespace Automattic\WooCommerce\Blocks {
         {
         }
         /**
+         * Register block categories
+         *
+         * Used in combination with the `block_categories_all` filter, to append
+         * WooCommerce Blocks related categories to the Gutenberg editor.
+         *
+         * @param array $categories The array of already registered categories.
+         */
+        public function register_block_categories($categories)
+        {
+        }
+        /**
          * Add data- attributes to blocks when rendered if the block is under the woocommerce/ namespace.
          *
          * @param string $content Block content.
@@ -91339,22 +91485,6 @@ namespace Automattic\WooCommerce\Blocks\Domain {
          * @return FeatureGating
          */
         public function feature()
-        {
-        }
-        /**
-         * Checks if we're executing the code in an experimental build mode.
-         *
-         * @return boolean
-         */
-        public function is_experimental_build()
-        {
-        }
-        /**
-         * Checks if we're executing the code in an feature plugin or experimental build mode.
-         *
-         * @return boolean
-         */
-        public function is_feature_plugin_build()
         {
         }
     }
@@ -92301,21 +92431,13 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services\Email {
 }
 namespace Automattic\WooCommerce\Blocks\Domain\Services {
     /**
-     * Service class that handles the feature flags.
+     * Service class that used to handle feature flags. That functionality
+     * is removed now and it is only used to determine "environment".
      *
      * @internal
      */
     class FeatureGating
     {
-        /**
-         * Current flag value.
-         *
-         * @var int
-         */
-        private $flag;
-        const EXPERIMENTAL_FLAG = 3;
-        const FEATURE_PLUGIN_FLAG = 2;
-        const CORE_FLAG = 1;
         /**
          * Current environment
          *
@@ -92328,46 +92450,15 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         /**
          * Constructor
          *
-         * @param int    $flag        Hardcoded flag value. Useful for tests.
          * @param string $environment Hardcoded environment value. Useful for tests.
          */
-        public function __construct($flag = 0, $environment = 'unset')
-        {
-        }
-        /**
-         * Set correct flag.
-         */
-        public function load_flag()
+        public function __construct($environment = 'unset')
         {
         }
         /**
          * Set correct environment.
          */
         public function load_environment()
-        {
-        }
-        /**
-         * Returns the current flag value.
-         *
-         * @return int
-         */
-        public function get_flag()
-        {
-        }
-        /**
-         * Checks if we're executing the code in an experimental build mode.
-         *
-         * @return boolean
-         */
-        public function is_experimental_build()
-        {
-        }
-        /**
-         * Checks if we're executing the code in an feature plugin or experimental build mode.
-         *
-         * @return boolean
-         */
-        public function is_feature_plugin_build()
         {
         }
         /**
@@ -92400,38 +92491,6 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
          * @return boolean
          */
         public function is_test_environment()
-        {
-        }
-        /**
-         * Returns core flag value.
-         *
-         * @return number
-         */
-        public static function get_core_flag()
-        {
-        }
-        /**
-         * Returns feature plugin flag value.
-         *
-         * @return number
-         */
-        public static function get_feature_plugin_flag()
-        {
-        }
-        /**
-         * Returns experimental flag value.
-         *
-         * @return number
-         */
-        public static function get_experimental_flag()
-        {
-        }
-        /**
-         * Check if the block templates controller refactor should be used to display blocks.
-         *
-         * @return boolean
-         */
-        public function is_block_templates_controller_refactor_enabled()
         {
         }
     }
@@ -92647,7 +92706,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         {
         }
         /**
-         * Replaces all notices with the new block based notices.
+         * Replaces all notices with the new block-based notices.
          *
          * @return void
          */
@@ -92881,7 +92940,7 @@ namespace Automattic\WooCommerce\Blocks {
         }
         /**
          * Modifies default page content replacing it with classic shortcode block.
-         * We check for shortcode as default because after WooCommerce 8.3, block based checkout is used by default.
+         * We check for shortcode as default because after WooCommerce 8.3, block-based checkout is used by default.
          * This only runs on Tools > Create Pages as the filter is not applied on WooCommerce plugin activation.
          *
          * @param array $pages Default pages.
@@ -93292,22 +93351,6 @@ namespace Automattic\WooCommerce\Blocks {
         {
         }
         /**
-         * Checks if we're executing the code in an experimental build mode.
-         *
-         * @return boolean
-         */
-        public static function is_experimental_build()
-        {
-        }
-        /**
-         * Checks if we're executing the code in a feature plugin or experimental build mode.
-         *
-         * @return boolean
-         */
-        public static function is_feature_plugin_build()
-        {
-        }
-        /**
          * Loads the dependency injection container for woocommerce blocks.
          *
          * @param boolean $reset Used to reset the container to a fresh instance.
@@ -93315,6 +93358,224 @@ namespace Automattic\WooCommerce\Blocks {
          *                       reconstructed.
          */
         public static function container($reset = false)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blocks\Patterns {
+    /**
+     * AIPatterns class.
+     */
+    class AIPatterns
+    {
+        const PATTERNS_AI_DATA_POST_TYPE = 'patterns_ai_data';
+        /**
+         * Constructor for the class.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Register the Patterns AI Data post type to store patterns with the AI-generated content.
+         */
+        public function register_patterns_ai_data_post_type()
+        {
+        }
+        /**
+         * Make sure the 'woocommerce_blocks_allow_ai_connection' option is set to true if the site is connected to AI.
+         *
+         * @return bool
+         */
+        public function update_ai_connection_allowed_option() : bool
+        {
+        }
+        /**
+         * Update the patterns content when the store description is changed.
+         *
+         * @param string $option The option name.
+         * @param string $value The option value.
+         */
+        public function schedule_on_option_update($option, $value)
+        {
+        }
+        /**
+         * Update the patterns content when the WooCommerce Blocks plugin is updated.
+         *
+         * @param \WP_Upgrader $upgrader_object  WP_Upgrader instance.
+         * @param array        $options  Array of bulk item update data.
+         */
+        public function schedule_on_plugin_update($upgrader_object, $options)
+        {
+        }
+        /**
+         * Update the patterns content when the store description is changed.
+         *
+         * @param string $business_description The business description.
+         */
+        public function schedule_patterns_content_update($business_description)
+        {
+        }
+        /**
+         * Update the patterns content.
+         *
+         * @return bool|string|\WP_Error
+         */
+        public function update_patterns_content()
+        {
+        }
+    }
+    /**
+     * PatternsToolkit class.
+     */
+    class PTKClient
+    {
+        /**
+         *  The Patterns Toolkit API URL
+         */
+        const PATTERNS_TOOLKIT_URL = 'https://public-api.wordpress.com/rest/v1/ptk/patterns/';
+        /**
+         * Fetch the WooCommerce patterns from the Patterns Toolkit (PTK) API.
+         *
+         * @param array $options Options for fetching patterns.
+         * @return array|WP_Error
+         */
+        public function fetch_patterns(array $options = array())
+        {
+        }
+    }
+    /**
+     * PTKPatterns class.
+     */
+    class PTKPatternsStore
+    {
+        const TRANSIENT_NAME = 'ptk_patterns';
+        // Some patterns need to be excluded because they have dependencies which
+        // are not installed by default (like Jetpack). Otherwise, the user
+        // would see an error when trying to insert them in the editor.
+        const EXCLUDED_PATTERNS = array('13923', '14781', '14779', '13666', '13664', '13660', '13588', '14922', '14880', '13596', '13967', '13958', '15050', '15027');
+        /**
+         * PatternsToolkit instance.
+         *
+         * @var PTKClient $ptk_client
+         */
+        private \Automattic\WooCommerce\Blocks\Patterns\PTKClient $ptk_client;
+        /**
+         * Constructor for the class.
+         *
+         * @param PTKClient $ptk_client An instance of PatternsToolkit.
+         */
+        public function __construct(\Automattic\WooCommerce\Blocks\Patterns\PTKClient $ptk_client)
+        {
+        }
+        /**
+         * Resets the cached patterns when the `woocommerce_allow_tracking` option is disabled.
+         * Resets and fetch the patterns from the PTK when it is enabled (if the scheduler
+         * is initialized, it's done asynchronously via a scheduled action).
+         *
+         * @return void
+         */
+        public function flush_or_fetch_patterns()
+        {
+        }
+        /**
+         * Schedule an async action to fetch the PTK patterns when the scheduler is initialized.
+         *
+         * @return void
+         */
+        private function schedule_fetch_patterns()
+        {
+        }
+        /**
+         * Schedule an action if it's not already pending.
+         *
+         * @param string $action The action name to schedule.
+         * @return void
+         */
+        private function schedule_action_if_not_pending($action)
+        {
+        }
+        /**
+         * Get the patterns from the Patterns Toolkit cache.
+         *
+         * @return array
+         */
+        public function get_patterns()
+        {
+        }
+        /**
+         * Filter patterns to exclude those with the given IDs.
+         *
+         * @param array $patterns The patterns to filter.
+         * @param array $pattern_ids The pattern IDs to exclude.
+         * @return array
+         */
+        private function filter_patterns(array $patterns, array $pattern_ids)
+        {
+        }
+        /**
+         * Re-fetch the patterns when the WooCommerce plugin is updated.
+         *
+         * @param WP_Upgrader $upgrader_object WP_Upgrader instance.
+         * @param array       $options Array of bulk item update data.
+         *
+         * @return void
+         */
+        public function fetch_patterns_on_plugin_update($upgrader_object, $options)
+        {
+        }
+        /**
+         * Reset the cached patterns to fetch them again from the PTK.
+         *
+         * @return void
+         */
+        public function flush_cached_patterns()
+        {
+        }
+        /**
+         * Reset the cached patterns and fetch them again from the PTK API.
+         *
+         * @return void
+         */
+        public function fetch_patterns()
+        {
+        }
+        /**
+         * Check if the user allowed tracking.
+         *
+         * @return bool
+         */
+        private function allowed_tracking_is_enabled() : bool
+        {
+        }
+    }
+    /**
+     * PatternRegistry class.
+     */
+    class PatternRegistry
+    {
+        const SLUG_REGEX = '/^[A-z0-9\\/_-]+$/';
+        const COMMA_SEPARATED_REGEX = '/[\\s,]+/';
+        /**
+         * Register a block pattern.
+         *
+         * @param string $source The pattern source.
+         * @param array  $pattern_data The pattern data.
+         * @param array  $dictionary The patterns' dictionary.
+         *
+         * @return void
+         */
+        public function register_block_pattern($source, $pattern_data, $dictionary)
+        {
+        }
+        /**
+         * Filter the patterns dictionary to get the pattern data corresponding to the pattern slug.
+         *
+         * @param array  $dictionary The patterns' dictionary.
+         * @param string $slug The pattern slug.
+         *
+         * @return array|null
+         */
+        private function get_pattern_from_dictionary($dictionary, $slug)
         {
         }
     }
@@ -95332,6 +95593,57 @@ namespace Automattic\WooCommerce\Blocks\Templates {
         }
     }
     /**
+     * ProductFiltersOverlayTemplate class.
+     *
+     * @internal
+     */
+    class ProductFiltersOverlayTemplate extends \Automattic\WooCommerce\Blocks\Templates\AbstractTemplatePart
+    {
+        /**
+         * The slug of the template.
+         *
+         * @var string
+         */
+        const SLUG = 'product-filters-overlay';
+        /**
+         * The template part area where the template part belongs.
+         *
+         * @var string
+         */
+        public $template_area = 'product-filters-overlay';
+        /**
+         * Initialization method.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Returns the title of the template.
+         *
+         * @return string
+         */
+        public function get_template_title()
+        {
+        }
+        /**
+         * Returns the description of the template.
+         *
+         * @return string
+         */
+        public function get_template_description()
+        {
+        }
+        /**
+         * Add Filters Overlay to the default template part areas.
+         *
+         * @param array $default_area_definitions An array of supported area objects.
+         * @return array The supported template part areas including the Filters Overlay one.
+         */
+        public function register_product_filters_overlay_template_part_area($default_area_definitions)
+        {
+        }
+    }
+    /**
      * ProductSearchResultsTemplate class.
      *
      * @internal
@@ -96070,6 +96382,17 @@ namespace Automattic\WooCommerce\Blocks\Utils {
          * @return bool true if the WC checkout page is using the Checkout block.
          */
         public static function is_checkout_block_default()
+        {
+        }
+        /**
+         * Checks if the template overriding the page loads the page content or not.
+         * Templates by default load the page content, but if that block is deleted the content can get out of sync with the one presented in the page editor.
+         *
+         * @param string $block The block to check.
+         *
+         * @return bool true if the template has out of sync content.
+         */
+        public static function is_overriden_by_custom_template_content(string $block) : bool
         {
         }
         /**
@@ -97595,6 +97918,32 @@ namespace Automattic\WooCommerce\DataBase\Migrations\CustomOrderTable {
          * @param array $assoc_args Associative arguments (options) passed to the command.
          */
         public function backfill(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Enables compatibility mode, which keeps the HPOS and posts datastore in sync.
+         *
+         * @since 9.1.0
+         */
+        public function enable_compat_mode() : void
+        {
+        }
+        /**
+         * Disables compatibility mode, which keeps the HPOS and posts datastore in sync.
+         *
+         * @since 9.1.0
+         */
+        public function disable_compat_mode() : void
+        {
+        }
+        /**
+         * Toggles compatibility mode on or off.
+         *
+         * @since 9.1.0
+         *
+         * @param bool $enabled TRUE to enable compatibility mode, FALSE to disable.
+         */
+        private function toggle_compat_mode(bool $enabled) : void
         {
         }
     }
@@ -104583,6 +104932,16 @@ namespace Automattic\WooCommerce\Internal\Admin\Orders {
         {
         }
         /**
+         * Gets the order status label for an order.
+         *
+         * @param WC_Order $order The order object.
+         *
+         * @return string
+         */
+        private function get_order_status_label(\WC_Order $order) : string
+        {
+        }
+        /**
          * Renders order billing information.
          *
          * @param WC_Order $order The order object for the current row.
@@ -105808,16 +106167,6 @@ namespace Automattic\WooCommerce\Internal\Admin\ProductReviews {
          * @return string
          */
         protected function edit_review_parent_file($parent_file)
-        {
-        }
-        /**
-         * Replaces Edit/Moderate Comment title/headline with Edit Review, when editing/moderating a review.
-         *
-         * @param  string|mixed $translation Translated text.
-         * @param  string|mixed $text        Text to translate.
-         * @return string|mixed              Translated text.
-         */
-        protected function edit_comments_screen_text($translation, $text)
         {
         }
         /**
@@ -107967,9 +108316,11 @@ namespace Automattic\WooCommerce\Internal\Admin {
         /**
          * Whether the WooPayments welcome page should be visible.
          *
+         * @param bool $skip_wcpay_active Whether to skip the check for the WooPayments plugin being active.
+         *
          * @return boolean
          */
-        public function must_be_visible() : bool
+        public function must_be_visible($skip_wcpay_active = false) : bool
         {
         }
         /**
@@ -107988,7 +108339,7 @@ namespace Automattic\WooCommerce\Internal\Admin {
         {
         }
         /**
-         * Adds allowed promo notes from the WooPayments incentive.
+         * Adds allowed promo notes for the WooPayments incentives.
          *
          * @param array $promo_notes Allowed promo notes.
          * @return array
@@ -108131,6 +108482,10 @@ namespace Automattic\WooCommerce\Internal\BatchProcessing {
         const ENQUEUED_PROCESSORS_OPTION_NAME = 'wc_pending_batch_processes';
         const ACTION_GROUP = 'wc_batch_processes';
         /**
+         * Maximum number of failures per processor before it gets dequeued.
+         */
+        const FAILING_PROCESS_MAX_ATTEMPTS_DEFAULT = 5;
+        /**
          * Instance of WC_Logger class.
          *
          * @var \WC_Logger_Interface
@@ -108201,11 +108556,11 @@ namespace Automattic\WooCommerce\Internal\BatchProcessing {
         /**
          * Get the name of the option where we will be saving state for a given processor.
          *
-         * @param BatchProcessorInterface $batch_processor Batch processor instance.
+         * @param BatchProcessorInterface|string $batch_processor Batch processor instance or class name.
          *
          * @return string Option name.
          */
-        private function get_processor_state_option_name(\Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessorInterface $batch_processor) : string
+        private function get_processor_state_option_name($batch_processor) : string
         {
         }
         /**
@@ -108216,6 +108571,16 @@ namespace Automattic\WooCommerce\Internal\BatchProcessing {
          * @param \Exception|null         $last_error Exception object in processing the batch, if there was one.
          */
         private function update_processor_state(\Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessorInterface $batch_processor, float $time_taken, \Exception $last_error = null) : void
+        {
+        }
+        /**
+         * Removes the option where we store state for a given processor.
+         *
+         * @since 9.1.0
+         *
+         * @param string $processor_class_name Fully qualified class name of the processor.
+         */
+        private function clear_processor_state(string $processor_class_name) : void
         {
         }
         /**
@@ -108306,6 +108671,39 @@ namespace Automattic\WooCommerce\Internal\BatchProcessing {
          * @param array                   $batch Batch that was being processed.
          */
         protected function log_error(\Exception $error, \Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessorInterface $batch_processor, array $batch) : void
+        {
+        }
+        /**
+         * Determines whether a given processor is consistently failing based on how many recent consecutive failures it has had.
+         *
+         * @since 9.1.0
+         *
+         * @param BatchProcessorInterface $batch_processor The processor that we want to check.
+         * @return boolean TRUE if processor is consistently failing. FALSE otherwise.
+         */
+        private function is_consistently_failing(\Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessorInterface $batch_processor) : bool
+        {
+        }
+        /**
+         * Creates log entry with details about a batch processor that is consistently failing.
+         *
+         * @since 9.1.0
+         *
+         * @param BatchProcessorInterface $batch_processor The batch processor instance.
+         * @param array                   $process_details Failing process details.
+         */
+        private function log_consistent_failure(\Automattic\WooCommerce\Internal\BatchProcessing\BatchProcessorInterface $batch_processor, array $process_details) : void
+        {
+        }
+        /**
+         * Hooked onto 'shutdown'. This cleanup routine checks enqueued processors and whether they are scheduled or not to
+         * either re-eschedule them or remove them from the queue.
+         * This prevents stale states where Action Scheduler won't schedule any more attempts but we still report the
+         * processor as enqueued.
+         *
+         * @since 9.1.0
+         */
+        private function remove_or_retry_failed_processors() : void
         {
         }
     }
@@ -109339,6 +109737,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
         /**
          * Option name for this feature.
+         *
+         * @deprecated 9.1.0
          */
         public const OPTION_NAME = 'woocommerce_hpos_legacy_data_cleanup_in_progress';
         /**
@@ -109369,12 +109769,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @var \WC_Logger
          */
         private $error_logger;
-        /**
-         * Class constructor.
-         */
-        public function __construct()
-        {
-        }
         /**
          * Class initialization, invoked by the DI container.
          *
@@ -109445,14 +109839,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Checks whether the cleanup process should run. That is, it must be activated and {@see can_run()} must return TRUE.
-         *
-         * @return boolean TRUE if the cleanup process should be run, FALSE otherwise.
-         */
-        public function should_run()
-        {
-        }
-        /**
          * Whether the user has initiated the cleanup process.
          *
          * @return boolean TRUE if the user has initiated the cleanup process, FALSE otherwise.
@@ -109464,8 +109850,9 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * Sets the flag that indicates that the cleanup process should be initiated.
          *
          * @param boolean $enabled TRUE if the process should be initiated, FALSE if it should be canceled.
+         * @return boolean Whether the legacy data cleanup was initiated or not.
          */
-        public function toggle_flag(bool $enabled)
+        public function toggle_flag(bool $enabled) : bool
         {
         }
         /**
@@ -109477,50 +109864,11 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
         {
         }
         /**
-         * Hooked onto 'add_option' to enqueue the batch processor (if needed).
-         *
-         * @param string $option Name of the option to add.
-         * @param mixed  $value  Value of the option.
-         */
-        private function process_added_option(string $option, $value)
-        {
-        }
-        /**
-         * Hooked onto 'delete_option' to remove the batch processor.
-         */
-        private function process_deleted_option()
-        {
-        }
-        /**
-         * Hooked onto 'update_option' to enqueue the batch processor as needed.
-         *
-         * @param mixed $old_value Previous option value.
-         * @param mixed $new_value New option value.
-         */
-        private function process_updated_option($old_value, $new_value)
-        {
-        }
-        /**
-         * Hooked onto 'pre_update_option' to prevent enabling of the cleanup process when conditions aren't met.
-         *
-         * @param mixed $new_value New option value.
-         * @param mixed $old_value Previous option value.
-         */
-        private function pre_update_option($new_value, $old_value)
-        {
-        }
-        /**
          * Checks whether there are any orders in need of cleanup and cleanup can run.
          *
          * @return bool TRUE if there are orders in need of cleanup, FALSE otherwise.
          */
         private function orders_pending()
-        {
-        }
-        /**
-         * Hooked onto 'shutdown' to clean up or set things straight in case of failures (timeouts, etc).
-         */
-        private function maybe_reset_state()
         {
         }
     }
@@ -112563,7 +112911,7 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders 
          *
          * @var array
          */
-        protected $provides = array(\Automattic\WooCommerce\Internal\ProductAttributesLookup\DataRegenerator::class, \Automattic\WooCommerce\Internal\ProductAttributesLookup\Filterer::class, \Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore::class);
+        protected $provides = array(\Automattic\WooCommerce\Internal\ProductAttributesLookup\DataRegenerator::class, \Automattic\WooCommerce\Internal\ProductAttributesLookup\Filterer::class, \Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore::class, \Automattic\WooCommerce\Internal\ProductAttributesLookup\CLIRunner::class);
         /**
          * Register the classes.
          */
@@ -113376,12 +113724,6 @@ namespace Automattic\WooCommerce\Internal\Features\ProductBlockEditor\ProductTem
          * Adds the general group blocks to the template.
          */
         protected function add_general_group_blocks()
-        {
-        }
-        /**
-         * Adds the pricing group blocks to the template.
-         */
-        protected function add_pricing_group_blocks()
         {
         }
         /**
@@ -114302,6 +114644,319 @@ namespace Automattic\WooCommerce\Internal\Orders {
 }
 namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
     /**
+     * Command line tools to handle the regeneration of the product aatributes lookup table.
+     */
+    class CLIRunner
+    {
+        use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
+        /**
+         * The instance of DataRegenerator to use.
+         *
+         * @var DataRegenerator
+         */
+        private \Automattic\WooCommerce\Internal\ProductAttributesLookup\DataRegenerator $data_regenerator;
+        /**
+         * The instance of DataRegenerator to use.
+         *
+         * @var LookupDataStore
+         */
+        private \Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore $lookup_data_store;
+        /**
+         * Creates a new instance of the class.
+         */
+        public function __construct()
+        {
+        }
+        // phpcs:disable WooCommerce.Functions.InternalInjectionMethod
+        /**
+         * Class initialization, invoked by the DI container.
+         *
+         * This method is normally defined as public, we define it as private here
+         * (and "publicize" it in the constructor) to prevent WP_CLI from
+         * creating a dummy command for it.
+         *
+         * @param DataRegenerator $data_regenerator The instance of DataRegenerator to use.
+         * @param LookupDataStore $lookup_data_store The instance of DataRegenerator to use.
+         */
+        private function init(\Automattic\WooCommerce\Internal\ProductAttributesLookup\DataRegenerator $data_regenerator, \Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore $lookup_data_store)
+        {
+        }
+        // phpcs:enable WooCommerce.Functions.InternalInjectionMethod
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+        /**
+         * Enable the usage of the product attributes lookup table.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function enable(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "enable" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function enable_core(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Disable the usage of the product attributes lookup table.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function disable(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "disable" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function disable_core(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Regenerate the product attributes lookup table data for one single product.
+         *
+         * ## OPTIONS
+         *
+         * <product-id>
+         * : The id of the product for which the data will be regenerated.
+         *
+         * [--disable-db-optimization]
+         * : Don't use optimized database access even if products are stored as custom post types.
+         *
+         * ## EXAMPLES
+         *
+         *     wp wc palt regenerate_for_product 34 --disable-db-optimization
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function regenerate_for_product(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "regenerate_for_product" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function regenerate_for_product_core(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * If database access optimization is requested but can't be used, show a warning.
+         *
+         * @param bool $use_db_optimization True if database access optimization is requested.
+         */
+        private function check_can_use_db_optimization(bool $use_db_optimization)
+        {
+        }
+        /**
+         * Obtain information about the product attributes lookup table.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function info(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "info" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function info_core(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Abort the background regeneration of the product attributes lookup table that is happening in the background.
+         *
+         * [--cleanup]
+         * : Also cleanup temporary data (so regeneration can't be resumed, but it can be restarted).
+         *
+         *  ## EXAMPLES
+         *
+         *      wp wc palt abort_regeneration --cleanup
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function abort_regeneration(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "abort_regeneration" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function abort_regeneration_core(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Resume the background regeneration of the product attributes lookup table after it has been aborted.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function resume_regeneration(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "resume_regeneration" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function resume_regeneration_core(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Delete the temporary data used during the regeneration of the product attributes lookup table. This data is normally deleted automatically after the regeneration process finishes.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function cleanup_regeneration_progress(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "cleanup_regeneration_progress" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function cleanup_regeneration_progress_core(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Initiate the background regeneration of the product attributes lookup table. The regeneration will happen in the background, using scheduled actions.
+         *
+         * ## OPTIONS
+         *
+         * [--force]
+         * : Don't prompt for confirmation if the product attributes lookup table isn't empty.
+         *
+         *   ## EXAMPLES
+         *
+         *       wp wc palt initiate_regeneration --force
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function initiate_regeneration(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "initiate_regeneration" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        private function initiate_regeneration_core(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Regenerate the product attributes lookup table immediately, without using scheduled tasks.
+         *
+         * ## OPTIONS
+         *
+         * [--force]
+         * : Don't prompt for confirmation if the product attributes lookup table isn't empty.
+         *
+         * [--from-scratch]
+         * : Start table regeneration from scratch even if a regeneration is already in progress.
+         *
+         * [--disable-db-optimization]
+         * : Don't use optimized database access even if products are stored as custom post types.
+         *
+         * [--batch-size=<size>]
+         * : How many products to process in each iteration of the loop.
+         * ---
+         * default: 10
+         * ---
+         *
+         * ## EXAMPLES
+         *
+         *     wp wc palt regenerate --force --from-scratch --batch-size=20
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         */
+        public function regenerate(array $args = array(), array $assoc_args = array())
+        {
+        }
+        /**
+         * Core method for the "regenerate" command.
+         *
+         * @param array $args Positional arguments passed to the command.
+         * @param array $assoc_args Associative arguments (options) passed to the command.
+         * @throws \Exception Invalid batch size argument.
+         */
+        private function regenerate_core(array $args = array(), array $assoc_args = array())
+        {
+        }
+        // phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+        /**
+         * Get information about the product attributes lookup table.
+         *
+         * @return array Array containing the 'total_rows' and 'products_count' keys.
+         */
+        private function get_lookup_table_info() : array
+        {
+        }
+        /**
+         * Invoke a method from the class, and if an exception is thrown, show it using WP_CLI::error.
+         *
+         * @param string $method_name Name of the method to invoke.
+         * @param array  $args Positional arguments to pass to the method.
+         * @param array  $assoc_args Associative arguments to pass to the method.
+         * @return mixed Result from the method, or 1 if an exception is thrown.
+         */
+        private function invoke(string $method_name, array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Show a log message using the WP_CLI text colorization feature.
+         *
+         * @param string $text Text to show.
+         */
+        private function log(string $text)
+        {
+        }
+        /**
+         * Show a warning message using the WP_CLI text colorization feature.
+         *
+         * @param string $text Text to show.
+         */
+        private function warning(string $text)
+        {
+        }
+        /**
+         * Show a success message using the WP_CLI text colorization feature.
+         *
+         * @param string $text Text to show.
+         */
+        private function success(string $text)
+        {
+        }
+        /**
+         * Show an error message using the WP_CLI text colorization feature.
+         *
+         * @param string $text Text to show.
+         */
+        private function error(string $text)
+        {
+        }
+    }
+    /**
      * This class handles the (re)generation of the product attributes lookup table.
      * It schedules the regeneration in small product batches by itself, so it can be used outside the
      * regular WooCommerce data regenerations mechanism.
@@ -114322,7 +114977,7 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
     class DataRegenerator
     {
         use \Automattic\WooCommerce\Internal\Traits\AccessiblePrivateMethods;
-        public const PRODUCTS_PER_GENERATION_STEP = 10;
+        public const PRODUCTS_PER_GENERATION_STEP = 100;
         /**
          * The data store to use.
          *
@@ -114335,6 +114990,12 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          * @var string
          */
         private $lookup_table_name;
+        /**
+         * Flag indicating if the last regeneration step failed.
+         *
+         * @var bool
+         */
+        private $last_regeneration_step_failed;
         /**
          * DataRegenerator constructor.
          */
@@ -114351,29 +115012,52 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
         {
         }
         /**
+         * Check if the last regeneration step failed.
+         *
+         * @return bool True if the last regeneration step failed.
+         */
+        public function get_last_regeneration_step_failed()
+        {
+        }
+        /**
          * Initialize the regeneration procedure:
          * deletes the lookup table and related options if they exist,
          * then it creates the table and runs the first step of the regeneration process.
          *
-         * This method is intended ONLY to be used as a callback for a db update in wc-update-functions,
-         * regeneration triggered from the tools page will use initiate_regeneration_from_tools_page instead.
+         * If $in_background is true, regeneration will continue in the background using scheduled actions.
+         * If $in_background is false, do_regeneration_step and finalize_regeneration must be invoked explicitly.
+         *
+         * This method is intended to be used as a callback for a db update in wc-update-functions
+         * and in the CLI commands, regeneration triggered from the tools page will use
+         * initiate_regeneration_from_tools_page instead.
+         *
+         * @param bool $in_background True if regeneration will continue in the background using scheduled actions.
+         * @return int Highest product id that will be processed.
          */
-        public function initiate_regeneration()
+        public function initiate_regeneration(bool $in_background = true) : int
         {
         }
         /**
-         * Delete all the existing data related to the lookup table, including the table itself.
+         * Delete all the existing data related to the lookup table, optionally including the table itself.
+         *
+         * @param bool $truncate_table True to truncate the lookup table too.
          */
-        private function delete_all_attributes_lookup_data()
+        private function delete_all_attributes_lookup_data(bool $truncate_table)
+        {
+        }
+        /**
+         * Delete all the data from the lookup table.
+         */
+        public function truncate_lookup_table()
         {
         }
         /**
          * Create the lookup table and initialize the options that will be temporarily used
          * while the regeneration is in progress.
          *
-         * @return bool True if there's any product at all in the database, false otherwise.
+         * @return int Id of the last product id that will be processed.
          */
-        private function initialize_table_and_data()
+        private function initialize_table_and_data() : int
         {
         }
         /**
@@ -114401,9 +115085,11 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          * Perform one regeneration step: grabs a chunk of products and creates
          * the appropriate entries for them in the lookup table.
          *
+         * @param int|null $step_size How many products to process, by default PRODUCTS_PER_GENERATION_STEP will be used.
+         * @param bool     $use_optimized_db_access Use direct database access for data retrieval if possible.
          * @return bool True if more steps need to be run, false otherwise.
          */
-        private function do_regeneration_step()
+        public function do_regeneration_step(?int $step_size = null, bool $use_optimized_db_access = false)
         {
         }
         /**
@@ -114411,7 +115097,7 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          *
          * @param bool $enable_usage Whether the table usage should be enabled or not.
          */
-        private function finalize_regeneration(bool $enable_usage)
+        public function finalize_regeneration(bool $enable_usage)
         {
         }
         /**
@@ -114447,23 +115133,39 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          * @param mixed $product_id The product id to check the regeneration viability for, or null to check if a complete regeneration is possible.
          * @throws \Exception Something prevents the regeneration from starting.
          */
-        private function check_can_do_lookup_table_regeneration($product_id = null)
+        public function check_can_do_lookup_table_regeneration($product_id = null)
         {
         }
         /**
-         * Callback to abort the regeneration process from the Status - Tools page.
+         * Callback to abort the regeneration process from the Status - Tools page or from CLI.
          *
+         * @param bool $verify_nonce True to perform nonce verification (needed when running the tool from the tools page).
          * @throws \Exception The lookup table doesn't exist, or there's no regeneration process in progress to abort.
          */
-        private function abort_regeneration_from_tools_page()
+        public function abort_regeneration(bool $verify_nonce)
         {
         }
         /**
-         * Callback to resume the regeneration process from the Status - Tools page.
-         *
-         * @throws \Exception The lookup table doesn't exist, or a regeneration process is already in place.
+         * Cancel any existing regeneration step scheduled action.
          */
-        private function resume_regeneration_from_tools_page()
+        public function cancel_regeneration_scheduled_action()
+        {
+        }
+        /**
+         * Check if any pending regeneration step scheduled action exists.
+         *
+         * @return bool True if any pending regeneration step scheduled action exists.
+         */
+        public function has_scheduled_action_for_regeneration_step() : bool
+        {
+        }
+        /**
+         * Callback to resume the regeneration process from the Status - Tools page or from CLI.
+         *
+         * @param bool $verify_nonce True to perform nonce verification (needed when running the tool from the tools page).
+         * @throws \Exception The lookup table doesn't exist, or a regeneration process is already in place or hasn't been aborted.
+         */
+        public function resume_regeneration(bool $verify_nonce)
         {
         }
         /**
@@ -114619,7 +115321,19 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          */
         private $lookup_table_name;
         /**
-         * LookupDataStore constructor. Makes the feature hidden by default.
+         * True if the optimized database access setting is enabled AND products are stored as custom post types.
+         *
+         * @var bool
+         */
+        private bool $optimized_db_access_is_enabled;
+        /**
+         * Flag indicating if the last lookup table creation operation failed.
+         *
+         * @var bool
+         */
+        private bool $last_create_operation_failed = false;
+        /**
+         * LookupDataStore constructor.
          */
         public function __construct()
         {
@@ -114628,6 +115342,14 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          * Initialize the hooks used by the class.
          */
         private function init_hooks()
+        {
+        }
+        /**
+         * Check if optimized database access can be used when creating lookup table entries.
+         *
+         * @return bool True if optimized database access can be used.
+         */
+        public function can_use_optimized_db_access()
         {
         }
         /**
@@ -114644,6 +115366,14 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          * @return string
          */
         public function get_lookup_table_name()
+        {
+        }
+        /**
+         * Check if the last lookup data creation operation failed.
+         *
+         * @return bool True if the last lookup data creation operation failed.
+         */
+        public function get_last_create_operation_failed()
         {
         }
         /**
@@ -114712,9 +115442,9 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          * This method is intended to be called from the data regenerator.
          *
          * @param int|WC_Product $product Product object or id.
-         * @throws \Exception A variation object is passed.
+         * @param bool           $use_optimized_db_access Use direct database access for data retrieval if possible.
          */
-        public function create_data_for_product($product)
+        public function create_data_for_product($product, $use_optimized_db_access = false)
         {
         }
         /**
@@ -114936,6 +115666,33 @@ namespace Automattic\WooCommerce\Internal\ProductAttributesLookup {
          * @return array New settings configuration array.
          */
         private function add_product_attributes_lookup_table_settings(array $settings, string $section_id) : array
+        {
+        }
+        /**
+         * Check if the optimized database access setting is enabled.
+         *
+         * @return bool True if the optimized database access setting is enabled.
+         */
+        public function optimized_data_access_is_enabled()
+        {
+        }
+        /**
+         * Create the lookup table data for a product or variation using optimized database access.
+         * For variable products entries are created for the main product and for all the variations.
+         *
+         * @param int $product_id Product or variation id.
+         */
+        private function create_data_for_product_cpt(int $product_id)
+        {
+        }
+        /**
+         * Core version of create_data_for_product_cpt (doesn't catch exceptions).
+         *
+         * @param int $product_id Product or variation id.
+         * @return void
+         * @throws \WC_Data_Exception Wrongly serialized attribute data found, or INSERT statement failed.
+         */
+        private function create_data_for_product_cpt_core(int $product_id)
         {
         }
     }
@@ -117314,6 +118071,59 @@ namespace Automattic\WooCommerce\Internal\Utilities {
          * @return bool
          */
         public static function should_user_verify_order_email($order_id, $supplied_email = null, $context = 'view')
+        {
+        }
+        /**
+         * Site-specific method of retrieving the requested user meta.
+         *
+         * This is a multisite-aware wrapper around WordPress's own `get_user_meta()` function, and works by prefixing the
+         * supplied meta key with a blog-specific meta key.
+         *
+         * @param int    $user_id User ID.
+         * @param string $key     Optional. The meta key to retrieve. By default, returns data for all keys.
+         * @param bool   $single  Optional. Whether to return a single value. This parameter has no effect if `$key` is not
+         *                        specified. Default false.
+         *
+         * @return mixed An array of values if `$single` is false. The value of meta data field if `$single` is true.
+         *               False for an invalid `$user_id` (non-numeric, zero, or negative value). An empty string if a valid
+         *               but non-existing user ID is passed.
+         */
+        public static function get_site_user_meta(int $user_id, string $key = '', bool $single = false)
+        {
+        }
+        /**
+         * Site-specific means of updating user meta.
+         *
+         * This is a multisite-aware wrapper around WordPress's own `update_user_meta()` function, and works by prefixing
+         * the supplied meta key with a blog-specific meta key.
+         *
+         * @param int    $user_id    User ID.
+         * @param string $meta_key   Metadata key.
+         * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
+         * @param mixed  $prev_value Optional. Previous value to check before updating. If specified, only update existing
+         *                           metadata entries with this value. Otherwise, update all entries. Default empty.
+         *
+         * @return int|bool Meta ID if the key didn't exist, true on successful update, false on failure or if the value
+         *                  passed to the function is the same as the one that is already in the database.
+         */
+        public static function update_site_user_meta(int $user_id, string $meta_key, $meta_value, $prev_value = '')
+        {
+        }
+        /**
+         * Site-specific means of deleting user meta.
+         *
+         * This is a multisite-aware wrapper around WordPress's own `delete_user_meta()` function, and works by prefixing
+         * the supplied meta key with a blog-specific meta key.
+         *
+         * @param int    $user_id    User ID.
+         * @param string $meta_key   Metadata name.
+         * @param mixed  $meta_value Optional. Metadata value. If provided, rows will only be removed that match the value.
+         *                           Must be serializable if non-scalar. Default empty.
+         *
+         * @return bool True on success, false on failure.
+         * /
+         */
+        public static function delete_site_user_meta($user_id, $meta_key, $meta_value = '')
         {
         }
     }
@@ -120614,6 +121424,70 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         }
     }
     /**
+     * Patterns class.
+     */
+    class Patterns extends \Automattic\WooCommerce\StoreApi\Routes\V1\AbstractRoute
+    {
+        /**
+         * The route identifier.
+         *
+         * @var string
+         */
+        const IDENTIFIER = 'patterns';
+        /**
+         * The schema item identifier.
+         *
+         * @var string
+         */
+        const SCHEMA_TYPE = 'patterns';
+        /**
+         * Get the path of this REST route.
+         *
+         * @return string
+         */
+        public function get_path()
+        {
+        }
+        /**
+         * Get the path of this rest route.
+         *
+         * @return string
+         */
+        public static function get_path_regex()
+        {
+        }
+        /**
+         * Get method arguments for this REST route.
+         *
+         * @return array An array of endpoints.
+         */
+        public function get_args()
+        {
+        }
+        /**
+         * Fetch a single pattern from the PTK to ensure the API is available.
+         *
+         * @param WP_REST_Request $request Request object.
+         *
+         * @return WP_Error|\WP_HTTP_Response|WP_REST_Response
+         * @throws RouteException If the patterns cannot be fetched.
+         */
+        protected function get_route_response(\WP_REST_Request $request)
+        {
+        }
+        /**
+         * Fetch the patterns from the PTK and update the transient.
+         *
+         * @param WP_REST_Request $request Request object.
+         *
+         * @return WP_REST_Response
+         * @throws Exception If the patterns cannot be fetched.
+         */
+        protected function get_route_post_response(\WP_REST_Request $request)
+        {
+        }
+    }
+    /**
      * ProductAttributeTerms class.
      */
     class ProductAttributeTerms extends \Automattic\WooCommerce\StoreApi\Routes\V1\AbstractTermsRoute
@@ -123211,6 +124085,42 @@ namespace Automattic\WooCommerce\StoreApi\Schemas\V1 {
         }
     }
     /**
+     * OrderSchema class.
+     */
+    class PatternsSchema extends \Automattic\WooCommerce\StoreApi\Schemas\V1\AbstractSchema
+    {
+        /**
+         * The schema item name.
+         *
+         * @var string
+         */
+        protected $title = 'patterns';
+        /**
+         * The schema item identifier.
+         *
+         * @var string
+         */
+        const IDENTIFIER = 'patterns';
+        /**
+         * Patterns schema properties.
+         *
+         * @return array
+         */
+        public function get_properties()
+        {
+        }
+        /**
+         * Get the Patterns response.
+         *
+         * @param array $item Item to get response for.
+         *
+         * @return array
+         */
+        public function get_item_response($item)
+        {
+        }
+    }
+    /**
      * ProductAttributeSchema class.
      */
     class ProductAttributeSchema extends \Automattic\WooCommerce\StoreApi\Schemas\V1\AbstractSchema
@@ -124822,24 +125732,24 @@ namespace Automattic\WooCommerce\Utilities {
          *
          * E.g. for [ 'foo' => [ 'bar' => [ 'fizz' => 'buzz' ] ] ] the value for key 'foo::bar::fizz' would be 'buzz'.
          *
-         * @param array  $array The array to get the value from.
+         * @param array  $items The array to get the value from.
          * @param string $key The complete key hierarchy, using '::' as separator.
-         * @param mixed  $default The value to return if the key doesn't exist in the array.
+         * @param mixed  $default_value The value to return if the key doesn't exist in the array.
          *
          * @return mixed The retrieved value, or the supplied default value.
          * @throws \Exception $array is not an array.
          */
-        public static function get_nested_value(array $array, string $key, $default = null)
+        public static function get_nested_value(array $items, string $key, $default_value = null)
         {
         }
         /**
          * Checks if a given key exists in an array and its value can be evaluated as 'true'.
          *
-         * @param array  $array The array to check.
+         * @param array  $items The array to check.
          * @param string $key The key for the value to check.
          * @return bool True if the key exists in the array and the value can be evaluated as 'true'.
          */
-        public static function is_truthy(array $array, string $key)
+        public static function is_truthy(array $items, string $key)
         {
         }
         /**
@@ -124852,12 +125762,12 @@ namespace Automattic\WooCommerce\Utilities {
          * $array['key'] ?? 'default' => 'default'
          * ArrayUtil::get_value_or_default($array, 'key', 'default') => null
          *
-         * @param array  $array The array to get the value from.
+         * @param array  $items The array to get the value from.
          * @param string $key The key to use to retrieve the value.
-         * @param null   $default The default value to return if the key doesn't exist in the array.
+         * @param null   $default_value The default value to return if the key doesn't exist in the array.
          * @return mixed|null The value for the key, or the default value passed.
          */
-        public static function get_value_or_default(array $array, string $key, $default = null)
+        public static function get_value_or_default(array $items, string $key, $default_value = null)
         {
         }
         /**
@@ -124950,23 +125860,37 @@ namespace Automattic\WooCommerce\Utilities {
         /**
          * Push a value to an array, but only if the value isn't in the array already.
          *
-         * @param array $array The array.
+         * @param array $items The array.
          * @param mixed $value The value to maybe push.
          * @return bool True if the value has been added to the array, false if the value was already in the array.
          */
-        public static function push_once(array &$array, $value) : bool
+        public static function push_once(array &$items, $value) : bool
         {
         }
         /**
          * Ensure that an associative array has a given key, and if not, set the key to an empty array.
          *
-         * @param array  $array The array to check.
+         * @param array  $items The array to check.
          * @param string $key The key to check.
          * @param bool   $throw_if_existing_is_not_array If true, an exception will be thrown if the key already exists in the array but the value is not an array.
          * @return bool True if the key has been added to the array, false if not (the key already existed).
          * @throws \Exception The key already exists in the array but the value is not an array.
          */
-        public static function ensure_key_is_array(array &$array, string $key, bool $throw_if_existing_is_not_array = false) : bool
+        public static function ensure_key_is_array(array &$items, string $key, bool $throw_if_existing_is_not_array = false) : bool
+        {
+        }
+        /**
+         * Given an array of associative arrays, all having a shared key name ("column"), generates a new array in which
+         * keys are the distinct column values found, and values are arrays with all the matches found
+         * (or only the last matching array found, if $single_values is true).
+         * See ArrayUtilTest for examples.
+         *
+         * @param array  $items The array to process.
+         * @param string $column The name of the key to group by.
+         * @param bool   $single_values True to only return the last suitable array found for each column value.
+         * @return array The grouped array.
+         */
+        public static function group_by_column(array $items, string $column, bool $single_values = false) : array
         {
         }
     }
@@ -132393,6 +133317,18 @@ namespace {
     {
     }
     /**
+     * Update the product archive title to the title of the shop page. Fallback to
+     * 'Shop' if the shop page doesn't exist.
+     *
+     * @param string $post_type_name Post type 'name' label.
+     * @param string $post_type      Post type.
+     *
+     * @return string
+     */
+    function wc_update_product_archive_title($post_type_name, $post_type)
+    {
+    }
+    /**
      * Change get terms defaults for attributes to order by the sorting setting, or default to menu_order for sortable taxonomies.
      *
      * @since 3.6.0 Sorting options are now set as the default automatically, so you no longer have to request to orderby menu_order.
@@ -133148,7 +134084,6 @@ namespace {
     {
     }
     \define('WC_PLUGIN_FILE', __FILE__);
-    \define('WC_BLOCKS_IS_FEATURE_PLUGIN', \true);
     /**
      * Returns the main instance of WC.
      *
@@ -133170,5 +134105,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '9.0.2-1-gc5c57d3');
+    define('WC_VERSION', '9.1.0');
 }

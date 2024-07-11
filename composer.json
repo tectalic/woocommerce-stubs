@@ -19,9 +19,9 @@
     "require-dev": {
         "php": "^8.0",
         "composer/installers": "~2.0",
-        "tectalic/woocommerce-dist": "9.0.2",
         "php-stubs/generator": "^0.8.3",
-        "php-stubs/wordpress-stubs": "^5.3 || ^6.0"
+        "php-stubs/wordpress-stubs": "^5.3 || ^6.0",
+        "tectalic/woocommerce-dist": "9.1.0"
     },
     "suggest": {
         "szepeviktor/phpstan-wordpress": "WordPress extensions for PHPStan"
