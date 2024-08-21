@@ -195,7 +195,7 @@ namespace {
          * This general purpose method can be used in place of specific methods such as async(),
          * async_unique(), single() or single_unique(), etc.
          *
-         * @internal Not intended for public use, should not be overriden by subclasses.
+         * @internal Not intended for public use, should not be overridden by subclasses.
          *
          * @param array $options {
          *     Describes the action we wish to schedule.
@@ -324,7 +324,7 @@ namespace {
          * Convert an interval of seconds into a two part human friendly string.
          *
          * The WordPress human_time_diff() function only calculates the time difference to one degree, meaning
-         * even if an action is 1 day and 11 hours away, it will display "1 day". This funciton goes one step
+         * even if an action is 1 day and 11 hours away, it will display "1 day". This function goes one step
          * further to display two degrees of accuracy.
          *
          * Based on Crontrol::interval() function by Edward Dale: https://wordpress.org/plugins/wp-crontrol/
@@ -1214,7 +1214,7 @@ namespace {
         /**
          * Prepares the data to feed WP_Table_List.
          *
-         * This has the core for selecting, sorting and filting data. To keep the code simple
+         * This has the core for selecting, sorting and filtering data. To keep the code simple
          * its logic is split among many methods (get_items_query_*).
          *
          * Beside populating the items this function will also count all the records that matches
@@ -1233,7 +1233,7 @@ namespace {
         }
         /**
          * Set the data for displaying. It will attempt to unserialize (There is a chance that some columns
-         * are serialized). This can be override in child classes for futher data transformation.
+         * are serialized). This can be override in child classes for further data transformation.
          *
          * @param array $items Items array.
          */
@@ -1272,7 +1272,7 @@ namespace {
         {
         }
         /**
-         * Default column formatting, it will escape everythig for security.
+         * Default column formatting, it will escape everything for security.
          *
          * @param array  $item The item array.
          * @param string $column_name Column name to display.
@@ -1838,7 +1838,7 @@ namespace {
         }
         /**
          * Mark actions that have been running for more than a given time limit as failed, based on
-         * the assumption some uncatachable and unloggable fatal error occurred during processing.
+         * the assumption some uncatchable and unloggable fatal error occurred during processing.
          *
          * When called by ActionScheduler_Abstract_QueueRunner::run_cleanup(), the time limit passed
          * as a parameter is 10x the time limit used for queue processing.
@@ -1916,7 +1916,7 @@ namespace {
          * Process an individual action.
          *
          * @param int $action_id The action ID to process.
-         * @param string $context Optional identifer for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
+         * @param string $context Optional identifier for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
          *        Generally, this should be capitalised and not localised as it's a proper noun.
          */
         public function process_action($action_id, $context = '')
@@ -2042,7 +2042,7 @@ namespace {
          * Process actions in the queue.
          *
          * @author Jeremy Pry
-         * @param string $context Optional identifer for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
+         * @param string $context Optional identifier for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
          *        Generally, this should be capitalised and not localised as it's a proper noun.
          * @return int The number of actions processed.
          */
@@ -2126,7 +2126,7 @@ namespace {
          * should set a context as the first parameter. For an example of this, refer to the code seen in
          * @see ActionScheduler_AsyncRequest_QueueRunner::handle()
          *
-         * @param string $context Optional identifer for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
+         * @param string $context Optional identifier for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
          *        Generally, this should be capitalised and not localised as it's a proper noun.
          * @return int The number of actions processed.
          */
@@ -2140,7 +2140,7 @@ namespace {
          * size is completed, or memory or time limits are reached, defined by @see $this->batch_limits_exceeded().
          *
          * @param int $size The maximum number of actions to process in the batch.
-         * @param string $context Optional identifer for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
+         * @param string $context Optional identifier for the context in which this action is being processed, e.g. 'WP CLI' or 'WP Cron'
          *        Generally, this should be capitalised and not localised as it's a proper noun.
          * @return int The number of actions processed.
          */
@@ -3003,7 +3003,7 @@ namespace {
          */
         protected $first_timestamp = \NULL;
         /**
-         * The recurrance between each time an action is run using this schedule.
+         * The recurrence between each time an action is run using this schedule.
          * Used to calculate the start date & time. Can be a number of seconds, in the
          * case of ActionScheduler_IntervalSchedule, or a cron expression, as in the
          * case of ActionScheduler_CronSchedule. Or something else.
@@ -3013,7 +3013,7 @@ namespace {
         protected $recurrence;
         /**
          * @param DateTime $date The date & time to run the action.
-         * @param mixed $recurrence The data used to determine the schedule's recurrance.
+         * @param mixed $recurrence The data used to determine the schedule's recurrence.
          * @param DateTime|null $first (Optional) The date & time the first instance of this interval schedule ran. Default null, meaning this is the first instance.
          */
         public function __construct(\DateTime $date, $recurrence, \DateTime $first = \null)
@@ -3227,7 +3227,7 @@ namespace {
         }
         /**
          * @param string $action_id
-         * @param Exception|NULL $exception The exception which occured when fetching the action. NULL by default for backward compatibility.
+         * @param Exception|NULL $exception The exception which occurred when fetching the action. NULL by default for backward compatibility.
          *
          * @return ActionScheduler_LogEntry[]
          */
@@ -3463,7 +3463,7 @@ namespace {
         {
         }
         /**
-         * Get the time MySQL formated date/time string for an action's (next) scheduled date.
+         * Get the time MySQL formatted date/time string for an action's (next) scheduled date.
          *
          * @param ActionScheduler_Action $action
          * @param DateTime $scheduled_date (optional)
@@ -3473,7 +3473,7 @@ namespace {
         {
         }
         /**
-         * Get the time MySQL formated date/time string for an action's (next) scheduled date.
+         * Get the time MySQL formatted date/time string for an action's (next) scheduled date.
          *
          * @param ActionScheduler_Action $action
          * @param DateTime $scheduled_date (optional)
@@ -5304,7 +5304,7 @@ namespace Action_Scheduler\Migration {
         {
         }
         /**
-         * Get the configured source loger.
+         * Get the configured source logger.
          *
          * @return ActionScheduler_Logger
          */
@@ -5871,7 +5871,7 @@ namespace {
         /**
          * Serialize cron schedules with data required prior to AS 3.0.0
          *
-         * Prior to Action Scheduler 3.0.0, reccuring schedules used different property names to
+         * Prior to Action Scheduler 3.0.0, recurring schedules used different property names to
          * refer to equivalent data. For example, ActionScheduler_IntervalSchedule::start_timestamp
          * was the same as ActionScheduler_SimpleSchedule::timestamp. Action Scheduler 3.0.0
          * aligned properties and property names for better inheritance. To guard against the
@@ -5925,7 +5925,7 @@ namespace {
         /**
          * Serialize interval schedules with data required prior to AS 3.0.0
          *
-         * Prior to Action Scheduler 3.0.0, reccuring schedules used different property names to
+         * Prior to Action Scheduler 3.0.0, recurring schedules used different property names to
          * refer to equivalent data. For example, ActionScheduler_IntervalSchedule::start_timestamp
          * was the same as ActionScheduler_SimpleSchedule::timestamp. Action Scheduler 3.0.0
          * aligned properties and property names for better inheritance. To guard against the
@@ -6559,14 +6559,14 @@ namespace {
     /**
      * Registers this version of Action Scheduler.
      */
-    function action_scheduler_register_3_dot_7_dot_4()
+    function action_scheduler_register_3_dot_8_dot_1()
     {
     }
     // phpcs:disable Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace
     /**
      * Initializes this version of Action Scheduler.
      */
-    function action_scheduler_initialize_3_dot_7_dot_4()
+    function action_scheduler_initialize_3_dot_8_dot_1()
     {
     }
     /**
