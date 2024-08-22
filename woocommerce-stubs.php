@@ -8154,23 +8154,16 @@ namespace Automattic\WooCommerce\Internal\Traits {
         //phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
         /**
          * List of instance methods marked as externally accessible.
-         * This is actually a dictionary where keys are object instances and values are arrays of method names.
          *
-         * @var SplObjectStorage
+         * @var array
          */
-        private static $_accessible_private_methods = null;
+        private $_accessible_private_methods = array();
         /**
          * List of static methods marked as externally accessible.
          *
          * @var array
          */
         private static $_accessible_static_private_methods = array();
-        /**
-         * Flag indicating that $_accessible_private_methods already contains an entry for this object.
-         *
-         * @var bool
-         */
-        private bool $_accessible_private_methods_is_initialized_for_this = false;
         //phpcs:enable PSR2.Classes.PropertyDeclaration.Underscore
         /**
          * Register a WordPress action.
@@ -8255,12 +8248,6 @@ namespace Automattic\WooCommerce\Internal\Traits {
          * @throws \Error The called static method doesn't exist or is private/protected and not marked as externally accessible.
          */
         public static function __callStatic($name, $arguments)
-        {
-        }
-        /**
-         * Class destructor, needed to remove this object from the dictionary of accessible instance methods.
-         */
-        public function __destruct()
         {
         }
     }
@@ -23180,6 +23167,7 @@ namespace {
          * @param bool                     $defer           If tracking the download should be deferred.
          *
          * @return void
+         * @throws Exception If the active version of Action Scheduler is less than 3.6.0.
          */
         private static function track_download($download, $user_id = \null, $user_ip_address = \null, bool $defer = \false) : void
         {
@@ -35375,7 +35363,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '9.2.0';
+        public $version = '9.2.1';
         /**
          * WooCommerce Schema version.
          *
@@ -135319,5 +135307,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '9.2.0');
+    define('WC_VERSION', '9.2.1');
 }
