@@ -53,17 +53,17 @@ namespace {
         /**
          * Return stored actions for given params.
          *
-         * @param string                   $status The action's status in the data store.
-         * @param string                   $hook The hook to trigger when this action runs.
-         * @param array                    $args Args to pass to callbacks when the hook is triggered.
-         * @param ActionScheduler_Schedule $schedule The action's schedule.
-         * @param string                   $group A group to put the action in.
+         * @param string                        $status The action's status in the data store.
+         * @param string                        $hook The hook to trigger when this action runs.
+         * @param array                         $args Args to pass to callbacks when the hook is triggered.
+         * @param ActionScheduler_Schedule|null $schedule The action's schedule.
+         * @param string                        $group A group to put the action in.
          * phpcs:ignore Squiz.Commenting.FunctionComment.ExtraParamComment
-         * @param int                      $priority The action priority.
+         * @param int                           $priority The action priority.
          *
          * @return ActionScheduler_Action An instance of the stored action.
          */
-        public function get_stored_action($status, $hook, array $args = array(), \ActionScheduler_Schedule $schedule = \null, $group = '')
+        public function get_stored_action($status, $hook, array $args = array(), ?\ActionScheduler_Schedule $schedule = \null, $group = '')
         {
         }
         /**
@@ -2326,6 +2326,50 @@ namespace {
         }
     }
     /**
+     * Provides information about active and registered instances of Action Scheduler.
+     */
+    class ActionScheduler_SystemInformation
+    {
+        /**
+         * Returns information about the plugin or theme which contains the current active version
+         * of Action Scheduler.
+         *
+         * If this cannot be determined, or if Action Scheduler is being loaded via some other
+         * method, then it will return an empty array. Otherwise, if populated, the array will
+         * look like the following:
+         *
+         *     [
+         *         'type' => 'plugin', # or 'theme'
+         *         'name' => 'Name',
+         *     ]
+         *
+         * @return array
+         */
+        public static function active_source() : array
+        {
+        }
+        /**
+         * Returns the directory path for the currently active installation of Action Scheduler.
+         *
+         * @return string
+         */
+        public static function active_source_path() : string
+        {
+        }
+        /**
+         * Get registered sources.
+         *
+         * It is not always possible to obtain this information. For instance, if earlier versions (<=3.9.0) of
+         * Action Scheduler register themselves first, then the necessary data about registered sources will
+         * not be available.
+         *
+         * @return array<string, string>
+         */
+        public static function get_sources()
+        {
+        }
+    }
+    /**
      * Class ActionScheduler_Versions
      */
     class ActionScheduler_Versions
@@ -2343,6 +2387,12 @@ namespace {
          */
         private $versions = array();
         /**
+         * Registered sources.
+         *
+         * @var array<string, string>
+         */
+        private $sources = array();
+        /**
          * Register version's callback.
          *
          * @param string   $version_string          Action Scheduler version.
@@ -2355,6 +2405,20 @@ namespace {
          * Get all versions.
          */
         public function get_versions()
+        {
+        }
+        /**
+         * Get registered sources.
+         *
+         * Use with caution: this method is only available as of Action Scheduler's 3.9.1
+         * release and, owing to the way Action Scheduler is loaded, it's possible that the
+         * class definition used at runtime will belong to an earlier version.
+         *
+         * @since 3.9.1
+         *
+         * @return array<string, string>
+         */
+        public function get_sources()
         {
         }
         /**
@@ -2384,6 +2448,36 @@ namespace {
          * @codeCoverageIgnore
          */
         public static function initialize_latest_version()
+        {
+        }
+        /**
+         * Returns information about the plugin or theme which contains the current active version
+         * of Action Scheduler.
+         *
+         * If this cannot be determined, or if Action Scheduler is being loaded via some other
+         * method, then it will return an empty array. Otherwise, if populated, the array will
+         * look like the following:
+         *
+         *     [
+         *         'type' => 'plugin', # or 'theme'
+         *         'name' => 'Name',
+         *     ]
+         *
+         * @deprecated 3.9.2 Use ActionScheduler_SystemInformation::active_source().
+         *
+         * @return array
+         */
+        public function active_source() : array
+        {
+        }
+        /**
+         * Returns the directory path for the currently active installation of Action Scheduler.
+         *
+         * @deprecated 3.9.2 Use ActionScheduler_SystemInformation::active_source_path().
+         *
+         * @return string
+         */
+        public function active_source_path() : string
         {
         }
     }
@@ -2527,6 +2621,363 @@ namespace {
         {
         }
     }
+    /**
+     * Abstract for WP-CLI commands.
+     */
+    abstract class ActionScheduler_WPCLI_Command extends \WP_CLI_Command
+    {
+        const DATE_FORMAT = 'Y-m-d H:i:s O';
+        /**
+         * Keyed arguments.
+         *
+         * @var string[]
+         */
+        protected $args;
+        /**
+         * Positional arguments.
+         *
+         * @var array<string, string>
+         */
+        protected $assoc_args;
+        /**
+         * Construct.
+         *
+         * @param string[]              $args       Positional arguments.
+         * @param array<string, string> $assoc_args Keyed arguments.
+         * @throws \Exception When loading a CLI command file outside of WP CLI context.
+         */
+        public function __construct(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Execute command.
+         */
+        public abstract function execute();
+        /**
+         * Get the scheduled date in a human friendly format.
+         *
+         * @see ActionScheduler_ListTable::get_schedule_display_string()
+         * @param ActionScheduler_Schedule $schedule Schedule.
+         * @return string
+         */
+        protected function get_schedule_display_string(\ActionScheduler_Schedule $schedule)
+        {
+        }
+        /**
+         * Transforms arguments with '__' from CSV into expected arrays.
+         *
+         * @see \WP_CLI\CommandWithDBObject::process_csv_arguments_to_arrays()
+         * @link https://github.com/wp-cli/entity-command/blob/c270cc9a2367cb8f5845f26a6b5e203397c91392/src/WP_CLI/CommandWithDBObject.php#L99
+         * @return void
+         */
+        protected function process_csv_arguments_to_arrays()
+        {
+        }
+    }
+}
+namespace Action_Scheduler\WP_CLI\Action {
+    /**
+     * WP-CLI command: action-scheduler action cancel
+     */
+    class Cancel_Command extends \ActionScheduler_WPCLI_Command
+    {
+        /**
+         * Execute command.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+        /**
+         * Cancel single action.
+         *
+         * @param string $hook The hook that the job will trigger.
+         * @param array  $callback_args Args that would have been passed to the job.
+         * @param string $group The group the job is assigned to.
+         * @return void
+         */
+        protected function cancel_single($hook, $callback_args, $group)
+        {
+        }
+        /**
+         * Cancel all actions.
+         *
+         * @param string $hook The hook that the job will trigger.
+         * @param array  $callback_args Args that would have been passed to the job.
+         * @param string $group The group the job is assigned to.
+         * @return void
+         */
+        protected function cancel_all($hook, $callback_args, $group)
+        {
+        }
+        /**
+         * Print a success message.
+         *
+         * @return void
+         */
+        protected function print_success()
+        {
+        }
+        /**
+         * Convert an exception into a WP CLI error.
+         *
+         * @param \Exception $e The error object.
+         * @param bool       $multiple Boolean if multiple actions.
+         * @throws \WP_CLI\ExitException When an error occurs.
+         * @return void
+         */
+        protected function print_error(\Exception $e, $multiple)
+        {
+        }
+    }
+    /**
+     * WP-CLI command: action-scheduler action create
+     */
+    class Create_Command extends \ActionScheduler_WPCLI_Command
+    {
+        const ASYNC_OPTS = array('async', 0);
+        /**
+         * Execute command.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+        /**
+         * Print a success message with the action ID.
+         *
+         * @param int    $action_id   Created action ID.
+         * @param string $action_type Type of action.
+         *
+         * @return void
+         */
+        protected function print_success($action_id, $action_type)
+        {
+        }
+        /**
+         * Convert an exception into a WP CLI error.
+         *
+         * @param \Exception $e The error object.
+         * @throws \WP_CLI\ExitException When an error occurs.
+         * @return void
+         */
+        protected function print_error(\Exception $e)
+        {
+        }
+    }
+    /**
+     * WP-CLI command: action-scheduler action delete
+     */
+    class Delete_Command extends \ActionScheduler_WPCLI_Command
+    {
+        /**
+         * Array of action IDs to delete.
+         *
+         * @var int[]
+         */
+        protected $action_ids = array();
+        /**
+         * Number of deleted, failed, and total actions deleted.
+         *
+         * @var array<string, int>
+         */
+        protected $action_counts = array('deleted' => 0, 'failed' => 0, 'total' => 0);
+        /**
+         * Construct.
+         *
+         * @param string[]              $args       Positional arguments.
+         * @param array<string, string> $assoc_args Keyed arguments.
+         */
+        public function __construct(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Execute.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+        /**
+         * Action: action_scheduler_deleted_action
+         *
+         * @param int $action_id Action ID.
+         * @return void
+         */
+        public function on_action_deleted($action_id)
+        {
+        }
+    }
+    /**
+     * WP-CLI command: action-scheduler action generate
+     */
+    class Generate_Command extends \ActionScheduler_WPCLI_Command
+    {
+        /**
+         * Execute command.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+        /**
+         * Schedule multiple single actions.
+         *
+         * @param int    $schedule_start Starting timestamp of first action.
+         * @param int    $interval How long to wait between runs.
+         * @param int    $count Limit number of actions to schedule.
+         * @param string $hook The hook to trigger.
+         * @param array  $args Arguments to pass when the hook triggers.
+         * @param string $group The group to assign this job to.
+         * @return int[] IDs of actions added.
+         */
+        protected function generate($schedule_start, $interval, $count, $hook, array $args = array(), $group = '')
+        {
+        }
+        /**
+         * Print a success message with the action ID.
+         *
+         * @param int    $actions_added Number of actions generated.
+         * @param string $action_type   Type of actions scheduled.
+         * @return void
+         */
+        protected function print_success($actions_added, $action_type)
+        {
+        }
+        /**
+         * Convert an exception into a WP CLI error.
+         *
+         * @param \Exception $e The error object.
+         * @throws \WP_CLI\ExitException When an error occurs.
+         * @return void
+         */
+        protected function print_error(\Exception $e)
+        {
+        }
+    }
+    /**
+     * WP-CLI command: action-scheduler action get
+     */
+    class Get_Command extends \ActionScheduler_WPCLI_Command
+    {
+        /**
+         * Execute command.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+    }
+    // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaping output is not necessary in WP CLI.
+    /**
+     * WP-CLI command: action-scheduler action list
+     */
+    class List_Command extends \ActionScheduler_WPCLI_Command
+    {
+        const PARAMETERS = array('hook', 'args', 'date', 'date_compare', 'modified', 'modified_compare', 'group', 'status', 'claimed', 'per_page', 'offset', 'orderby', 'order');
+        /**
+         * Execute command.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+    }
+    /**
+     * WP-CLI command: action-scheduler action next
+     */
+    class Next_Command extends \ActionScheduler_WPCLI_Command
+    {
+        /**
+         * Execute command.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+    }
+    /**
+     * WP-CLI command: action-scheduler action run
+     */
+    class Run_Command extends \ActionScheduler_WPCLI_Command
+    {
+        /**
+         * Array of action IDs to execute.
+         *
+         * @var int[]
+         */
+        protected $action_ids = array();
+        /**
+         * Number of executed, failed, ignored, invalid, and total actions.
+         *
+         * @var array<string, int>
+         */
+        protected $action_counts = array('executed' => 0, 'failed' => 0, 'ignored' => 0, 'invalid' => 0, 'total' => 0);
+        /**
+         * Construct.
+         *
+         * @param string[]              $args       Positional arguments.
+         * @param array<string, string> $assoc_args Keyed arguments.
+         */
+        public function __construct(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Execute.
+         *
+         * @return void
+         */
+        public function execute()
+        {
+        }
+        /**
+         * Action: action_scheduler_execution_ignored
+         *
+         * @param int $action_id Action ID.
+         * @return void
+         */
+        public function on_action_ignored($action_id)
+        {
+        }
+        /**
+         * Action: action_scheduler_after_execute
+         *
+         * @param int $action_id Action ID.
+         * @return void
+         */
+        public function on_action_executed($action_id)
+        {
+        }
+        /**
+         * Action: action_scheduler_failed_execution
+         *
+         * @param int        $action_id Action ID.
+         * @param \Exception $e         Exception.
+         * @return void
+         */
+        public function on_action_failed($action_id, \Exception $e)
+        {
+        }
+        /**
+         * Action: action_scheduler_failed_validation
+         *
+         * @param int        $action_id Action ID.
+         * @param \Exception $e         Exception.
+         * @return void
+         */
+        public function on_action_invalid($action_id, \Exception $e)
+        {
+        }
+    }
+}
+namespace {
     /**
      * Commands for Action Scheduler.
      */
@@ -2809,6 +3260,329 @@ namespace {
 }
 namespace Action_Scheduler\WP_CLI {
     /**
+     * Action command for Action Scheduler.
+     */
+    class Action_Command extends \WP_CLI_Command
+    {
+        /**
+         * Cancel the next occurrence or all occurrences of a scheduled action.
+         *
+         * ## OPTIONS
+         *
+         * [<hook>]
+         * : Name of the action hook.
+         *
+         * [--group=<group>]
+         * : The group the job is assigned to.
+         *
+         * [--args=<args>]
+         * : JSON object of arguments assigned to the job.
+         * ---
+         * default: []
+         * ---
+         *
+         * [--all]
+         * : Cancel all occurrences of a scheduled action.
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         */
+        public function cancel(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Creates a new scheduled action.
+         *
+         * ## OPTIONS
+         *
+         * <hook>
+         * : Name of the action hook.
+         *
+         * <start>
+         * : A unix timestamp representing the date you want the action to start. Also 'async' or 'now' to enqueue an async action.
+         *
+         * [--args=<args>]
+         * : JSON object of arguments to pass to callbacks when the hook triggers.
+         * ---
+         * default: []
+         * ---
+         *
+         * [--cron=<cron>]
+         * : A cron-like schedule string (https://crontab.guru/).
+         * ---
+         * default: ''
+         * ---
+         *
+         * [--group=<group>]
+         * : The group to assign this job to.
+         * ---
+         * default: ''
+         * ---
+         *
+         * [--interval=<interval>]
+         * : Number of seconds to wait between runs.
+         * ---
+         * default: 0
+         * ---
+         *
+         * ## EXAMPLES
+         *
+         *     wp action-scheduler action create hook_async async
+         *     wp action-scheduler action create hook_single 1627147598
+         *     wp action-scheduler action create hook_recurring 1627148188 --interval=5
+         *     wp action-scheduler action create hook_cron 1627147655 --cron='5 4 * * *'
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         */
+        public function create(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Delete existing scheduled action(s).
+         *
+         * ## OPTIONS
+         *
+         * <id>...
+         * : One or more IDs of actions to delete.
+         * ---
+         * default: 0
+         * ---
+         *
+         * ## EXAMPLES
+         *
+         *     # Delete the action with id 100
+         *     $ wp action-scheduler action delete 100
+         *
+         *     # Delete the actions with ids 100 and 200
+         *     $ wp action-scheduler action delete 100 200
+         *
+         *     # Delete the first five pending actions in 'action-scheduler' group
+         *     $ wp action-scheduler action delete $( wp action-scheduler action list --status=pending --group=action-scheduler --format=ids )
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         */
+        public function delete(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Generates some scheduled actions.
+         *
+         * ## OPTIONS
+         *
+         * <hook>
+         * : Name of the action hook.
+         *
+         * <start>
+         * : The Unix timestamp representing the date you want the action to start.
+         *
+         * [--count=<count>]
+         * : Number of actions to create.
+         * ---
+         * default: 1
+         * ---
+         *
+         * [--interval=<interval>]
+         * : Number of seconds to wait between runs.
+         * ---
+         * default: 0
+         * ---
+         *
+         * [--args=<args>]
+         * : JSON object of arguments to pass to callbacks when the hook triggers.
+         * ---
+         * default: []
+         * ---
+         *
+         * [--group=<group>]
+         * : The group to assign this job to.
+         * ---
+         * default: ''
+         * ---
+         *
+         * ## EXAMPLES
+         *
+         *     wp action-scheduler action generate test_multiple 1627147598 --count=5 --interval=5
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         */
+        public function generate(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Get details about a scheduled action.
+         *
+         * ## OPTIONS
+         *
+         * <id>
+         * : The ID of the action to get.
+         * ---
+         * default: 0
+         * ---
+         *
+         * [--field=<field>]
+         * : Instead of returning the whole action, returns the value of a single field.
+         *
+         * [--fields=<fields>]
+         * : Limit the output to specific fields (comma-separated). Defaults to all fields.
+         *
+         * [--format=<format>]
+         * : Render output in a particular format.
+         * ---
+         * default: table
+         * options:
+         *   - table
+         *   - csv
+         *   - json
+         *   - yaml
+         * ---
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         */
+        public function get(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Get a list of scheduled actions.
+         *
+         * Display actions based on all arguments supported by
+         * [as_get_scheduled_actions()](https://actionscheduler.org/api/#function-reference--as_get_scheduled_actions).
+         *
+         * ## OPTIONS
+         *
+         * [--<field>=<value>]
+         * : One or more arguments to pass to as_get_scheduled_actions().
+         *
+         * [--field=<field>]
+         * : Prints the value of a single property for each action.
+         *
+         * [--fields=<fields>]
+         * : Limit the output to specific object properties.
+         *
+         * [--format=<format>]
+         * : Render output in a particular format.
+         * ---
+         * default: table
+         * options:
+         *   - table
+         *   - csv
+         *   - ids
+         *   - json
+         *   - count
+         *   - yaml
+         * ---
+         *
+         * ## AVAILABLE FIELDS
+         *
+         * These fields will be displayed by default for each action:
+         *
+         * * id
+         * * hook
+         * * status
+         * * group
+         * * recurring
+         * * scheduled_date
+         *
+         * These fields are optionally available:
+         *
+         * * args
+         * * log_entries
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         *
+         * @subcommand list
+         */
+        public function subcommand_list(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Get logs for a scheduled action.
+         *
+         * ## OPTIONS
+         *
+         * <id>
+         * : The ID of the action to get.
+         * ---
+         * default: 0
+         * ---
+         *
+         * @param array $args Positional arguments.
+         * @return void
+         */
+        public function logs(array $args)
+        {
+        }
+        /**
+         * Get the ID or timestamp of the next scheduled action.
+         *
+         * ## OPTIONS
+         *
+         * <hook>
+         * : The hook of the next scheduled action.
+         *
+         * [--args=<args>]
+         * : JSON object of arguments to search for next scheduled action.
+         * ---
+         * default: []
+         * ---
+         *
+         * [--group=<group>]
+         * : The group to which the next scheduled action is assigned.
+         * ---
+         * default: ''
+         * ---
+         *
+         * [--raw]
+         * : Display the raw output of as_next_scheduled_action() (timestamp or boolean).
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         */
+        public function next(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Run existing scheduled action(s).
+         *
+         * ## OPTIONS
+         *
+         * <id>...
+         * : One or more IDs of actions to run.
+         * ---
+         * default: 0
+         * ---
+         *
+         * ## EXAMPLES
+         *
+         *     # Run the action with id 100
+         *     $ wp action-scheduler action run 100
+         *
+         *     # Run the actions with ids 100 and 200
+         *     $ wp action-scheduler action run 100 200
+         *
+         *     # Run the first five pending actions in 'action-scheduler' group
+         *     $ wp action-scheduler action run $( wp action-scheduler action list --status=pending --group=action-scheduler --format=ids )
+         *
+         * @param array $args       Positional arguments.
+         * @param array $assoc_args Keyed arguments.
+         * @return void
+         */
+        public function run(array $args, array $assoc_args)
+        {
+        }
+    }
+    /**
      * Class Migration_Command
      *
      * @package Action_Scheduler\WP_CLI
@@ -2955,6 +3729,136 @@ namespace Action_Scheduler\WP_CLI {
          * Set up the progress bar.
          */
         protected function setup_progress_bar()
+        {
+        }
+    }
+    /**
+     * System info WP-CLI commands for Action Scheduler.
+     */
+    class System_Command
+    {
+        /**
+         * Data store for querying actions
+         *
+         * @var ActionScheduler_Store
+         */
+        protected $store;
+        /**
+         * Construct.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Print in-use data store class.
+         *
+         * @param array $args       Positional args.
+         * @param array $assoc_args Keyed args.
+         * @return void
+         *
+         * @subcommand data-store
+         */
+        public function datastore(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Print in-use runner class.
+         *
+         * @param array $args       Positional args.
+         * @param array $assoc_args Keyed args.
+         * @return void
+         */
+        public function runner(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Get system status.
+         *
+         * @param array $args       Positional args.
+         * @param array $assoc_args Keyed args.
+         * @return void
+         */
+        public function status(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Display the active version, or all registered versions.
+         *
+         * ## OPTIONS
+         *
+         * [--all]
+         * : List all registered versions.
+         *
+         * @param array $args       Positional args.
+         * @param array $assoc_args Keyed args.
+         * @return void
+         */
+        public function version(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Display the current source, or all registered sources.
+         *
+         * ## OPTIONS
+         *
+         * [--all]
+         * : List all registered sources.
+         *
+         * [--fullpath]
+         * : List full path of source(s).
+         *
+         * @param array $args       Positional args.
+         * @param array $assoc_args Keyed args.
+         * @uses ActionScheduler_SystemInformation::active_source_path()
+         * @uses \WP_CLI\Formatter::display_items()
+         * @uses $this->get_latest_version()
+         * @return void
+         */
+        public function source(array $args, array $assoc_args)
+        {
+        }
+        /**
+         * Get current data store.
+         *
+         * @return string
+         */
+        protected function get_current_datastore()
+        {
+        }
+        /**
+         * Get latest version.
+         *
+         * @param null|\ActionScheduler_Versions $instance Versions.
+         * @return string
+         */
+        protected function get_latest_version($instance = null)
+        {
+        }
+        /**
+         * Get current runner.
+         *
+         * @return string
+         */
+        protected function get_current_runner()
+        {
+        }
+        /**
+         * Get oldest and newest scheduled dates for a given set of statuses.
+         *
+         * @param array $status_keys Set of statuses to find oldest & newest action for.
+         * @return array
+         */
+        protected function get_oldest_and_newest($status_keys)
+        {
+        }
+        /**
+         * Get oldest or newest scheduled date for a given status.
+         *
+         * @param string $status Action status label/name string.
+         * @param string $date_type Oldest or Newest.
+         * @return string
+         */
+        protected function get_action_status_date($status, $date_type = 'oldest')
         {
         }
     }
@@ -3174,7 +4078,7 @@ namespace {
          *
          * @return DateTime|null
          */
-        public function next(\DateTime $after = \null)
+        public function next(?\DateTime $after = \null)
         {
         }
     }
@@ -6842,7 +7746,7 @@ namespace {
         *
         * @return CronExpression
         */
-        public static function factory($expression, \CronExpression_FieldFactory $fieldFactory = \null)
+        public static function factory($expression, ?\CronExpression_FieldFactory $fieldFactory = \null)
         {
         }
         /**
@@ -7285,20 +8189,3529 @@ namespace {
         }
     }
 }
+namespace MailPoet\EmailEditor {
+    class Bootstrap
+    {
+        /** @var Email_Editor */
+        private $emailEditor;
+        /** @var CoreEmailEditorIntegration */
+        private $coreEmailEditorIntegration;
+        public function __construct(\MailPoet\EmailEditor\Engine\Email_Editor $emailEditor, \MailPoet\EmailEditor\Integrations\Core\Initializer $coreEmailEditorIntegration)
+        {
+        }
+        public function init()
+        {
+        }
+        public function initialize()
+        {
+        }
+        public function setupEmailEditorIntegrations()
+        {
+        }
+    }
+    /**
+     * Main package class.
+     */
+    class EmailEditorContainer
+    {
+        /**
+         * Init method.
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Loads the DI container for the Email editor.
+         *
+         * @internal This uses the Blocks DI container. This container will be replaced
+         * with a different compatible container.
+         *
+         * @param boolean $reset Used to reset the container to a fresh instance. Note: this means all dependencies will be reconstructed.
+         * @return mixed
+         */
+        public static function container($reset = false)
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine\Patterns {
+    /**
+     * Abstract class for block patterns.
+     */
+    abstract class Abstract_Pattern
+    {
+        /**
+         * Name of the pattern.
+         *
+         * @var string $name
+         */
+        protected $name = '';
+        /**
+         * Namespace of the pattern.
+         *
+         * @var string $namespace
+         */
+        protected $namespace = '';
+        /**
+         * List of block types.
+         *
+         * @var array $block_types
+         */
+        protected $block_types = array();
+        /**
+         * List of template types.
+         *
+         * @var string[] $template_types
+         */
+        protected $template_types = array();
+        /**
+         * Flag to enable/disable inserter.
+         *
+         * @var bool $inserter
+         */
+        protected $inserter = true;
+        /**
+         * Source of the pattern.
+         *
+         * @var string $source
+         */
+        protected $source = 'plugin';
+        /**
+         * List of categories.
+         *
+         * @var array $categories
+         */
+        protected $categories = array();
+        /**
+         * Viewport width.
+         *
+         * @var int $viewport_width
+         */
+        protected $viewport_width = 620;
+        /**
+         * Get name of the pattern.
+         *
+         * @return string
+         */
+        public function get_name() : string
+        {
+        }
+        /**
+         * Get namespace of the pattern.
+         *
+         * @return string
+         */
+        public function get_namespace() : string
+        {
+        }
+        /**
+         * Return properties of the pattern.
+         *
+         * @return array
+         */
+        public function get_properties() : array
+        {
+        }
+        /**
+         * Get content.
+         *
+         * @return string
+         */
+        protected abstract function get_content() : string;
+        /**
+         * Get title.
+         *
+         * @return string
+         */
+        protected abstract function get_title() : string;
+        /**
+         * Get description.
+         *
+         * @return string
+         */
+        protected function get_description() : string
+        {
+        }
+    }
+    /**
+     * Register block patterns.
+     */
+    class Patterns
+    {
+        /**
+         * Initialize block patterns.
+         *
+         * @return void
+         */
+        public function initialize() : void
+        {
+        }
+        /**
+         * Register block pattern category.
+         *
+         * @return void
+         */
+        private function register_block_pattern_categories() : void
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
+    /**
+     * Class based on WP_HTML_Tag_Processor which is extended to replace
+     * tokens with their values in the email content.
+     *
+     * This class was inspired by a concept from the WordPress core,
+     * which could help us to avoid refactoring in the future.
+     */
+    class HTML_Tag_Processor extends \WP_HTML_Tag_Processor
+    {
+        /**
+         * List of deferred updates which will be replaced after calling flush_updates().
+         *
+         * @var WP_HTML_Text_Replacement[]
+         */
+        private $deferred_updates = array();
+        /**
+         * Replaces the token with the new content.
+         *
+         * @param string $new_content The new content to replace the token.
+         */
+        public function replace_token(string $new_content) : void
+        {
+        }
+        /**
+         * Flushes the deferred updates to the lexical updates.
+         */
+        public function flush_updates() : void
+        {
+        }
+    }
+    /**
+     * The class represents a personalization tag that contains  all necessary information
+     * for replacing the tag with its value and displaying it in the UI.
+     */
+    class Personalization_Tag
+    {
+        /**
+         * The name of the tag displayed in the UI.
+         *
+         * @var string
+         */
+        private string $name;
+        /**
+         * The token which is used in HTML_Tag_Processor to replace the tag with its value.
+         *
+         * @var string
+         */
+        private string $token;
+        /**
+         * The category of the personalization tag for categorization on the UI.
+         *
+         * @var string
+         */
+        private string $category;
+        /**
+         * The callback function which returns the value of the personalization tag.
+         *
+         * @var callable
+         */
+        private $callback;
+        /**
+         * The attributes which are used in the Personalization Tag UI.
+         *
+         * @var array
+         */
+        private array $attributes;
+        /**
+         * The value that is inserted via the UI. When the value is null the token is generated based on $token attribute and $attributes.
+         *
+         * @var string
+         */
+        private string $value_to_insert;
+        /**
+         * Personalization_Tag constructor.
+         *
+         * Example usage:
+         *   $tag = new Personalization_Tag(
+         *     'First Name',
+         *     'user:first_name',
+         *     'User',
+         *      function( $context, $args ) {
+         *        return $context['user_firstname'] ?? 'user';
+         *      },
+         *      array( default => 'user' ),
+         *      'user:first default="user"'
+         *   );
+         *
+         * @param string      $name The name of the tag displayed in the UI.
+         * @param string      $token The token used in HTML_Tag_Processor to replace the tag with its value.
+         * @param string      $category The category of the personalization tag for categorization on the UI.
+         * @param callable    $callback The callback function which returns the value of the personalization tag.
+         * @param array       $attributes The attributes which are used in the Personalization Tag UI.
+         * @param string|null $value_to_insert The value that is inserted via the UI. When the value is null the token is generated based on $token attribute and $attributes.
+         */
+        public function __construct(string $name, string $token, string $category, callable $callback, array $attributes = array(), ?string $value_to_insert = null)
+        {
+        }
+        /**
+         * Returns the name of the personalization tag.
+         *
+         * @return string
+         */
+        public function get_name() : string
+        {
+        }
+        /**
+         * Returns the token of the personalization tag.
+         *
+         * @return string
+         */
+        public function get_token() : string
+        {
+        }
+        /**
+         * Returns the category of the personalization tag.
+         *
+         * @return string
+         */
+        public function get_category() : string
+        {
+        }
+        /**
+         * Returns the attributes of the personalization tag.
+         *
+         * @return array
+         */
+        public function get_attributes() : array
+        {
+        }
+        /**
+         * Returns the token to insert via UI in the editor.
+         *
+         * @return string
+         */
+        public function get_value_to_insert() : string
+        {
+        }
+        /**
+         * Executes the callback function for the personalization tag.
+         *
+         * @param mixed $context The context for the personalization tag.
+         * @param array $args The additional arguments for the callback.
+         * @return string The value of the personalization tag.
+         */
+        public function execute_callback($context, $args = array()) : string
+        {
+        }
+    }
+    /**
+     * Registry for personalization tags.
+     */
+    class Personalization_Tags_Registry
+    {
+        /**
+         * List of registered personalization tags.
+         *
+         * @var Personalization_Tag[]
+         */
+        private $tags = array();
+        /**
+         * Initialize the personalization tags registry.
+         * This method should be called only once.
+         *
+         * @return void
+         */
+        public function initialize() : void
+        {
+        }
+        /**
+         * Register a new personalization instance in the registry.
+         *
+         * @param Personalization_Tag $tag The personalization tag to register.
+         * @return void
+         */
+        public function register(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag $tag) : void
+        {
+        }
+        /**
+         * Retrieve a personalization tag by its token.
+         * Example: get_by_token( 'user:first_name' ) will return the instance of Personalization_Tag with identical token.
+         *
+         * @param string $token The token of the personalization tag.
+         * @return Personalization_Tag|null The array data or null if not found.
+         */
+        public function get_by_token(string $token) : ?\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag
+        {
+        }
+        /**
+         * Retrieve all registered personalization tags.
+         *
+         * @return array List of all registered personalization tags.
+         */
+        public function get_all()
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
+    /**
+     * This class provides functionality to render inner blocks of a block that supports reduced flex layout.
+     */
+    class Flex_Layout_Renderer
+    {
+        /**
+         * Render inner blocks in flex layout.
+         *
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        public function render_inner_blocks_in_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * Compute widths for blocks in flex layout.
+         *
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @param float               $flex_gap Flex gap.
+         * @return array
+         */
+        private function compute_widths_for_flex_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, float $flex_gap) : array
+        {
+        }
+        /**
+         * How much of width we will strip to keep some space for the gap
+         * This is computed based on CSS rule used in the editor:
+         * For block with width set to X percent
+         * width: calc(X% - (var(--wp--style--block-gap) * (100 - X)/100)));
+         *
+         * @param float $block_width Block width in pixels.
+         * @param float $flex_gap Flex gap in pixels.
+         * @param float $block_width_percent Block width in percent.
+         * @return int
+         */
+        private function get_width_without_gap(float $block_width, float $flex_gap, float $block_width_percent) : int
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
+    /**
+     * Interface for postprocessors.
+     */
+    interface Postprocessor
+    {
+        /**
+         * Postprocess the HTML.
+         *
+         * @param string $html HTML to postprocess.
+         * @return string
+         */
+        public function postprocess(string $html) : string;
+    }
+    /**
+     * This postprocessor replaces <mark> tags with <span> tags because mark tags are not supported across all email clients
+     */
+    class Highlighting_Postprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor
+    {
+        /**
+         * Postprocess the HTML.
+         *
+         * @param string $html HTML to postprocess.
+         * @return string
+         */
+        public function postprocess(string $html) : string
+        {
+        }
+    }
+    /**
+     * In some case the blocks HTML contains CSS variables.
+     * For example when spacing is set from a preset the inline styles contain var(--wp--preset--spacing--10), var(--wp--preset--spacing--20) etc.
+     * This postprocessor uses variables from theme.json and replaces the CSS variables with their values in final email HTML.
+     */
+    class Variables_Postprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor
+    {
+        /**
+         * Instance of Theme_Controller.
+         *
+         * @var Theme_Controller Theme controller.
+         */
+        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        /**
+         * Constructor.
+         *
+         * @param Theme_Controller $theme_controller Theme controller.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        {
+        }
+        /**
+         * Postprocess the HTML.
+         *
+         * @param string $html HTML to postprocess.
+         * @return string
+         */
+        public function postprocess(string $html) : string
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
+    /**
+     * Interface Preprocessor
+     */
+    interface Preprocessor
+    {
+        /**
+         * Method to preprocess the content before rendering
+         *
+         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}          $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @return array
+         */
+        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array;
+    }
+    /**
+     * This class sets the width of the blocks based on the layout width or column count.
+     * The final width in pixels is stored in the email_attrs array because we would like to avoid changing the original attributes.
+     */
+    class Blocks_Width_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    {
+        /**
+         * Method to preprocess the content before rendering
+         *
+         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @return array
+         */
+        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        {
+        }
+        // TODO: We could add support for other units like em, rem, etc.
+        /**
+         * Convert width to pixels
+         *
+         * @param string $current_width Current width.
+         * @param float  $layout_width Layout width.
+         * @return float
+         */
+        private function convert_width_to_pixels(string $current_width, float $layout_width) : float
+        {
+        }
+        /**
+         * Parse number from string with pixels
+         *
+         * @param string $value Value with pixels.
+         * @return float
+         */
+        private function parse_number_from_string_with_pixels(string $value) : float
+        {
+        }
+        /**
+         * Add missing column widths
+         *
+         * @param array $columns Columns.
+         * @param float $columns_width Columns width.
+         * @return array
+         */
+        private function add_missing_column_widths(array $columns, float $columns_width) : array
+        {
+        }
+    }
+    /**
+     * Class Cleanup_Preprocessor
+     */
+    class Cleanup_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    {
+        /**
+         * Method to preprocess the content before rendering
+         *
+         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @return array
+         */
+        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        {
+        }
+    }
+    /**
+     * This preprocessor is responsible for setting default spacing values for blocks.
+     * In the early development phase, we are setting only margin-top for blocks that are not first or last in the columns block.
+     */
+    class Spacing_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    {
+        /**
+         * Preprocesses the parsed blocks.
+         *
+         * @param array $parsed_blocks Parsed blocks.
+         * @param array $layout Layout.
+         * @param array $styles Styles.
+         * @return array
+         */
+        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        {
+        }
+        /**
+         * Adds margin-top to blocks that are not first or last in the columns block.
+         *
+         * @param array      $parsed_blocks Parsed blocks.
+         * @param string     $gap Gap.
+         * @param array|null $parent_block Parent block.
+         * @return array
+         */
+        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null) : array
+        {
+        }
+    }
+    /**
+     * This preprocessor is responsible for setting default typography values for blocks.
+     */
+    class Typography_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    {
+        /**
+         * List of styles that should be copied from parent to children.
+         *
+         * @var string[]
+         */
+        private const TYPOGRAPHY_STYLES = array('color', 'font-size', 'text-decoration');
+        /**
+         * Injected settings controller
+         *
+         * @var Settings_Controller
+         */
+        private $settings_controller;
+        /**
+         * Typography_Preprocessor constructor.
+         *
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller)
+        {
+        }
+        /**
+         * Method to preprocess the content before rendering
+         *
+         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @return array
+         */
+        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        {
+        }
+        /**
+         * Copy typography styles from parent to children
+         *
+         * @param array $children List of children blocks.
+         * @param array $parent_block  Parent block.
+         * @return array
+         */
+        private function copy_typography_from_parent(array $children, array $parent_block) : array
+        {
+        }
+        /**
+         * Preprocess parent block
+         *
+         * @param array $block Block to preprocess.
+         * @return array
+         */
+        private function preprocess_parent(array $block) : array
+        {
+        }
+        /**
+         * Filter styles to only include typography styles
+         *
+         * @param array $styles List of styles.
+         * @return array
+         */
+        private function filterStyles(array $styles) : array
+        {
+        }
+        /**
+         * Set default values from theme
+         *
+         * @param array $block Block to set defaults for.
+         * @return array
+         */
+        private function set_defaults_from_theme(array $block) : array
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
+    /**
+     * Interface Block_Renderer
+     */
+    interface Block_Renderer
+    {
+        /**
+         * Renders the block content
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string;
+    }
+    /**
+     * Class Blocks_Parser
+     */
+    class Blocks_Parser extends \WP_Block_Parser
+    {
+        /**
+         * List of parsed blocks
+         *
+         * @var \WP_Block_Parser_Block[]
+         */
+        public $output;
+        /**
+         * Parse the blocks from the document
+         *
+         * @param string $document Document to parse.
+         * @return array[]
+         */
+        public function parse($document)
+        {
+        }
+    }
+    /**
+     * Class Blocks_Registry
+     */
+    class Blocks_Registry
+    {
+        /**
+         * Fallback renderer.
+         *
+         * @var ?Block_Renderer $fallback_renderer
+         */
+        private $fallback_renderer = null;
+        /**
+         * Array of block renderers.
+         *
+         * @var Block_Renderer[] $block_renderers_map
+         */
+        private array $block_renderers_map = array();
+        /**
+         * Adds block renderer to the registry.
+         *
+         * @param string         $block_name Block name.
+         * @param Block_Renderer $renderer Block renderer.
+         */
+        public function add_block_renderer(string $block_name, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer) : void
+        {
+        }
+        /**
+         * Adds fallback renderer to the registry.
+         *
+         * @param Block_Renderer $renderer Fallback renderer.
+         */
+        public function add_fallback_renderer(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer) : void
+        {
+        }
+        /**
+         * Checks if block renderer is registered.
+         *
+         * @param string $block_name Block name.
+         * @return bool
+         */
+        public function has_block_renderer(string $block_name) : bool
+        {
+        }
+        /**
+         * Returns block renderer by block name.
+         *
+         * @param string $block_name Block name.
+         * @return Block_Renderer|null
+         */
+        public function get_block_renderer(string $block_name) : ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+        {
+        }
+        /**
+         * Returns fallback renderer.
+         *
+         * @return Block_Renderer|null
+         */
+        public function get_fallback_renderer() : ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+        {
+        }
+        /**
+         * Removes all block renderers from the registry.
+         */
+        public function remove_all_block_renderers() : void
+        {
+        }
+        /**
+         * Removes block renderer from the registry.
+         *
+         * @param string $block_name Block name.
+         */
+        private function remove_block_renderer(string $block_name) : void
+        {
+        }
+    }
+    /**
+     * Class Content_Renderer
+     */
+    class Content_Renderer
+    {
+        /**
+         * Blocks registry
+         *
+         * @var Blocks_Registry
+         */
+        private \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry;
+        /**
+         * Process manager
+         *
+         * @var Process_Manager
+         */
+        private \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $process_manager;
+        /**
+         * Settings controller
+         *
+         * @var Settings_Controller
+         */
+        private \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller;
+        /**
+         * Theme controller
+         *
+         * @var Theme_Controller
+         */
+        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        const CONTENT_STYLES_FILE = 'content.css';
+        /**
+         * CSS inliner
+         *
+         * @var Css_Inliner
+         */
+        private \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
+        /**
+         * Content_Renderer constructor.
+         *
+         * @param Process_Manager     $preprocess_manager Preprocess manager.
+         * @param Blocks_Registry     $blocks_registry Blocks registry.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @param Css_Inliner         $css_inliner Css inliner.
+         * @param Theme_Controller    $theme_controller Theme controller.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $preprocess_manager, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        {
+        }
+        /**
+         * Initialize the content renderer
+         *
+         * @return void
+         */
+        private function initialize()
+        {
+        }
+        /**
+         * Render the content
+         *
+         * @param WP_Post           $post Post object.
+         * @param WP_Block_Template $template Block template.
+         * @return string
+         */
+        public function render(\WP_Post $post, \WP_Block_Template $template) : string
+        {
+        }
+        /**
+         * Get block parser class
+         *
+         * @return string
+         */
+        public function block_parser()
+        {
+        }
+        /**
+         * Preprocess parsed blocks
+         *
+         * @param array $parsed_blocks Parsed blocks.
+         * @return array
+         */
+        public function preprocess_parsed_blocks(array $parsed_blocks) : array
+        {
+        }
+        /**
+         * Renders block
+         * Translates block's HTML to HTML suitable for email clients. The method is intended as a callback for 'render_block' filter.
+         *
+         * @param string $block_content Block content.
+         * @param array  $parsed_block Parsed block.
+         * @return string
+         */
+        public function render_block(string $block_content, array $parsed_block) : string
+        {
+        }
+        /**
+         * Set template globals
+         *
+         * @param WP_Post           $post Post object.
+         * @param WP_Block_Template $template Block template.
+         * @return void
+         */
+        private function set_template_globals(\WP_Post $post, \WP_Block_Template $template)
+        {
+        }
+        /**
+         * As we use default WordPress filters, we need to remove them after email rendering
+         * so that we don't interfere with possible post rendering that might happen later.
+         */
+        private function reset() : void
+        {
+        }
+        /**
+         * Method to inline styles into the HTML
+         *
+         * @param string                 $html HTML content.
+         * @param WP_Post                $post Post object.
+         * @param WP_Block_Template|null $template Block template.
+         * @return string
+         */
+        private function inline_styles($html, \WP_Post $post, $template = null)
+        {
+        }
+    }
+    /**
+     * Class Process_Manager
+     */
+    class Process_Manager
+    {
+        /**
+         * List of preprocessors
+         *
+         * @var Preprocessor[]
+         */
+        private $preprocessors = array();
+        /**
+         * List of postprocessors
+         *
+         * @var Postprocessor[]
+         */
+        private $postprocessors = array();
+        /**
+         * Process_Manager constructor.
+         *
+         * @param Cleanup_Preprocessor       $cleanup_preprocessor Cleanup preprocessor.
+         * @param Blocks_Width_Preprocessor  $blocks_width_preprocessor Blocks width preprocessor.
+         * @param Typography_Preprocessor    $typography_preprocessor Typography preprocessor.
+         * @param Spacing_Preprocessor       $spacing_preprocessor Spacing preprocessor.
+         * @param Highlighting_Postprocessor $highlighting_postprocessor Highlighting postprocessor.
+         * @param Variables_Postprocessor    $variables_postprocessor Variables postprocessor.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Cleanup_Preprocessor $cleanup_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Blocks_Width_Preprocessor $blocks_width_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Typography_Preprocessor $typography_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Spacing_Preprocessor $spacing_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Highlighting_Postprocessor $highlighting_postprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Variables_Postprocessor $variables_postprocessor)
+        {
+        }
+        /**
+         * Method to preprocess blocks
+         *
+         * @param array                                                                                                             $parsed_blocks Parsed blocks.
+         * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}          $layout Layout.
+         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles.
+         * @return array
+         */
+        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        {
+        }
+        /**
+         * Method to postprocess the content
+         *
+         * @param string $html HTML content.
+         * @return string
+         */
+        public function postprocess(string $html) : string
+        {
+        }
+        /**
+         * Register preprocessor
+         *
+         * @param Preprocessor $preprocessor Preprocessor.
+         */
+        public function register_preprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor $preprocessor) : void
+        {
+        }
+        /**
+         * Register postprocessor
+         *
+         * @param Postprocessor $postprocessor Postprocessor.
+         */
+        public function register_postprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor $postprocessor) : void
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine\Renderer {
+    /**
+     * Class Renderer
+     */
+    class Renderer
+    {
+        /**
+         * Theme controller
+         *
+         * @var Theme_Controller
+         */
+        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        /**
+         * Content renderer
+         *
+         * @var Content_Renderer
+         */
+        private \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer;
+        /**
+         * Templates
+         *
+         * @var Templates
+         */
+        private \MailPoet\EmailEditor\Engine\Templates\Templates $templates;
+        /**
+         * Css inliner
+         *
+         * @var Css_Inliner
+         */
+        private \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
+        const TEMPLATE_FILE = 'template-canvas.php';
+        const TEMPLATE_STYLES_FILE = 'template-canvas.css';
+        /**
+         * Renderer constructor.
+         *
+         * @param Content_Renderer $content_renderer Content renderer.
+         * @param Templates        $templates Templates.
+         * @param Css_Inliner      $css_inliner CSS Inliner.
+         * @param Theme_Controller $theme_controller Theme controller.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer, \MailPoet\EmailEditor\Engine\Templates\Templates $templates, \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        {
+        }
+        /**
+         * Renders the email template
+         *
+         * @param \WP_Post $post Post object.
+         * @param string   $subject Email subject.
+         * @param string   $pre_header Email preheader.
+         * @param string   $language Email language.
+         * @param string   $meta_robots Email meta robots.
+         * @return array
+         */
+        public function render(\WP_Post $post, string $subject, string $pre_header, string $language, $meta_robots = '') : array
+        {
+        }
+        /**
+         * Inlines CSS styles into the HTML
+         *
+         * @param string $template HTML template.
+         * @return string
+         */
+        private function inline_css_styles($template)
+        {
+        }
+        /**
+         * Renders the text version of the email template
+         *
+         * @param string $template HTML template.
+         * @return string
+         */
+        private function render_text_version($template)
+        {
+        }
+    }
+    interface Css_Inliner
+    {
+        /**
+         * Builds a new instance from the given HTML.
+         *
+         * @param string $unprocessed_html raw HTML, must be UTF-encoded, must not be empty.
+         *
+         * @return static
+         */
+        public function from_html(string $unprocessed_html) : self;
+        /**
+         * Inlines the given CSS into the existing HTML.
+         *
+         * @param string $css the CSS to inline, must be UTF-8-encoded.
+         *
+         * @return $this
+         */
+        public function inline_css(string $css = '') : self;
+        /**
+         * Renders the normalized and processed HTML.
+         *
+         * @return string
+         */
+        public function render() : string;
+    }
+}
+namespace MailPoet\EmailEditor\Engine\Templates {
+    /**
+     * The class represents a template
+     */
+    class Template
+    {
+        /**
+         * Plugin uri used in the template name.
+         *
+         * @var string $plugin_uri
+         */
+        private string $plugin_uri;
+        /**
+         * The template slug used in the template name.
+         *
+         * @var string $slug
+         */
+        private string $slug;
+        /**
+         * The template name used for block template registration.
+         *
+         * @var string $name
+         */
+        private string $name;
+        /**
+         * The template title.
+         *
+         * @var string $title
+         */
+        private string $title;
+        /**
+         * The template description.
+         *
+         * @var string $description
+         */
+        private string $description;
+        /**
+         * The template content.
+         *
+         * @var string $content
+         */
+        private string $content;
+        /**
+         * The list of supoorted post types.
+         *
+         * @var string[]
+         */
+        private array $post_types;
+        /**
+         * Constructor of the class.
+         *
+         * @param string   $plugin_uri The plugin uri.
+         * @param string   $slug The template slug.
+         * @param string   $title The template title.
+         * @param string   $description The template description.
+         * @param string   $content The template content.
+         * @param string[] $post_types The list of post types supported by the template.
+         */
+        public function __construct(string $plugin_uri, string $slug, string $title, string $description, string $content, array $post_types = array())
+        {
+        }
+        /**
+         * Get the plugin uri.
+         *
+         * @return string
+         */
+        public function get_pluginuri() : string
+        {
+        }
+        /**
+         * Get the template slug.
+         *
+         * @return string
+         */
+        public function get_slug() : string
+        {
+        }
+        /**
+         * Get the template name composed from the plugin_uri and the slug.
+         *
+         * @return string
+         */
+        public function get_name() : string
+        {
+        }
+        /**
+         * Get the template title.
+         *
+         * @return string
+         */
+        public function get_title() : string
+        {
+        }
+        /**
+         * Get the template description.
+         *
+         * @return string
+         */
+        public function get_description() : string
+        {
+        }
+        /**
+         * Get the template content.
+         *
+         * @return string
+         */
+        public function get_content() : string
+        {
+        }
+        /**
+         * Get the list of supported post types.
+         *
+         * @return string[]
+         */
+        public function get_post_types() : array
+        {
+        }
+    }
+    /**
+     * Registry for email templates.
+     */
+    class Templates_Registry
+    {
+        /**
+         * List of registered templates.
+         *
+         * @var Template[]
+         */
+        private $templates = array();
+        /**
+         * Initialize the template registry.
+         * This method should be called only once.
+         *
+         * @return void
+         */
+        public function initialize() : void
+        {
+        }
+        /**
+         * Register a template instance in the registry.
+         *
+         * @param Template $template The template to register.
+         * @return void
+         */
+        public function register(\MailPoet\EmailEditor\Engine\Templates\Template $template) : void
+        {
+        }
+        /**
+         * Retrieve a template by its name.
+         * Example: get_by_name( 'mailpoet//email-general' ) will return the instance of Template with identical name.
+         *
+         * @param string $name The name of the template.
+         * @return Template|null The template object or null if not found.
+         */
+        public function get_by_name(string $name) : ?\MailPoet\EmailEditor\Engine\Templates\Template
+        {
+        }
+        /**
+         * Retrieve a template by its slug.
+         * Example: get_by_slug( 'email-general' ) will return the instance of Template with identical slug.
+         *
+         * @param string $slug The slug of the template.
+         * @return Template|null The template object or null if not found.
+         */
+        public function get_by_slug(string $slug) : ?\MailPoet\EmailEditor\Engine\Templates\Template
+        {
+        }
+        /**
+         * Retrieve all registered templates.
+         *
+         * @return array List of all registered templates.
+         */
+        public function get_all()
+        {
+        }
+    }
+    /**
+     * Templates class.
+     */
+    class Templates
+    {
+        /**
+         * The plugin slug.
+         *
+         * @var string $plugin_slug
+         */
+        private string $template_prefix = 'mailpoet';
+        /**
+         * The post type.
+         *
+         * @var string[] $post_type
+         */
+        private array $post_types = array();
+        /**
+         * The template directory.
+         *
+         * @var string $template_directory
+         */
+        private string $template_directory = __DIR__ . DIRECTORY_SEPARATOR;
+        /**
+         * The templates registry.
+         *
+         * @var Templates_Registry $templates_registry
+         */
+        private \MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry;
+        /**
+         * Constructor of the class.
+         *
+         * @param Templates_Registry $templates_registry The templates registry.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry)
+        {
+        }
+        /**
+         * Initializes the class.
+         *
+         * @param string[] $post_types The list of post types registered for usage with email editor.
+         */
+        public function initialize(array $post_types) : void
+        {
+        }
+        /**
+         * Get a block template by ID.
+         *
+         * @param string $template_slug The template slug.
+         * @return WP_Block_Template|null
+         */
+        public function get_block_template($template_slug)
+        {
+        }
+        /**
+         * Register the templates via register_block_template
+         *
+         * @param Templates_Registry $templates_registry The templates registry.
+         */
+        public function register_templates(\MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry) : \MailPoet\EmailEditor\Engine\Templates\Templates_Registry
+        {
+        }
+        /**
+         * Register post_types property to the templates rest api response.
+         *
+         * There is a PR that adds the property into the core https://github.com/WordPress/wordpress-develop/pull/7530
+         * Until it is merged, we need to add it manually.
+         */
+        public function register_post_types_to_api() : void
+        {
+        }
+        /**
+         * This is a callback function for adding post_types property to templates rest api response.
+         *
+         * @param array $response_object The rest API response object.
+         * @return array
+         */
+        public function get_post_types($response_object) : array
+        {
+        }
+        /**
+         * This is need to enable saving post – template association.
+         * When a theme doesn't support block_templates feature the association is not saved, because templates registered via register_block_template are not added to the list of available templates.
+         * https://github.com/WordPress/wordpress-develop/blob/cdc2f255acce57372b849d6278c4156e1056c749/src/wp-includes/class-wp-theme.php#L1355
+         *
+         * This function ensures that the email templates are in the list which is used for checking if the template can be saved in the association.
+         * See https://github.com/WordPress/wordpress-develop/blob/cdc2f255acce57372b849d6278c4156e1056c749/src/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L1595-L1599
+         *
+         * @param array    $templates The templates.
+         * @param string   $theme The theme.
+         * @param \WP_Post $post The post.
+         * @param string   $post_type The post type.
+         * @return array
+         */
+        public function add_theme_templates($templates, $theme, $post, $post_type)
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Engine {
+    /**
+     * This class is responsible checking the dependencies of the email editor.
+     */
+    class Dependency_Check
+    {
+        /**
+         * Minimum WordPress version required for the email editor.
+         */
+        public const MIN_WP_VERSION = '6.7';
+        /**
+         * Checks if all dependencies are met.
+         */
+        public function are_dependencies_met() : bool
+        {
+        }
+        /**
+         * Checks if the WordPress version is supported.
+         */
+        private function is_wp_version_compatible() : bool
+        {
+        }
+    }
+    /**
+     * Class for email API controller.
+     */
+    class Email_Api_Controller
+    {
+        /**
+         * Personalization tags registry to get all personalization tags.
+         *
+         * @var Personalization_Tags_Registry
+         */
+        private \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
+        /**
+         * Email_Api_Controller constructor with all dependencies.
+         *
+         * @param Personalization_Tags_Registry $personalization_tags_registry Personalization tags registry.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry)
+        {
+        }
+        /**
+         * Returns email specific data.
+         *
+         * @return array - Email specific data such styles.
+         */
+        public function get_email_data() : array
+        {
+        }
+        /**
+         * Update Email specific data we store.
+         *
+         * @param array   $data - Email specific data.
+         * @param WP_Post $email_post - Email post object.
+         */
+        public function save_email_data(array $data, \WP_Post $email_post) : void
+        {
+        }
+        /**
+         * Sends preview email
+         *
+         * @param WP_REST_Request $request route request.
+         * @return WP_REST_Response
+         */
+        public function send_preview_email_data(\WP_REST_Request $request) : \WP_REST_Response
+        {
+        }
+        /**
+         * Returns all registered personalization tags.
+         *
+         * @return WP_REST_Response
+         */
+        public function get_personalization_tags() : \WP_REST_Response
+        {
+        }
+        /**
+         * Returns the schema for email data.
+         *
+         * @return array
+         */
+        public function get_email_data_schema() : array
+        {
+        }
+    }
+    /**
+     * Email editor class.
+     *
+     * @phpstan-type EmailPostType array{name: string, args: array, meta: array{key: string, args: array}[]}
+     * See register_post_type for details about EmailPostType args.
+     */
+    class Email_Editor
+    {
+        public const MAILPOET_EMAIL_META_THEME_TYPE = 'mailpoet_email_theme';
+        /**
+         * Property for the email API controller.
+         *
+         * @var Email_Api_Controller Email API controller.
+         */
+        private \MailPoet\EmailEditor\Engine\Email_Api_Controller $email_api_controller;
+        /**
+         * Property for the templates.
+         *
+         * @var Templates Templates.
+         */
+        private \MailPoet\EmailEditor\Engine\Templates\Templates $templates;
+        /**
+         * Property for the patterns.
+         *
+         * @var Patterns Patterns.
+         */
+        private \MailPoet\EmailEditor\Engine\Patterns\Patterns $patterns;
+        /**
+         * Property for the send preview email controller.
+         *
+         * @var Send_Preview_Email Send Preview controller.
+         */
+        private \MailPoet\EmailEditor\Engine\Send_Preview_Email $send_preview_email;
+        /**
+         * Property for Personalization_Tags_Controller that allows initializing personalization tags.
+         *
+         * @var Personalization_Tags_Registry Personalization tags registry.
+         */
+        private \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
+        /**
+         * Constructor.
+         *
+         * @param Email_Api_Controller          $email_api_controller Email API controller.
+         * @param Templates                     $templates Templates.
+         * @param Patterns                      $patterns Patterns.
+         * @param Send_Preview_Email            $send_preview_email Preview email controller.
+         * @param Personalization_Tags_Registry $personalization_tags_controller Personalization tags registry that allows initializing personalization tags.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Email_Api_Controller $email_api_controller, \MailPoet\EmailEditor\Engine\Templates\Templates $templates, \MailPoet\EmailEditor\Engine\Patterns\Patterns $patterns, \MailPoet\EmailEditor\Engine\Send_Preview_Email $send_preview_email, \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_controller)
+        {
+        }
+        /**
+         * Initialize the email editor.
+         *
+         * @return void
+         */
+        public function initialize() : void
+        {
+        }
+        /**
+         * Register block templates.
+         *
+         * @return void
+         */
+        private function register_block_templates() : void
+        {
+        }
+        /**
+         * Register block patterns.
+         *
+         * @return void
+         */
+        private function register_block_patterns() : void
+        {
+        }
+        /**
+         * Register all custom post types that should be edited via the email editor
+         * The post types are added via mailpoet_email_editor_post_types filter.
+         *
+         * @return void
+         */
+        private function register_email_post_types() : void
+        {
+        }
+        /**
+         * Register all personalization tags registered via
+         * the mailpoet_email_editor_register_personalization_tags filter.
+         *
+         * @return void
+         */
+        private function register_personalization_tags() : void
+        {
+        }
+        /**
+         * Returns the email post types.
+         *
+         * @return array
+         * @phpstan-return EmailPostType[]
+         */
+        private function get_post_types() : array
+        {
+        }
+        /**
+         * Returns the default arguments for email post types.
+         *
+         * @return array
+         */
+        private function get_default_email_post_args() : array
+        {
+        }
+        /**
+         * Register the 'sent' post status for emails.
+         *
+         * @return void
+         */
+        private function register_email_post_sent_status() : void
+        {
+        }
+        /**
+         * Extends the email post types with email specific data.
+         *
+         * @return void
+         */
+        public function extend_email_post_api()
+        {
+        }
+        /**
+         * Registers the API route endpoint for the email editor
+         *
+         * @return void
+         */
+        public function register_email_editor_api_routes()
+        {
+        }
+        /**
+         * Extends the email theme styles with the email specific styles.
+         *
+         * @param WP_Theme_JSON $theme Email theme styles.
+         * @param WP_Post       $post Email post object.
+         * @return WP_Theme_JSON
+         */
+        public function extend_email_theme_styles(\WP_Theme_JSON $theme, \WP_Post $post) : \WP_Theme_JSON
+        {
+        }
+        /**
+         * Get the current post object
+         *
+         * @return array|mixed|WP_Post|null
+         */
+        public function get_current_post()
+        {
+        }
+        /**
+         * Use a custom page template for the email editor frontend rendering.
+         *
+         * @param string $template post template.
+         * @return string
+         */
+        public function load_email_preview_template($template)
+        {
+        }
+    }
+    /**
+     * Class for email styles schema.
+     */
+    class Email_Styles_Schema
+    {
+        /**
+         * Returns the schema for email styles.
+         *
+         * @return array
+         */
+        public function get_schema() : array
+        {
+        }
+    }
+    /**
+     * Class for replacing personalization tags with their values in the email content.
+     */
+    class Personalizer
+    {
+        /**
+         * Personalization tags registry.
+         *
+         * @var Personalization_Tags_Registry
+         */
+        private \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $tags_registry;
+        /**
+         * Context for personalization tags.
+         *
+         * The `context` is an associative array containing recipient-specific or
+         * campaign-specific data. This data is used to resolve personalization tags
+         * and provide input for tag callbacks during email content processing.
+         *
+         * Example context:
+         * array(
+         *     'recipient_email' => 'john@example.com', // Recipient's email
+         *     'custom_field'    => 'Special Value',    // Custom campaign-specific data
+         * )
+         *
+         * @var array<string, mixed>
+         */
+        private array $context;
+        /**
+         * Class constructor with required dependencies.
+         *
+         * @param Personalization_Tags_Registry $tags_registry Personalization tags registry.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $tags_registry)
+        {
+        }
+        /**
+         * Set the context for personalization.
+         *
+         * The `context` provides data required for resolving personalization tags
+         * during content processing. This method allows the context to be set or updated.
+         *
+         * Example usage:
+         * $personalizer->set_context(array(
+         *     'recipient_email' => 'john@example.com',
+         * ));
+         *
+         * @param array<string, mixed> $context Associative array containing personalization data.
+         * @return void
+         */
+        public function set_context(array $context)
+        {
+        }
+        /**
+         * Personalize the content by replacing the personalization tags with their values.
+         *
+         * @param string $content The content to personalize.
+         * @return string The personalized content.
+         */
+        public function personalize_content(string $content) : string
+        {
+        }
+        /**
+         * Parse a personalization tag to the token and attributes.
+         *
+         * @param string $token The token to parse.
+         * @return array{token: string, arguments: array} The parsed token.
+         */
+        private function parse_token(string $token) : array
+        {
+        }
+        /**
+         * Replace the href attribute of the anchor tag with the personalized value.
+         * The replacement uses regular expression to match the shortcode and its attributes.
+         *
+         * @param string $content The content to replace the link href.
+         * @param string $token Personalization tag token.
+         * @param string $replacement The callback output to replace the link href.
+         * @return string
+         */
+        private function replace_link_href(string $content, string $token, string $replacement)
+        {
+        }
+    }
+    /**
+     * Class Send_Preview_Email
+     *
+     * This class is responsible for handling the functionality to send preview emails.
+     * It is part of the email editor integrations utilities.
+     *
+     * @package MailPoet\EmailEditor\Integrations\Utils
+     */
+    class Send_Preview_Email
+    {
+        /**
+         * Instance of the Renderer class used for rendering the editor emails.
+         *
+         * @var Renderer $renderer
+         */
+        private \MailPoet\EmailEditor\Engine\Renderer\Renderer $renderer;
+        /**
+         * Instance of the Personalizer class used for rendering personalization tags.
+         *
+         * @var Personalizer $personalizer
+         */
+        private \MailPoet\EmailEditor\Engine\Personalizer $personalizer;
+        /**
+         * Send_Preview_Email constructor.
+         *
+         * @param Renderer     $renderer renderer instance.
+         * @param Personalizer $personalizer personalizer instance.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\Renderer $renderer, \MailPoet\EmailEditor\Engine\Personalizer $personalizer)
+        {
+        }
+        /**
+         * Sends a preview email.
+         *
+         * @param array $data The data required to send the preview email.
+         * @return bool Returns true if the preview email was sent successfully, false otherwise.
+         * @throws \Exception If the data is invalid.
+         */
+        public function send_preview_email($data) : bool
+        {
+        }
+        /**
+         * Renders the HTML content of the post
+         *
+         * @param \WP_Post $post The WordPress post object.
+         * @return string
+         */
+        public function render_html($post) : string
+        {
+        }
+        /**
+         * Personalize the content.
+         *
+         * @param string $content HTML content.
+         * @return string
+         */
+        public function set_personalize_content(string $content) : string
+        {
+        }
+        /**
+         * Sends an email preview.
+         *
+         * @param string $to The recipient email address.
+         * @param string $subject The subject of the email.
+         * @param string $body The body content of the email.
+         * @return bool Returns true if the email was sent successfully, false otherwise.
+         */
+        public function send_email(string $to, string $subject, string $body) : bool
+        {
+        }
+        /**
+         * Sets the mail content type. Used by $this->send_email.
+         *
+         * @param string $content_type The content type to be set for the mail.
+         * @return string The content type that was set.
+         */
+        public function set_mail_content_type(string $content_type) : string
+        {
+        }
+        /**
+         * Validates the provided data array.
+         *
+         * @param array $data The data array to be validated.
+         *
+         * @return void
+         * @throws \InvalidArgumentException If the data is invalid.
+         */
+        private function validate_data(array $data)
+        {
+        }
+        /**
+         * Fetches a post_id post object based on the provided post ID.
+         *
+         * @param int $post_id The ID of the post to fetch.
+         * @return \WP_Post The WordPress post object.
+         * @throws \Exception If the post is invalid.
+         */
+        private function fetch_post($post_id) : \WP_Post
+        {
+        }
+    }
+    /**
+     * Class managing the settings for the email editor.
+     */
+    class Settings_Controller
+    {
+        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/paragraph', 'core/heading', 'core/column', 'core/columns', 'core/image', 'core/list', 'core/list-item', 'core/group', 'core/spacer');
+        const DEFAULT_SETTINGS = array('enableCustomUnits' => array('px', '%'));
+        /**
+         * Theme controller.
+         *
+         * @var Theme_Controller
+         */
+        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        /**
+         * Assets for iframe editor (component styles, scripts, etc.)
+         *
+         * @var array
+         */
+        private array $iframe_assets = array();
+        /**
+         * Class constructor.
+         *
+         * @param Theme_Controller $theme_controller Theme controller.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        {
+        }
+        /**
+         * Get the settings for the email editor.
+         *
+         * @return array
+         */
+        public function get_settings() : array
+        {
+        }
+        /**
+         * Returns the layout settings for the email editor.
+         *
+         * @return array{contentSize: string, wideSize: string}
+         */
+        public function get_layout() : array
+        {
+        }
+        /**
+         * Get the email styles.
+         *
+         * @return array{
+         *   spacing: array{
+         *     blockGap: string,
+         *     padding: array{bottom: string, left: string, right: string, top: string}
+         *   },
+         *   color: array{
+         *     background: string
+         *   },
+         *   typography: array{
+         *     fontFamily: string
+         *   }
+         * }
+         */
+        public function get_email_styles() : array
+        {
+        }
+        /**
+         * Returns the width of the layout without padding.
+         *
+         * @return string
+         */
+        public function get_layout_width_without_padding() : string
+        {
+        }
+        /**
+         * Parse styles string to array.
+         *
+         * @param string $styles Styles string.
+         * @return array
+         */
+        public function parse_styles_to_array(string $styles) : array
+        {
+        }
+        /**
+         * Returns float number parsed from string with pixels.
+         *
+         * @param string $value Value with pixels.
+         * @return float
+         */
+        public function parse_number_from_string_with_pixels(string $value) : float
+        {
+        }
+        /**
+         * Returns the theme.
+         *
+         * @return \WP_Theme_JSON
+         */
+        public function get_theme() : \WP_Theme_JSON
+        {
+        }
+        /**
+         * Translate slug to font size.
+         *
+         * @param string $font_size Font size slug.
+         * @return string
+         */
+        public function translate_slug_to_font_size(string $font_size) : string
+        {
+        }
+        /**
+         * Translate slug to color.
+         *
+         * @param string $color_slug Color slug.
+         * @return string
+         */
+        public function translate_slug_to_color(string $color_slug) : string
+        {
+        }
+        /**
+         * Method to initialize iframe assets.
+         *
+         * @return void
+         */
+        private function init_iframe_assets() : void
+        {
+        }
+    }
+    /**
+     * E-mail editor works with own theme.json which defines settings for the editor and styles for the e-mail.
+     * This class is responsible for accessing data defined by the theme.json.
+     */
+    class Theme_Controller
+    {
+        /**
+         * Core theme loaded from the WordPress core.
+         *
+         * @var WP_Theme_JSON
+         */
+        private \WP_Theme_JSON $core_theme;
+        /**
+         * Base theme loaded from a file in the package directory.
+         *
+         * @var WP_Theme_JSON
+         */
+        private \WP_Theme_JSON $base_theme;
+        /**
+         * User theme contains user custom styles and settings
+         *
+         * @var User_Theme
+         */
+        private \MailPoet\EmailEditor\Engine\User_Theme $user_theme;
+        /**
+         * Theme_Controller constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Gets combined theme data from the core and base theme, merged with the user .
+         *
+         * @return WP_Theme_JSON
+         */
+        public function get_theme() : \WP_Theme_JSON
+        {
+        }
+        /**
+         * Gets combined theme data from the core and base theme.
+         *
+         * @return WP_Theme_JSON
+         */
+        public function get_base_theme() : \WP_Theme_JSON
+        {
+        }
+        /**
+         * Replace preset variables with their values.
+         *
+         * @param array $values Styles array.
+         * @param array $presets Presets array.
+         * @return array
+         */
+        private function recursive_replace_presets($values, $presets)
+        {
+        }
+        /**
+         * Replace preset variables with their values.
+         *
+         * @param array $styles Styles array.
+         * @return array
+         */
+        private function recursive_extract_preset_variables($styles)
+        {
+        }
+        /**
+         * Get styles for the e-mail.
+         *
+         * @return array{
+         *   spacing: array{
+         *     blockGap: string,
+         *     padding: array{bottom: string, left: string, right: string, top: string}
+         *   },
+         *   color: array{
+         *     background: string
+         *   },
+         *   typography: array{
+         *     fontFamily: string
+         *   }
+         * }
+         */
+        public function get_styles() : array
+        {
+        }
+        /**
+         * Get settings from the theme.
+         *
+         * @return array
+         */
+        public function get_settings() : array
+        {
+        }
+        /**
+         * Get layout settings from the theme.
+         *
+         * @return array{contentSize: string, wideSize: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}
+         */
+        public function get_layout_settings() : array
+        {
+        }
+        /**
+         * Get stylesheet from context.
+         *
+         * @param string $context Context.
+         * @param array  $options Options.
+         * @return string
+         */
+        public function get_stylesheet_from_context($context, $options = array()) : string
+        {
+        }
+        /**
+         * Get stylesheet for rendering.
+         *
+         * @param WP_Post|null           $post Post object.
+         * @param WP_Block_Template|null $template Template object.
+         * @return string
+         */
+        public function get_stylesheet_for_rendering(?\WP_Post $post = null, $template = null) : string
+        {
+        }
+        /**
+         * Translate font family slug to font family name.
+         *
+         * @param string $font_size Font size slug.
+         * @return string
+         */
+        public function translate_slug_to_font_size(string $font_size) : string
+        {
+        }
+        /**
+         * Translate color slug to color.
+         *
+         * @param string $color_slug Color slug.
+         * @return string
+         */
+        public function translate_slug_to_color(string $color_slug) : string
+        {
+        }
+        /**
+         * Returns the map of CSS variables and their values from the theme.
+         *
+         * @return array
+         */
+        public function get_variables_values_map() : array
+        {
+        }
+    }
+    /**
+     * This class is responsible for managing and accessing theme data aka email styles created by users.
+     */
+    class User_Theme
+    {
+        private const USER_THEME_POST_NAME = 'wp-global-styles-mailpoet-email';
+        private const INITIAL_THEME_DATA = array('version' => 3, 'isGlobalStylesUserThemeJSON' => true);
+        /**
+         * Core theme loaded from the WordPress core.
+         *
+         * @var WP_Post | null
+         */
+        private ?\WP_Post $user_theme_post = null;
+        /**
+         * Getter for user theme.
+         *
+         * @throws \Exception If the user theme post cannot be created.
+         * @return WP_Theme_JSON
+         */
+        public function get_theme() : \WP_Theme_JSON
+        {
+        }
+        /**
+         * Getter for user theme post.
+         * If the post does not exist, it will be created.
+         *
+         * @throws \Exception If the user theme post cannot be created.
+         * @return WP_Post
+         */
+        public function get_user_theme_post() : \WP_Post
+        {
+        }
+        /**
+         * Ensures that the user theme post exists and is loaded.
+         *
+         * @throws \Exception If the user theme post cannot be created.
+         */
+        private function ensure_theme_post() : void
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
+    /**
+     * Shared functionality for block renderers.
+     */
+    abstract class Abstract_Block_Renderer implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+    {
+        /**
+         * Wrapper for wp_style_engine_get_styles which ensures all values are returned.
+         *
+         * @param array $block_styles Array of block styles.
+         * @param bool  $skip_convert_vars If true, --wp_preset--spacing--x type values will be left in the original var:preset:spacing:x format.
+         * @return array
+         */
+        protected function get_styles_from_block(array $block_styles, $skip_convert_vars = false)
+        {
+        }
+        /**
+         * Compile objects containing CSS properties to a string.
+         *
+         * @param array ...$styles Style arrays to compile.
+         * @return string
+         */
+        protected function compile_css(...$styles) : string
+        {
+        }
+        /**
+         * Add a spacer around the block.
+         *
+         * @param string $content The block content.
+         * @param array  $email_attrs The email attributes.
+         * @return string
+         */
+        protected function add_spacer($content, $email_attrs) : string
+        {
+        }
+        /**
+         * Render the block.
+         *
+         * @param string              $block_content The block content.
+         * @param array               $parsed_block The parsed block.
+         * @param Settings_Controller $settings_controller The settings controller.
+         * @return string
+         */
+        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * Render the block content.
+         *
+         * @param string              $block_content The block content.
+         * @param array               $parsed_block The parsed block.
+         * @param Settings_Controller $settings_controller The settings controller.
+         * @return string
+         */
+        protected abstract function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string;
+    }
+    /**
+     * Renders a button block.
+     *
+     * @see https://www.activecampaign.com/blog/email-buttons
+     * @see https://documentation.mjml.io/#mj-button
+     */
+    class Button extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Get styles for the wrapper element.
+         *
+         * @param array $block_styles Block styles.
+         * @return object{css: string, classname: string}
+         */
+        private function get_wrapper_styles(array $block_styles)
+        {
+        }
+        /**
+         * Get styles for the link element.
+         *
+         * @param array $block_styles Block styles.
+         * @return object{css: string, classname: string}
+         */
+        private function get_link_styles(array $block_styles)
+        {
+        }
+        /**
+         * Renders the block.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * Renders a buttons block.
+     */
+    class Buttons extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Provides the Flex_Layout_Renderer instance.
+         *
+         * @var Flex_Layout_Renderer
+         */
+        private $flex_layout_renderer;
+        /**
+         * Buttons constructor.
+         *
+         * @param Flex_Layout_Renderer $flex_layout_renderer Flex layout renderer.
+         */
+        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout\Flex_Layout_Renderer $flex_layout_renderer)
+        {
+        }
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * Renders a column block.
+     */
+    class Column extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Override this method to disable spacing (block gap) for columns.
+         * Spacing is applied on wrapping columns block. Columns are rendered side by side so no spacer is needed.
+         *
+         * @param string $content Content.
+         * @param array  $email_attrs Email attributes.
+         */
+        protected function add_spacer($content, $email_attrs) : string
+        {
+        }
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * Based on MJML <mj-column>
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * Renders a columns block.
+     */
+    class Columns extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Override this method to disable spacing (block gap) for columns.
+         * Spacing is applied on wrapping columns block. Columns are rendered side by side so no spacer is needed.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * Based on MJML <mj-section>
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        private function getBlockWrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * Fallback block renderer.
+     * This renderer is used when no specific renderer is found for a block.
+     *
+     * AbstractBlockRenderer applies some adjustments to the block content, like adding spacers.
+     * By using fallback renderer for all blocks we apply there adjustments to all blocks that don't have any renderer.
+     *
+     * We need to find a better abstraction/architecture for this.
+     */
+    class Fallback extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * Renders a group block.
+     */
+    class Group extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * Returns the block wrapper.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * Renders an image block.
+     */
+    class Image extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * Apply rounded style to the image.
+         *
+         * @param string $block_content Block content.
+         * @param array  $parsed_block Parsed block.
+         */
+        private function apply_rounded_style(string $block_content, array $parsed_block) : string
+        {
+        }
+        /**
+         * When the width is not set, it's important to get it for the image to be displayed correctly
+         *
+         * @param array               $parsed_block Parsed block.
+         * @param string              $image_url Image URL.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        private function add_image_size_when_missing(array $parsed_block, string $image_url, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : array
+        {
+        }
+        /**
+         * Apply border style to the image.
+         *
+         * @param string $block_content Block content.
+         * @param array  $parsed_block Parsed block.
+         * @param string $class_name Class name.
+         */
+        private function apply_image_border_style(string $block_content, array $parsed_block, string $class_name) : string
+        {
+        }
+        /**
+         * Settings width and height attributes for images is important for MS Outlook.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        private function addImageDimensions($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * This method configure the font size of the caption because it's set to 0 for the parent element to avoid unexpected white spaces
+         * We try to use font-size passed down from the parent element $parsedBlock['email_attrs']['font-size'], but if it's not set, we use the default font-size from the email theme.
+         *
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @param array               $parsed_block Parsed block.
+         */
+        private function get_caption_styles(\MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, array $parsed_block) : string
+        {
+        }
+        /**
+         * Based on MJML <mj-image> but because MJML doesn't support captions, our solution is a bit different
+         *
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string|null         $caption Caption.
+         */
+        private function get_block_wrapper(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, ?string $caption) : string
+        {
+        }
+        /**
+         * Add style to the element.
+         *
+         * @param string                                       $block_content Block content.
+         * @param array{tag_name: string, class_name?: string} $tag Tag to add style to.
+         * @param string                                       $style Style to add.
+         */
+        private function add_style_to_element($block_content, array $tag, string $style) : string
+        {
+        }
+        /**
+         * Remove style attribute from the element.
+         *
+         * @param string                                       $block_content Block content.
+         * @param array{tag_name: string, class_name?: string} $tag Tag to remove style from.
+         * @param string                                       $style_name Name of the style to remove.
+         */
+        private function remove_style_attribute_from_element($block_content, array $tag, string $style_name) : string
+        {
+        }
+        /**
+         * Parse block content to get image URL, image HTML and caption HTML.
+         *
+         * @param string $block_content Block content.
+         * @return array{imageUrl: string, image: string, caption: string, class: string}|null
+         */
+        private function parse_block_content(string $block_content) : ?array
+        {
+        }
+        /**
+         * Cleanup image HTML.
+         *
+         * @param string $content_html Content HTML.
+         */
+        private function cleanup_image_html(string $content_html) : string
+        {
+        }
+    }
+    /**
+     * Renders a list block.
+     * We have to avoid using keyword `List`
+     */
+    class List_Block extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * Renders a list item block.
+     */
+    class List_Item extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Override this method to disable spacing (block gap) for list items.
+         *
+         * @param string $content Content.
+         * @param array  $email_attrs Email attributes.
+         */
+        protected function add_spacer($content, $email_attrs) : string
+        {
+        }
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+    }
+    /**
+     * This renderer covers both core/paragraph and core/heading blocks
+     */
+    class Text extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        {
+        }
+        /**
+         * 1) We need to remove padding because we render padding on wrapping table cell
+         * 2) We also need to replace font-size to avoid clamp() because clamp() is not supported in many email clients.
+         * The font size values is automatically converted to clamp() when WP site theme is configured to use fluid layouts.
+         * Currently (WP 6.5), there is no way to disable this behavior.
+         *
+         * @param string $block_content Block content.
+         */
+        private function adjustStyleAttribute(string $block_content) : string
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Integrations\Core {
+    /**
+     * Initializes the core blocks renderers.
+     */
+    class Initializer
+    {
+        /**
+         * Initializes the core blocks renderers.
+         */
+        public function initialize() : void
+        {
+        }
+        /**
+         * Register core blocks email renderers when the blocks renderer is initialized.
+         *
+         * @param Blocks_Registry $blocks_registry Blocks registry.
+         */
+        public function register_core_blocks_renderers(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry) : void
+        {
+        }
+        /**
+         * Adjusts the editor's theme to add blocks specific settings for core blocks.
+         *
+         * @param \WP_Theme_JSON $editor_theme_json Editor theme JSON.
+         */
+        public function adjust_theme_json(\WP_Theme_JSON $editor_theme_json) : \WP_Theme_JSON
+        {
+        }
+        /**
+         * Allow styles for the email editor.
+         *
+         * @param array|null $allowed_styles Allowed styles.
+         */
+        public function allow_styles(?array $allowed_styles) : array
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Integrations\Utils {
+    /**
+     * This class should guarantee that our work with the DOMDocument is unified and safe.
+     */
+    class Dom_Document_Helper
+    {
+        /**
+         * Instance of the DOMDocument.
+         *
+         * @var \DOMDocument
+         */
+        private \DOMDocument $dom;
+        /**
+         * Constructor.
+         *
+         * @param string $html_content The HTML content to load.
+         */
+        public function __construct(string $html_content)
+        {
+        }
+        /**
+         * Loads the given HTML content into the DOMDocument.
+         *
+         * @param string $html_content The HTML content to load.
+         */
+        private function load_html(string $html_content) : void
+        {
+        }
+        /**
+         * Searches for the first appearance of the given tag name.
+         *
+         * @param string $tag_name The tag name to search for.
+         */
+        public function find_element(string $tag_name) : ?\DOMElement
+        {
+        }
+        /**
+         * Returns the value of the given attribute from the given element.
+         *
+         * @param \DOMElement $element The element to get the attribute value from.
+         * @param string      $attribute The attribute to get the value from.
+         */
+        public function get_attribute_value(\DOMElement $element, string $attribute) : string
+        {
+        }
+        /**
+         * Searches for the first appearance of the given tag name and returns the value of specified attribute.
+         *
+         * @param string $tag_name The tag name to search for.
+         * @param string $attribute The attribute to get the value from.
+         */
+        public function get_attribute_value_by_tag_name(string $tag_name, string $attribute) : ?string
+        {
+        }
+        /**
+         * Returns the outer HTML of the given element.
+         *
+         * @param \DOMElement $element The element to get the outer HTML from.
+         */
+        public function get_outer_html(\DOMElement $element) : string
+        {
+        }
+        /**
+         * Returns the inner HTML of the given element.
+         *
+         * @param \DOMElement $element The element to get the inner HTML from.
+         */
+        public function get_element_inner_html(\DOMElement $element) : string
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor {
+    /**
+     * Main package class.
+     */
+    class Package
+    {
+        /**
+         * Version.
+         *
+         * @var string
+         */
+        const VERSION = '0.1.0';
+        /**
+         * Init the package.
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Return the version of the package.
+         *
+         * @return string
+         */
+        public static function get_version()
+        {
+        }
+        /**
+         * Return the path to the package.
+         *
+         * @return string
+         */
+        public static function get_path()
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Validator {
+    /**
+     * Represents abastract schema.
+     */
+    abstract class Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array();
+        /**
+         * Sets the schema as nullable.
+         *
+         * @return static
+         */
+        public function nullable()
+        {
+        }
+        /**
+         * Sets the schema as non-nullable.
+         *
+         * @return static
+         */
+        public function non_nullable()
+        {
+        }
+        /**
+         * Sets the schema as required.
+         *
+         * @return static
+         */
+        public function required()
+        {
+        }
+        /**
+         * Unsets the required property.
+         *
+         * @return static
+         */
+        public function optional()
+        {
+        }
+        /**
+         * Set the title of the schema.
+         *
+         * @param string $title Title.
+         * @return static
+         */
+        public function title(string $title)
+        {
+        }
+        /**
+         * Set the description of the schema.
+         *
+         * @param string $description Description.
+         * @return static
+         */
+        public function description(string $description)
+        {
+        }
+        /**
+         * Set the default value.
+         *
+         * @param mixed $default_value Default value.
+         * @return static
+         */
+        public function default($default_value)
+        {
+        }
+        /**
+         * Set the field name and value.
+         *
+         * @param string $name Name of the field.
+         * @param mixed  $value Value of the field.
+         * @return static
+         * @throws \Exception When the field name is reserved.
+         */
+        public function field(string $name, $value)
+        {
+        }
+        /**
+         * Returns the schema as an array.
+         */
+        public function to_array() : array
+        {
+        }
+        /**
+         * Returns the schema as a JSON string.
+         *
+         * @throws \Exception When the schema cannot be converted to JSON.
+         */
+        public function to_string() : string
+        {
+        }
+        /**
+         * Updates the schema property.
+         *
+         * @param string $name Property name.
+         * @param mixed  $value Property value.
+         * @return static
+         */
+        protected function update_schema_property(string $name, $value)
+        {
+        }
+        /**
+         * Unsets the schema property.
+         *
+         * @param string $name Property name.
+         * @return static
+         */
+        protected function unset_schema_property(string $name)
+        {
+        }
+        /**
+         * Returns reserved keywords.
+         *
+         * @return string[]
+         */
+        protected function get_reserved_keywords() : array
+        {
+        }
+        /**
+         * Validates the regular expression pattern.
+         *
+         * @param string $pattern Regular expression pattern.
+         * @throws \Exception When the pattern is invalid.
+         */
+        protected function validate_pattern(string $pattern) : void
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Validator\Schema {
+    /**
+     * Represents a schema that allows a value to match any of the given schemas.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#oneof-and-anyof
+     */
+    class Any_Of_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array[]
+         */
+        protected $schema = array('anyOf' => array());
+        /**
+         * Any_Of_Schema constructor.
+         *
+         * @param Schema[] $schemas List of schemas.
+         */
+        public function __construct(array $schemas)
+        {
+        }
+        /**
+         * Returns the schema as an array.
+         */
+        public function nullable() : self
+        {
+        }
+        /**
+         * Returns the schema as an array.
+         */
+        public function non_nullable() : self
+        {
+        }
+    }
+    /**
+     * Represents a schema for an array.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#arrays
+     */
+    class Array_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('type' => 'array');
+        /**
+         * Sets the schema for the items in the array.
+         *
+         * @param Schema $schema Schema for the items in the array.
+         */
+        public function items(\MailPoet\EmailEditor\Validator\Schema $schema) : self
+        {
+        }
+        /**
+         * Sets the minimum number of items in the array.
+         *
+         * @param int $value Minimum number of items in the array.
+         */
+        public function minItems(int $value) : self
+        {
+        }
+        /**
+         * Sets the maximum number of items in the array.
+         *
+         * @param int $value Maximum number of items in the array.
+         */
+        public function maxItems(int $value) : self
+        {
+        }
+        /**
+         * Sets the uniqueItems property to true.
+         */
+        public function uniqueItems() : self
+        {
+        }
+    }
+    /**
+     * Represents a schema for a boolean.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#primitive-types
+     */
+    class Boolean_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('type' => 'boolean');
+    }
+    /**
+     * Represents a schema for an integer.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#numbers
+     */
+    class Integer_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('type' => 'integer');
+        /**
+         * Sets the minimum value of the integer.
+         *
+         * @param int $value Minimum value of the integer.
+         */
+        public function minimum(int $value) : self
+        {
+        }
+        /**
+         * Sets the exclusiveMinimum property to true.
+         *
+         * @param int $value Minimum value of the integer.
+         */
+        public function exclusiveMinimum(int $value) : self
+        {
+        }
+        /**
+         * Sets the maximum value of the integer.
+         *
+         * @param int $value Maximum value of the integer.
+         */
+        public function maximum(int $value) : self
+        {
+        }
+        /**
+         * Sets the exclusiveMaximum property to true.
+         *
+         * @param int $value Maximum value of the integer.
+         */
+        public function exclusiveMaximum(int $value) : self
+        {
+        }
+        /**
+         * Sets the multipleOf property.
+         *
+         * @param int $value Multiple of the integer.
+         */
+        public function multipleOf(int $value) : self
+        {
+        }
+    }
+    /**
+     * Represents a schema for a null.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#primitive-types
+     */
+    class Null_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('type' => 'null');
+    }
+    /**
+     * Represents a schema for a number.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#numbers
+     */
+    class Number_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('type' => 'number');
+        /**
+         * Sets the minimum value of the number.
+         *
+         * @param float $value Minimum value of the number.
+         */
+        public function minimum(float $value) : self
+        {
+        }
+        /**
+         * Sets the exclusiveMinimum property to true.
+         *
+         * @param float $value Minimum value of the number.
+         */
+        public function exclusiveMinimum(float $value) : self
+        {
+        }
+        /**
+         * Sets the maximum value of the number.
+         *
+         * @param float $value Maximum value of the number.
+         */
+        public function maximum(float $value) : self
+        {
+        }
+        /**
+         * Sets the exclusiveMaximum property to true.
+         *
+         * @param float $value Maximum value of the number.
+         */
+        public function exclusiveMaximum(float $value) : self
+        {
+        }
+        /**
+         * Sets the multipleOf property.
+         *
+         * @param float $value Multiple of the number.
+         */
+        public function multipleOf(float $value) : self
+        {
+        }
+    }
+    /**
+     * Represents a schema for an object.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#objects
+     */
+    class Object_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('type' => 'object');
+        /**
+         * Set the required properties of the object.
+         *
+         * @param array<string, Schema> $properties Required properties.
+         */
+        public function properties(array $properties) : self
+        {
+        }
+        /**
+         * Set the required properties of the object.
+         *
+         * @param Schema $schema Schema of the additional properties.
+         */
+        public function additionalProperties(\MailPoet\EmailEditor\Validator\Schema $schema) : self
+        {
+        }
+        /**
+         * Disables additional properties.
+         */
+        public function disableAdditionalProperties() : self
+        {
+        }
+        /**
+         * Keys of $properties are regular expressions without leading/trailing delimiters.
+         * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#patternproperties
+         *
+         * @param array<string, Schema> $properties Regular expressions and their schemas.
+         */
+        public function patternProperties(array $properties) : self
+        {
+        }
+        /**
+         * Sets the minimum number of properties in the object.
+         *
+         * @param int $value Minimum number of properties in the object.
+         */
+        public function minProperties(int $value) : self
+        {
+        }
+        /**
+         * Sets the maximum number of properties in the object.
+         *
+         * @param int $value Maximum number of properties in the object.
+         */
+        public function maxProperties(int $value) : self
+        {
+        }
+    }
+    /**
+     * Represents a schema that allows a value to match one of the given schemas.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#oneof-and-anyof
+     */
+    class One_Of_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('oneOf' => array());
+        /**
+         * One_Of_Schema constructor.
+         *
+         * @param Schema[] $schemas List of schemas.
+         */
+        public function __construct(array $schemas)
+        {
+        }
+        /**
+         * Sets the schema as nullable.
+         */
+        public function nullable() : self
+        {
+        }
+        /**
+         * Sets the schema as non-nullable.
+         */
+        public function non_nullable() : self
+        {
+        }
+    }
+    /**
+     * Represents a schema for a string.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#strings
+     */
+    class String_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    {
+        /**
+         * Schema definition.
+         *
+         * @var array
+         */
+        protected $schema = array('type' => 'string');
+        /**
+         * Set minimum length of the string.
+         *
+         * @param int $value Minimum length.
+         */
+        public function minLength(int $value) : self
+        {
+        }
+        /**
+         * Set maximum length of the string.
+         *
+         * @param int $value Maximum length.
+         */
+        public function maxLength(int $value) : self
+        {
+        }
+        /**
+         * Parameter $pattern is a regular expression without leading/trailing delimiters.
+         * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#pattern
+         *
+         * @param string $pattern Regular expression pattern.
+         */
+        public function pattern(string $pattern) : self
+        {
+        }
+        /**
+         * Set the format of the string according to DateTime.
+         */
+        public function formatDateTime() : self
+        {
+        }
+        /**
+         * Set the format of the string according to email.
+         */
+        public function formatEmail() : self
+        {
+        }
+        /**
+         * Set the format of the string according to Hex color.
+         */
+        public function formatHexColor() : self
+        {
+        }
+        /**
+         * Set the format of the string according to IP address.
+         */
+        public function formatIp() : self
+        {
+        }
+        /**
+         * Set the format of the string according to uri.
+         */
+        public function formatUri() : self
+        {
+        }
+        /**
+         * Set the format of the string according to uuid.
+         */
+        public function formatUuid() : self
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Validator {
+    /**
+     * Builder for creating schema objects.
+     * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/
+     */
+    class Builder
+    {
+        /**
+         * Creates a schema for a string.
+         */
+        public static function string() : \MailPoet\EmailEditor\Validator\Schema\String_Schema
+        {
+        }
+        /**
+         * Creates a schema for a number.
+         */
+        public static function number() : \MailPoet\EmailEditor\Validator\Schema\Number_Schema
+        {
+        }
+        /**
+         * Creates a schema for an integer.
+         */
+        public static function integer() : \MailPoet\EmailEditor\Validator\Schema\Integer_Schema
+        {
+        }
+        /**
+         * Creates a schema for a boolean.
+         */
+        public static function boolean() : \MailPoet\EmailEditor\Validator\Schema\Boolean_Schema
+        {
+        }
+        /**
+         * Creates a schema for null.
+         */
+        public static function null() : \MailPoet\EmailEditor\Validator\Schema\Null_Schema
+        {
+        }
+        /**
+         * Creates a schema for an array.
+         *
+         * @param Schema|null $items Schema of the items in the array.
+         */
+        public static function array(\MailPoet\EmailEditor\Validator\Schema $items = null) : \MailPoet\EmailEditor\Validator\Schema\Array_Schema
+        {
+        }
+        /**
+         * Creates a schema for an object.
+         *
+         * @param array<string, Schema>|null $properties Properties of the object.
+         */
+        public static function object(array $properties = null) : \MailPoet\EmailEditor\Validator\Schema\Object_Schema
+        {
+        }
+        /**
+         * Creates a schema that allows a value to match one of the given schemas.
+         *
+         * @param Schema[] $schemas List of schemas.
+         */
+        public static function one_of(array $schemas) : \MailPoet\EmailEditor\Validator\Schema\One_Of_Schema
+        {
+        }
+        /**
+         * Creates a schema that allows a value to match any of the given schemas.
+         *
+         * @param Schema[] $schemas List of schemas.
+         */
+        public static function any_of(array $schemas) : \MailPoet\EmailEditor\Validator\Schema\Any_Of_Schema
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor {
+    /**
+     * Provides information for converting exceptions to HTTP responses.
+     */
+    interface HttpAwareException
+    {
+        public function getHttpStatusCode() : int;
+    }
+    /**
+     * Frames all exceptions ("$e instanceof MailPoet\EmailEditor\Exception").
+     */
+    abstract class Exception extends \Exception
+    {
+        /** @var string[] */
+        private $errors = [];
+        public final function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
+        {
+        }
+        /** @return static */
+        public static function create(\Throwable $previous = null)
+        {
+        }
+        /** @return static */
+        public function withMessage(string $message)
+        {
+        }
+        /** @return static */
+        public function withCode(int $code)
+        {
+        }
+        /** @return static */
+        public function withErrors(array $errors)
+        {
+        }
+        /** @return static */
+        public function withError(string $id, string $error)
+        {
+        }
+        public function getErrors() : array
+        {
+        }
+    }
+    /**
+     * USE: Generic runtime error. When possible, use a more specific exception instead.
+     * API: 500 Server Error (not HTTP-aware)
+     */
+    class RuntimeException extends \MailPoet\EmailEditor\Exception
+    {
+    }
+    /**
+     * USE: When wrong data VALUE is received.
+     * API: 400 Bad Request
+     */
+    class UnexpectedValueException extends \MailPoet\EmailEditor\RuntimeException implements \MailPoet\EmailEditor\HttpAwareException
+    {
+        public function getHttpStatusCode() : int
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor\Validator {
+    /**
+     * Exception thrown when validation fails.
+     */
+    class Validation_Exception extends \MailPoet\EmailEditor\UnexpectedValueException
+    {
+        /**
+         * WP_Error instance.
+         *
+         * @var WP_Error
+         */
+        protected $wp_error;
+        /**
+         * Creates a new instance of the exception.
+         *
+         * @param WP_Error $wp_error WP_Error instance.
+         */
+        public static function create_from_wp_error(\WP_Error $wp_error) : self
+        {
+        }
+        /**
+         * Returns the WP_Error instance.
+         */
+        public function get_wp_error() : \WP_Error
+        {
+        }
+    }
+    /**
+     * Validates and sanitizes values based on a schema.
+     */
+    class Validator
+    {
+        /**
+         * Strict validation & sanitization implementation.
+         * It only coerces int to float (e.g. 5 to 5.0).
+         *
+         * @param Schema $schema The schema to validate against.
+         * @param mixed  $value The value to validate.
+         * @param string $param_name The parameter name.
+         * @return mixed
+         */
+        public function validate(\MailPoet\EmailEditor\Validator\Schema $schema, $value, string $param_name = 'value')
+        {
+        }
+        /**
+         * Strict validation & sanitization implementation.
+         * It only coerces int to float (e.g. 5 to 5.0).
+         *
+         * @param array  $schema The array must follow the format, which is returned from Schema::toArray().
+         * @param mixed  $value The value to validate.
+         * @param string $param_name The parameter name.
+         * @return mixed
+         * @throws Validation_Exception If the value does not match the schema.
+         */
+        public function validate_schema_array(array $schema, $value, string $param_name = 'value')
+        {
+        }
+        /**
+         * Mirrors rest_validate_value_from_schema() and rest_sanitize_value_from_schema().
+         *
+         * @param mixed  $value The value to validate.
+         * @param array  $schema The schema to validate against.
+         * @param string $param_name The parameter name.
+         * @return mixed|WP_Error
+         */
+        private function validate_and_sanitize_value_from_schema($value, array $schema, string $param_name)
+        {
+        }
+        /**
+         * Mirrors rest_find_any_matching_schema().
+         *
+         * @param mixed  $value The value to validate.
+         * @param array  $any_of_schema The schema to validate against.
+         * @param string $param_name The parameter name.
+         * @return mixed|WP_Error
+         */
+        private function validate_and_sanitize_any_of($value, array $any_of_schema, string $param_name)
+        {
+        }
+        /**
+         * Mirrors rest_find_one_matching_schema().
+         *
+         * @param mixed  $value The value to validate.
+         * @param array  $one_of_schema The schema to validate against.
+         * @param string $param_name The parameter name.
+         * @return mixed|WP_Error
+         */
+        private function validate_and_sanitize_one_of($value, array $one_of_schema, string $param_name)
+        {
+        }
+        /**
+         * Returns a WP_Error for a type mismatch.
+         *
+         * @param string          $param The parameter name.
+         * @param string|string[] $type The expected type.
+         */
+        private function get_type_error(string $param, $type) : \WP_Error
+        {
+        }
+    }
+}
+namespace MailPoet\EmailEditor {
+    /**
+     * Class Container is a simple dependency injection container.
+     *
+     * @package MailPoet\EmailEditor
+     */
+    class Container
+    {
+        /**
+         * A list of registered services
+         *
+         * @var array $services
+         */
+        protected array $services = array();
+        /**
+         * A list of created instances
+         *
+         * @var array
+         */
+        protected array $instances = array();
+        /**
+         * The method for registering a new service
+         *
+         * @param string   $name    The name of the service.
+         * @param callable $callback The callable that will be used to create the service.
+         * @return void
+         */
+        public function set(string $name, callable $callback) : void
+        {
+        }
+        /**
+         * Method for getting a registered service
+         *
+         * @template T
+         * @param class-string<T> $name The name of the service.
+         * @return T
+         * @throws \Exception If the service is not found.
+         */
+        public function get($name)
+        {
+        }
+    }
+    class EmailCssInliner implements \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner
+    {
+        private \Pelago\Emogrifier\CssInliner $inliner;
+        public function from_html(string $unprocessed_html) : self
+        {
+        }
+        public function inline_css(string $css = '') : self
+        {
+        }
+        public function render() : string
+        {
+        }
+    }
+    /**
+     * USE: When an action is forbidden for given actor (although generally valid).
+     * API: 403 Forbidden
+     */
+    class AccessDeniedException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
+    {
+        public function getHttpStatusCode() : int
+        {
+        }
+    }
+    /**
+     * USE: When the main resource we're interested in doesn't exist.
+     * API: 404 Not Found
+     */
+    class NotFoundException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
+    {
+        public function getHttpStatusCode() : int
+        {
+        }
+    }
+    /**
+     * USE: When the main action produces conflict (i.e. duplicate key).
+     * API: 409 Conflict
+     */
+    class ConflictException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
+    {
+        public function getHttpStatusCode() : int
+        {
+        }
+    }
+    /**
+     * USE: An application state that should not occur. Can be subclassed for feature-specific exceptions.
+     * API: 500 Server Error (not HTTP-aware)
+     */
+    class InvalidStateException extends \MailPoet\EmailEditor\RuntimeException
+    {
+    }
+    class NewsletterProcessingException extends \MailPoet\EmailEditor\Exception
+    {
+    }
+}
 namespace {
     // WRCS: DEFINED_VERSION.
     // phpcs:disable Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace
     /**
      * Registers this version of Action Scheduler.
      */
-    function action_scheduler_register_3_dot_9_dot_0()
+    function action_scheduler_register_3_dot_9_dot_2()
     {
     }
     // phpcs:disable Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace
     /**
      * Initializes this version of Action Scheduler.
      */
-    function action_scheduler_initialize_3_dot_9_dot_0()
+    function action_scheduler_initialize_3_dot_9_dot_2()
     {
     }
     /**
