@@ -601,7 +601,7 @@ namespace {
          * Override this method to perform any actions required
          * during the async request.
          */
-        protected abstract function handle();
+        abstract protected function handle();
     }
     /**
      * ActionScheduler_AsyncRequest_QueueRunner class.
@@ -1784,14 +1784,14 @@ namespace {
          * @param string $lock_type A string to identify different lock types.
          * @return bool
          */
-        public abstract function set($lock_type);
+        abstract public function set($lock_type);
         /**
          * If a lock is set, return the timestamp it was set to expiry.
          *
          * @param string $lock_type A string to identify different lock types.
          * @return bool|int False if no lock is set, otherwise the timestamp for when the lock is set to expire.
          */
-        public abstract function get_expiration($lock_type);
+        abstract public function get_expiration($lock_type);
         /**
          * Get the amount of time to set for a given lock. 60 seconds by default.
          *
@@ -2187,7 +2187,7 @@ namespace {
          *        Generally, this should be capitalised and not localised as it's a proper noun.
          * @return int The number of actions processed.
          */
-        public abstract function run($context = '');
+        abstract public function run($context = '');
     }
     /**
      * Class ActionScheduler_QueueRunner
@@ -2345,7 +2345,7 @@ namespace {
          *
          * @return array
          */
-        public static function active_source() : array
+        public static function active_source(): array
         {
         }
         /**
@@ -2353,7 +2353,7 @@ namespace {
          *
          * @return string
          */
-        public static function active_source_path() : string
+        public static function active_source_path(): string
         {
         }
         /**
@@ -2467,7 +2467,7 @@ namespace {
          *
          * @return array
          */
-        public function active_source() : array
+        public function active_source(): array
         {
         }
         /**
@@ -2477,7 +2477,7 @@ namespace {
          *
          * @return string
          */
-        public function active_source_path() : string
+        public function active_source_path(): string
         {
         }
     }
@@ -2652,7 +2652,7 @@ namespace {
         /**
          * Execute command.
          */
-        public abstract function execute();
+        abstract public function execute();
         /**
          * Get the scheduled date in a human friendly format.
          *
@@ -3219,7 +3219,7 @@ namespace {
          *
          * @return array
          */
-        private function parse_comma_separated_string($string) : array
+        private function parse_comma_separated_string($string): array
         {
         }
         /**
@@ -4010,19 +4010,19 @@ namespace {
         /**
          * Clone.
          */
-        public final function __clone()
+        final public function __clone()
         {
         }
         /**
          * Wakeup.
          */
-        public final function __wakeup()
+        final public function __wakeup()
         {
         }
         /**
          * Construct.
          */
-        private final function __construct()
+        final private function __construct()
         {
         }
         /** Deprecated **/
@@ -4112,14 +4112,14 @@ namespace {
          *
          * @return bool
          */
-        public abstract function is_recurring();
+        abstract public function is_recurring();
         /**
          * Calculate when the next instance of this schedule would run based on a given date & time.
          *
          * @param DateTime $after Start timestamp.
          * @return DateTime
          */
-        protected abstract function calculate_next(\DateTime $after);
+        abstract protected function calculate_next(\DateTime $after);
         /**
          * Get the next date & time when this schedule should run after a given date & time.
          *
@@ -4292,7 +4292,7 @@ namespace {
          *
          * @return string The CREATE TABLE statement, suitable for passing to dbDelta
          */
-        protected abstract function get_table_definition($table);
+        abstract protected function get_table_definition($table);
         /**
          * Determine if the database schema is out of date
          * by comparing the integer found in $this->schema_version
@@ -4372,7 +4372,7 @@ namespace {
          *
          * @return string The log entry ID
          */
-        public abstract function log($action_id, $message, ?\DateTime $date = \null);
+        abstract public function log($action_id, $message, ?\DateTime $date = \null);
         /**
          * Get action's log entry.
          *
@@ -4380,7 +4380,7 @@ namespace {
          *
          * @return ActionScheduler_LogEntry
          */
-        public abstract function get_entry($entry_id);
+        abstract public function get_entry($entry_id);
         /**
          * Get action's logs.
          *
@@ -4388,7 +4388,7 @@ namespace {
          *
          * @return ActionScheduler_LogEntry[]
          */
-        public abstract function get_logs($action_id);
+        abstract public function get_logs($action_id);
         /**
          * Initialize.
          *
@@ -4597,7 +4597,7 @@ namespace {
          *
          * @return int The action ID
          */
-        public abstract function save_action(\ActionScheduler_Action $action, ?\DateTime $scheduled_date = \null);
+        abstract public function save_action(\ActionScheduler_Action $action, ?\DateTime $scheduled_date = \null);
         /**
          * Get action.
          *
@@ -4605,7 +4605,7 @@ namespace {
          *
          * @return ActionScheduler_Action
          */
-        public abstract function fetch_action($action_id);
+        abstract public function fetch_action($action_id);
         /**
          * Find an action.
          *
@@ -4645,7 +4645,7 @@ namespace {
          *
          * @return string|array|null The IDs of actions matching the query. Null on failure.
          */
-        public abstract function query_actions($query = array(), $query_type = 'select');
+        abstract public function query_actions($query = array(), $query_type = 'select');
         /**
          * Run query to get a single action ID.
          *
@@ -4665,7 +4665,7 @@ namespace {
          *
          * @return array
          */
-        public abstract function action_counts();
+        abstract public function action_counts();
         /**
          * Get additional action counts.
          *
@@ -4681,13 +4681,13 @@ namespace {
          *
          * @param string $action_id Action ID.
          */
-        public abstract function cancel_action($action_id);
+        abstract public function cancel_action($action_id);
         /**
          * Delete action.
          *
          * @param string $action_id Action ID.
          */
-        public abstract function delete_action($action_id);
+        abstract public function delete_action($action_id);
         /**
          * Get action's schedule or run timestamp.
          *
@@ -4695,7 +4695,7 @@ namespace {
          *
          * @return DateTime The date the action is schedule to run, or the date that it ran.
          */
-        public abstract function get_date($action_id);
+        abstract public function get_date($action_id);
         /**
          * Make a claim.
          *
@@ -4706,64 +4706,64 @@ namespace {
          *
          * @return ActionScheduler_ActionClaim
          */
-        public abstract function stake_claim($max_actions = 10, ?\DateTime $before_date = \null, $hooks = array(), $group = '');
+        abstract public function stake_claim($max_actions = 10, ?\DateTime $before_date = \null, $hooks = array(), $group = '');
         /**
          * Get claim count.
          *
          * @return int
          */
-        public abstract function get_claim_count();
+        abstract public function get_claim_count();
         /**
          * Release the claim.
          *
          * @param ActionScheduler_ActionClaim $claim Claim object.
          */
-        public abstract function release_claim(\ActionScheduler_ActionClaim $claim);
+        abstract public function release_claim(\ActionScheduler_ActionClaim $claim);
         /**
          * Un-claim the action.
          *
          * @param string $action_id Action ID.
          */
-        public abstract function unclaim_action($action_id);
+        abstract public function unclaim_action($action_id);
         /**
          * Mark action as failed.
          *
          * @param string $action_id Action ID.
          */
-        public abstract function mark_failure($action_id);
+        abstract public function mark_failure($action_id);
         /**
          * Log action's execution.
          *
          * @param string $action_id Actoin ID.
          */
-        public abstract function log_execution($action_id);
+        abstract public function log_execution($action_id);
         /**
          * Mark action as complete.
          *
          * @param string $action_id Action ID.
          */
-        public abstract function mark_complete($action_id);
+        abstract public function mark_complete($action_id);
         /**
          * Get action's status.
          *
          * @param string $action_id Action ID.
          * @return string
          */
-        public abstract function get_status($action_id);
+        abstract public function get_status($action_id);
         /**
          * Get action's claim ID.
          *
          * @param string $action_id Action ID.
          * @return mixed
          */
-        public abstract function get_claim_id($action_id);
+        abstract public function get_claim_id($action_id);
         /**
          * Find actions by claim ID.
          *
          * @param string $claim_id Claim ID.
          * @return array
          */
-        public abstract function find_actions_by_claim_id($claim_id);
+        abstract public function find_actions_by_claim_id($claim_id);
         /**
          * Validate SQL operator.
          *
@@ -8293,7 +8293,7 @@ namespace MailPoet\EmailEditor\Engine\Patterns {
          *
          * @return string
          */
-        public function get_name() : string
+        public function get_name(): string
         {
         }
         /**
@@ -8301,7 +8301,7 @@ namespace MailPoet\EmailEditor\Engine\Patterns {
          *
          * @return string
          */
-        public function get_namespace() : string
+        public function get_namespace(): string
         {
         }
         /**
@@ -8309,7 +8309,7 @@ namespace MailPoet\EmailEditor\Engine\Patterns {
          *
          * @return array
          */
-        public function get_properties() : array
+        public function get_properties(): array
         {
         }
         /**
@@ -8317,19 +8317,19 @@ namespace MailPoet\EmailEditor\Engine\Patterns {
          *
          * @return string
          */
-        protected abstract function get_content() : string;
+        abstract protected function get_content(): string;
         /**
          * Get title.
          *
          * @return string
          */
-        protected abstract function get_title() : string;
+        abstract protected function get_title(): string;
         /**
          * Get description.
          *
          * @return string
          */
-        protected function get_description() : string
+        protected function get_description(): string
         {
         }
     }
@@ -8343,7 +8343,7 @@ namespace MailPoet\EmailEditor\Engine\Patterns {
          *
          * @return void
          */
-        public function initialize() : void
+        public function initialize(): void
         {
         }
         /**
@@ -8351,7 +8351,7 @@ namespace MailPoet\EmailEditor\Engine\Patterns {
          *
          * @return void
          */
-        private function register_block_pattern_categories() : void
+        private function register_block_pattern_categories(): void
         {
         }
     }
@@ -8377,13 +8377,13 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          *
          * @param string $new_content The new content to replace the token.
          */
-        public function replace_token(string $new_content) : void
+        public function replace_token(string $new_content): void
         {
         }
         /**
          * Flushes the deferred updates to the lexical updates.
          */
-        public function flush_updates() : void
+        public function flush_updates(): void
         {
         }
     }
@@ -8459,7 +8459,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          *
          * @return string
          */
-        public function get_name() : string
+        public function get_name(): string
         {
         }
         /**
@@ -8467,7 +8467,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          *
          * @return string
          */
-        public function get_token() : string
+        public function get_token(): string
         {
         }
         /**
@@ -8475,7 +8475,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          *
          * @return string
          */
-        public function get_category() : string
+        public function get_category(): string
         {
         }
         /**
@@ -8483,7 +8483,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          *
          * @return array
          */
-        public function get_attributes() : array
+        public function get_attributes(): array
         {
         }
         /**
@@ -8491,7 +8491,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          *
          * @return string
          */
-        public function get_value_to_insert() : string
+        public function get_value_to_insert(): string
         {
         }
         /**
@@ -8501,7 +8501,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          * @param array $args The additional arguments for the callback.
          * @return string The value of the personalization tag.
          */
-        public function execute_callback($context, $args = array()) : string
+        public function execute_callback($context, $args = array()): string
         {
         }
     }
@@ -8522,7 +8522,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          *
          * @return void
          */
-        public function initialize() : void
+        public function initialize(): void
         {
         }
         /**
@@ -8531,7 +8531,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          * @param Personalization_Tag $tag The personalization tag to register.
          * @return void
          */
-        public function register(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag $tag) : void
+        public function register(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag $tag): void
         {
         }
         /**
@@ -8541,7 +8541,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          * @param string $token The token of the personalization tag.
          * @return Personalization_Tag|null The array data or null if not found.
          */
-        public function get_by_token(string $token) : ?\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag
+        public function get_by_token(string $token): ?\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag
         {
         }
         /**
@@ -8567,7 +8567,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        public function render_inner_blocks_in_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        public function render_inner_blocks_in_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -8578,7 +8578,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
          * @param float               $flex_gap Flex gap.
          * @return array
          */
-        private function compute_widths_for_flex_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, float $flex_gap) : array
+        private function compute_widths_for_flex_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, float $flex_gap): array
         {
         }
         /**
@@ -8592,7 +8592,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
          * @param float $block_width_percent Block width in percent.
          * @return int
          */
-        private function get_width_without_gap(float $block_width, float $flex_gap, float $block_width_percent) : int
+        private function get_width_without_gap(float $block_width, float $flex_gap, float $block_width_percent): int
         {
         }
     }
@@ -8609,7 +8609,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
          * @param string $html HTML to postprocess.
          * @return string
          */
-        public function postprocess(string $html) : string;
+        public function postprocess(string $html): string;
     }
     /**
      * This postprocessor replaces <mark> tags with <span> tags because mark tags are not supported across all email clients
@@ -8622,7 +8622,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
          * @param string $html HTML to postprocess.
          * @return string
          */
-        public function postprocess(string $html) : string
+        public function postprocess(string $html): string
         {
         }
     }
@@ -8653,7 +8653,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
          * @param string $html HTML to postprocess.
          * @return string
          */
-        public function postprocess(string $html) : string
+        public function postprocess(string $html): string
         {
         }
     }
@@ -8672,7 +8672,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
-        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array;
+        public function preprocess(array $parsed_blocks, array $layout, array $styles): array;
     }
     /**
      * This class sets the width of the blocks based on the layout width or column count.
@@ -8688,7 +8688,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
-        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        public function preprocess(array $parsed_blocks, array $layout, array $styles): array
         {
         }
         // TODO: We could add support for other units like em, rem, etc.
@@ -8699,7 +8699,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param float  $layout_width Layout width.
          * @return float
          */
-        private function convert_width_to_pixels(string $current_width, float $layout_width) : float
+        private function convert_width_to_pixels(string $current_width, float $layout_width): float
         {
         }
         /**
@@ -8708,7 +8708,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param string $value Value with pixels.
          * @return float
          */
-        private function parse_number_from_string_with_pixels(string $value) : float
+        private function parse_number_from_string_with_pixels(string $value): float
         {
         }
         /**
@@ -8718,7 +8718,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param float $columns_width Columns width.
          * @return array
          */
-        private function add_missing_column_widths(array $columns, float $columns_width) : array
+        private function add_missing_column_widths(array $columns, float $columns_width): array
         {
         }
     }
@@ -8735,7 +8735,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
-        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        public function preprocess(array $parsed_blocks, array $layout, array $styles): array
         {
         }
     }
@@ -8753,7 +8753,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array $styles Styles.
          * @return array
          */
-        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        public function preprocess(array $parsed_blocks, array $layout, array $styles): array
         {
         }
         /**
@@ -8764,7 +8764,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array|null $parent_block Parent block.
          * @return array
          */
-        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null) : array
+        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null): array
         {
         }
     }
@@ -8801,7 +8801,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
-        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        public function preprocess(array $parsed_blocks, array $layout, array $styles): array
         {
         }
         /**
@@ -8811,7 +8811,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array $parent_block  Parent block.
          * @return array
          */
-        private function copy_typography_from_parent(array $children, array $parent_block) : array
+        private function copy_typography_from_parent(array $children, array $parent_block): array
         {
         }
         /**
@@ -8820,7 +8820,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array $block Block to preprocess.
          * @return array
          */
-        private function preprocess_parent(array $block) : array
+        private function preprocess_parent(array $block): array
         {
         }
         /**
@@ -8829,7 +8829,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array $styles List of styles.
          * @return array
          */
-        private function filterStyles(array $styles) : array
+        private function filterStyles(array $styles): array
         {
         }
         /**
@@ -8838,7 +8838,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          * @param array $block Block to set defaults for.
          * @return array
          */
-        private function set_defaults_from_theme(array $block) : array
+        private function set_defaults_from_theme(array $block): array
         {
         }
     }
@@ -8857,7 +8857,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string;
+        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string;
     }
     /**
      * Class Blocks_Parser
@@ -8903,7 +8903,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param string         $block_name Block name.
          * @param Block_Renderer $renderer Block renderer.
          */
-        public function add_block_renderer(string $block_name, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer) : void
+        public function add_block_renderer(string $block_name, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
         {
         }
         /**
@@ -8911,7 +8911,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @param Block_Renderer $renderer Fallback renderer.
          */
-        public function add_fallback_renderer(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer) : void
+        public function add_fallback_renderer(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
         {
         }
         /**
@@ -8920,7 +8920,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param string $block_name Block name.
          * @return bool
          */
-        public function has_block_renderer(string $block_name) : bool
+        public function has_block_renderer(string $block_name): bool
         {
         }
         /**
@@ -8929,7 +8929,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param string $block_name Block name.
          * @return Block_Renderer|null
          */
-        public function get_block_renderer(string $block_name) : ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+        public function get_block_renderer(string $block_name): ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
         {
         }
         /**
@@ -8937,13 +8937,13 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @return Block_Renderer|null
          */
-        public function get_fallback_renderer() : ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+        public function get_fallback_renderer(): ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
         {
         }
         /**
          * Removes all block renderers from the registry.
          */
-        public function remove_all_block_renderers() : void
+        public function remove_all_block_renderers(): void
         {
         }
         /**
@@ -8951,7 +8951,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @param string $block_name Block name.
          */
-        private function remove_block_renderer(string $block_name) : void
+        private function remove_block_renderer(string $block_name): void
         {
         }
     }
@@ -9018,7 +9018,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param WP_Block_Template $template Block template.
          * @return string
          */
-        public function render(\WP_Post $post, \WP_Block_Template $template) : string
+        public function render(\WP_Post $post, \WP_Block_Template $template): string
         {
         }
         /**
@@ -9035,7 +9035,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param array $parsed_blocks Parsed blocks.
          * @return array
          */
-        public function preprocess_parsed_blocks(array $parsed_blocks) : array
+        public function preprocess_parsed_blocks(array $parsed_blocks): array
         {
         }
         /**
@@ -9046,7 +9046,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param array  $parsed_block Parsed block.
          * @return string
          */
-        public function render_block(string $block_content, array $parsed_block) : string
+        public function render_block(string $block_content, array $parsed_block): string
         {
         }
         /**
@@ -9063,7 +9063,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * As we use default WordPress filters, we need to remove them after email rendering
          * so that we don't interfere with possible post rendering that might happen later.
          */
-        private function reset() : void
+        private function reset(): void
         {
         }
         /**
@@ -9116,7 +9116,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles.
          * @return array
          */
-        public function preprocess(array $parsed_blocks, array $layout, array $styles) : array
+        public function preprocess(array $parsed_blocks, array $layout, array $styles): array
         {
         }
         /**
@@ -9125,7 +9125,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param string $html HTML content.
          * @return string
          */
-        public function postprocess(string $html) : string
+        public function postprocess(string $html): string
         {
         }
         /**
@@ -9133,7 +9133,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @param Preprocessor $preprocessor Preprocessor.
          */
-        public function register_preprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor $preprocessor) : void
+        public function register_preprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor $preprocessor): void
         {
         }
         /**
@@ -9141,7 +9141,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @param Postprocessor $postprocessor Postprocessor.
          */
-        public function register_postprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor $postprocessor) : void
+        public function register_postprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor $postprocessor): void
         {
         }
     }
@@ -9199,7 +9199,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer {
          * @param string   $meta_robots Email meta robots.
          * @return array
          */
-        public function render(\WP_Post $post, string $subject, string $pre_header, string $language, $meta_robots = '') : array
+        public function render(\WP_Post $post, string $subject, string $pre_header, string $language, $meta_robots = ''): array
         {
         }
         /**
@@ -9230,7 +9230,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer {
          *
          * @return static
          */
-        public function from_html(string $unprocessed_html) : self;
+        public function from_html(string $unprocessed_html): self;
         /**
          * Inlines the given CSS into the existing HTML.
          *
@@ -9238,13 +9238,13 @@ namespace MailPoet\EmailEditor\Engine\Renderer {
          *
          * @return $this
          */
-        public function inline_css(string $css = '') : self;
+        public function inline_css(string $css = ''): self;
         /**
          * Renders the normalized and processed HTML.
          *
          * @return string
          */
-        public function render() : string;
+        public function render(): string;
     }
 }
 namespace MailPoet\EmailEditor\Engine\Templates {
@@ -9313,7 +9313,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return string
          */
-        public function get_pluginuri() : string
+        public function get_pluginuri(): string
         {
         }
         /**
@@ -9321,7 +9321,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return string
          */
-        public function get_slug() : string
+        public function get_slug(): string
         {
         }
         /**
@@ -9329,7 +9329,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return string
          */
-        public function get_name() : string
+        public function get_name(): string
         {
         }
         /**
@@ -9337,7 +9337,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return string
          */
-        public function get_title() : string
+        public function get_title(): string
         {
         }
         /**
@@ -9345,7 +9345,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return string
          */
-        public function get_description() : string
+        public function get_description(): string
         {
         }
         /**
@@ -9353,7 +9353,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return string
          */
-        public function get_content() : string
+        public function get_content(): string
         {
         }
         /**
@@ -9361,7 +9361,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return string[]
          */
-        public function get_post_types() : array
+        public function get_post_types(): array
         {
         }
     }
@@ -9382,7 +9382,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @return void
          */
-        public function initialize() : void
+        public function initialize(): void
         {
         }
         /**
@@ -9391,7 +9391,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          * @param Template $template The template to register.
          * @return void
          */
-        public function register(\MailPoet\EmailEditor\Engine\Templates\Template $template) : void
+        public function register(\MailPoet\EmailEditor\Engine\Templates\Template $template): void
         {
         }
         /**
@@ -9401,7 +9401,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          * @param string $name The name of the template.
          * @return Template|null The template object or null if not found.
          */
-        public function get_by_name(string $name) : ?\MailPoet\EmailEditor\Engine\Templates\Template
+        public function get_by_name(string $name): ?\MailPoet\EmailEditor\Engine\Templates\Template
         {
         }
         /**
@@ -9411,7 +9411,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          * @param string $slug The slug of the template.
          * @return Template|null The template object or null if not found.
          */
-        public function get_by_slug(string $slug) : ?\MailPoet\EmailEditor\Engine\Templates\Template
+        public function get_by_slug(string $slug): ?\MailPoet\EmailEditor\Engine\Templates\Template
         {
         }
         /**
@@ -9465,7 +9465,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @param string[] $post_types The list of post types registered for usage with email editor.
          */
-        public function initialize(array $post_types) : void
+        public function initialize(array $post_types): void
         {
         }
         /**
@@ -9482,7 +9482,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @param Templates_Registry $templates_registry The templates registry.
          */
-        public function register_templates(\MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry) : \MailPoet\EmailEditor\Engine\Templates\Templates_Registry
+        public function register_templates(\MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry): \MailPoet\EmailEditor\Engine\Templates\Templates_Registry
         {
         }
         /**
@@ -9491,7 +9491,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          * There is a PR that adds the property into the core https://github.com/WordPress/wordpress-develop/pull/7530
          * Until it is merged, we need to add it manually.
          */
-        public function register_post_types_to_api() : void
+        public function register_post_types_to_api(): void
         {
         }
         /**
@@ -9500,7 +9500,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          * @param array $response_object The rest API response object.
          * @return array
          */
-        public function get_post_types($response_object) : array
+        public function get_post_types($response_object): array
         {
         }
         /**
@@ -9535,13 +9535,13 @@ namespace MailPoet\EmailEditor\Engine {
         /**
          * Checks if all dependencies are met.
          */
-        public function are_dependencies_met() : bool
+        public function are_dependencies_met(): bool
         {
         }
         /**
          * Checks if the WordPress version is supported.
          */
-        private function is_wp_version_compatible() : bool
+        private function is_wp_version_compatible(): bool
         {
         }
     }
@@ -9569,7 +9569,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array - Email specific data such styles.
          */
-        public function get_email_data() : array
+        public function get_email_data(): array
         {
         }
         /**
@@ -9578,7 +9578,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param array   $data - Email specific data.
          * @param WP_Post $email_post - Email post object.
          */
-        public function save_email_data(array $data, \WP_Post $email_post) : void
+        public function save_email_data(array $data, \WP_Post $email_post): void
         {
         }
         /**
@@ -9587,7 +9587,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param WP_REST_Request $request route request.
          * @return WP_REST_Response
          */
-        public function send_preview_email_data(\WP_REST_Request $request) : \WP_REST_Response
+        public function send_preview_email_data(\WP_REST_Request $request): \WP_REST_Response
         {
         }
         /**
@@ -9595,7 +9595,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return WP_REST_Response
          */
-        public function get_personalization_tags() : \WP_REST_Response
+        public function get_personalization_tags(): \WP_REST_Response
         {
         }
         /**
@@ -9603,7 +9603,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array
          */
-        public function get_email_data_schema() : array
+        public function get_email_data_schema(): array
         {
         }
     }
@@ -9663,7 +9663,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return void
          */
-        public function initialize() : void
+        public function initialize(): void
         {
         }
         /**
@@ -9671,7 +9671,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return void
          */
-        private function register_block_templates() : void
+        private function register_block_templates(): void
         {
         }
         /**
@@ -9679,7 +9679,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return void
          */
-        private function register_block_patterns() : void
+        private function register_block_patterns(): void
         {
         }
         /**
@@ -9688,7 +9688,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return void
          */
-        private function register_email_post_types() : void
+        private function register_email_post_types(): void
         {
         }
         /**
@@ -9697,7 +9697,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return void
          */
-        private function register_personalization_tags() : void
+        private function register_personalization_tags(): void
         {
         }
         /**
@@ -9706,7 +9706,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @return array
          * @phpstan-return EmailPostType[]
          */
-        private function get_post_types() : array
+        private function get_post_types(): array
         {
         }
         /**
@@ -9714,7 +9714,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array
          */
-        private function get_default_email_post_args() : array
+        private function get_default_email_post_args(): array
         {
         }
         /**
@@ -9722,7 +9722,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return void
          */
-        private function register_email_post_sent_status() : void
+        private function register_email_post_sent_status(): void
         {
         }
         /**
@@ -9748,7 +9748,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param WP_Post       $post Email post object.
          * @return WP_Theme_JSON
          */
-        public function extend_email_theme_styles(\WP_Theme_JSON $theme, \WP_Post $post) : \WP_Theme_JSON
+        public function extend_email_theme_styles(\WP_Theme_JSON $theme, \WP_Post $post): \WP_Theme_JSON
         {
         }
         /**
@@ -9779,7 +9779,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array
          */
-        public function get_schema() : array
+        public function get_schema(): array
         {
         }
     }
@@ -9841,7 +9841,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $content The content to personalize.
          * @return string The personalized content.
          */
-        public function personalize_content(string $content) : string
+        public function personalize_content(string $content): string
         {
         }
         /**
@@ -9850,7 +9850,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $token The token to parse.
          * @return array{token: string, arguments: array} The parsed token.
          */
-        private function parse_token(string $token) : array
+        private function parse_token(string $token): array
         {
         }
         /**
@@ -9904,7 +9904,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @return bool Returns true if the preview email was sent successfully, false otherwise.
          * @throws \Exception If the data is invalid.
          */
-        public function send_preview_email($data) : bool
+        public function send_preview_email($data): bool
         {
         }
         /**
@@ -9913,7 +9913,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param \WP_Post $post The WordPress post object.
          * @return string
          */
-        public function render_html($post) : string
+        public function render_html($post): string
         {
         }
         /**
@@ -9922,7 +9922,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $content HTML content.
          * @return string
          */
-        public function set_personalize_content(string $content) : string
+        public function set_personalize_content(string $content): string
         {
         }
         /**
@@ -9933,7 +9933,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $body The body content of the email.
          * @return bool Returns true if the email was sent successfully, false otherwise.
          */
-        public function send_email(string $to, string $subject, string $body) : bool
+        public function send_email(string $to, string $subject, string $body): bool
         {
         }
         /**
@@ -9942,7 +9942,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $content_type The content type to be set for the mail.
          * @return string The content type that was set.
          */
-        public function set_mail_content_type(string $content_type) : string
+        public function set_mail_content_type(string $content_type): string
         {
         }
         /**
@@ -9963,7 +9963,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @return \WP_Post The WordPress post object.
          * @throws \Exception If the post is invalid.
          */
-        private function fetch_post($post_id) : \WP_Post
+        private function fetch_post($post_id): \WP_Post
         {
         }
     }
@@ -9999,7 +9999,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array
          */
-        public function get_settings() : array
+        public function get_settings(): array
         {
         }
         /**
@@ -10007,7 +10007,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array{contentSize: string, wideSize: string}
          */
-        public function get_layout() : array
+        public function get_layout(): array
         {
         }
         /**
@@ -10026,7 +10026,7 @@ namespace MailPoet\EmailEditor\Engine {
          *   }
          * }
          */
-        public function get_email_styles() : array
+        public function get_email_styles(): array
         {
         }
         /**
@@ -10034,7 +10034,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return string
          */
-        public function get_layout_width_without_padding() : string
+        public function get_layout_width_without_padding(): string
         {
         }
         /**
@@ -10043,7 +10043,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $styles Styles string.
          * @return array
          */
-        public function parse_styles_to_array(string $styles) : array
+        public function parse_styles_to_array(string $styles): array
         {
         }
         /**
@@ -10052,7 +10052,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $value Value with pixels.
          * @return float
          */
-        public function parse_number_from_string_with_pixels(string $value) : float
+        public function parse_number_from_string_with_pixels(string $value): float
         {
         }
         /**
@@ -10060,7 +10060,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return \WP_Theme_JSON
          */
-        public function get_theme() : \WP_Theme_JSON
+        public function get_theme(): \WP_Theme_JSON
         {
         }
         /**
@@ -10069,7 +10069,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $font_size Font size slug.
          * @return string
          */
-        public function translate_slug_to_font_size(string $font_size) : string
+        public function translate_slug_to_font_size(string $font_size): string
         {
         }
         /**
@@ -10078,7 +10078,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $color_slug Color slug.
          * @return string
          */
-        public function translate_slug_to_color(string $color_slug) : string
+        public function translate_slug_to_color(string $color_slug): string
         {
         }
         /**
@@ -10086,7 +10086,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return void
          */
-        private function init_iframe_assets() : void
+        private function init_iframe_assets(): void
         {
         }
     }
@@ -10125,7 +10125,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return WP_Theme_JSON
          */
-        public function get_theme() : \WP_Theme_JSON
+        public function get_theme(): \WP_Theme_JSON
         {
         }
         /**
@@ -10133,7 +10133,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return WP_Theme_JSON
          */
-        public function get_base_theme() : \WP_Theme_JSON
+        public function get_base_theme(): \WP_Theme_JSON
         {
         }
         /**
@@ -10171,7 +10171,7 @@ namespace MailPoet\EmailEditor\Engine {
          *   }
          * }
          */
-        public function get_styles() : array
+        public function get_styles(): array
         {
         }
         /**
@@ -10179,7 +10179,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array
          */
-        public function get_settings() : array
+        public function get_settings(): array
         {
         }
         /**
@@ -10187,7 +10187,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array{contentSize: string, wideSize: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}
          */
-        public function get_layout_settings() : array
+        public function get_layout_settings(): array
         {
         }
         /**
@@ -10197,7 +10197,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param array  $options Options.
          * @return string
          */
-        public function get_stylesheet_from_context($context, $options = array()) : string
+        public function get_stylesheet_from_context($context, $options = array()): string
         {
         }
         /**
@@ -10207,7 +10207,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param WP_Block_Template|null $template Template object.
          * @return string
          */
-        public function get_stylesheet_for_rendering(?\WP_Post $post = null, $template = null) : string
+        public function get_stylesheet_for_rendering(?\WP_Post $post = null, $template = null): string
         {
         }
         /**
@@ -10216,7 +10216,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $font_size Font size slug.
          * @return string
          */
-        public function translate_slug_to_font_size(string $font_size) : string
+        public function translate_slug_to_font_size(string $font_size): string
         {
         }
         /**
@@ -10225,7 +10225,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param string $color_slug Color slug.
          * @return string
          */
-        public function translate_slug_to_color(string $color_slug) : string
+        public function translate_slug_to_color(string $color_slug): string
         {
         }
         /**
@@ -10233,7 +10233,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @return array
          */
-        public function get_variables_values_map() : array
+        public function get_variables_values_map(): array
         {
         }
     }
@@ -10256,7 +10256,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @throws \Exception If the user theme post cannot be created.
          * @return WP_Theme_JSON
          */
-        public function get_theme() : \WP_Theme_JSON
+        public function get_theme(): \WP_Theme_JSON
         {
         }
         /**
@@ -10266,7 +10266,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @throws \Exception If the user theme post cannot be created.
          * @return WP_Post
          */
-        public function get_user_theme_post() : \WP_Post
+        public function get_user_theme_post(): \WP_Post
         {
         }
         /**
@@ -10274,7 +10274,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @throws \Exception If the user theme post cannot be created.
          */
-        private function ensure_theme_post() : void
+        private function ensure_theme_post(): void
         {
         }
     }
@@ -10301,7 +10301,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array ...$styles Style arrays to compile.
          * @return string
          */
-        protected function compile_css(...$styles) : string
+        protected function compile_css(...$styles): string
         {
         }
         /**
@@ -10311,7 +10311,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array  $email_attrs The email attributes.
          * @return string
          */
-        protected function add_spacer($content, $email_attrs) : string
+        protected function add_spacer($content, $email_attrs): string
         {
         }
         /**
@@ -10322,7 +10322,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller The settings controller.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10333,7 +10333,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller The settings controller.
          * @return string
          */
-        protected abstract function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string;
+        abstract protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string;
     }
     /**
      * Renders a button block.
@@ -10369,7 +10369,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10380,7 +10380,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10411,7 +10411,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10427,7 +10427,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string $content Content.
          * @param array  $email_attrs Email attributes.
          */
-        protected function add_spacer($content, $email_attrs) : string
+        protected function add_spacer($content, $email_attrs): string
         {
         }
         /**
@@ -10438,7 +10438,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10448,7 +10448,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10465,7 +10465,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10475,7 +10475,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function getBlockWrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        private function getBlockWrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10498,7 +10498,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10515,7 +10515,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10525,7 +10525,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10541,7 +10541,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10550,7 +10550,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string $block_content Block content.
          * @param array  $parsed_block Parsed block.
          */
-        private function apply_rounded_style(string $block_content, array $parsed_block) : string
+        private function apply_rounded_style(string $block_content, array $parsed_block): string
         {
         }
         /**
@@ -10560,7 +10560,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string              $image_url Image URL.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function add_image_size_when_missing(array $parsed_block, string $image_url, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : array
+        private function add_image_size_when_missing(array $parsed_block, string $image_url, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): array
         {
         }
         /**
@@ -10570,7 +10570,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array  $parsed_block Parsed block.
          * @param string $class_name Class name.
          */
-        private function apply_image_border_style(string $block_content, array $parsed_block, string $class_name) : string
+        private function apply_image_border_style(string $block_content, array $parsed_block, string $class_name): string
         {
         }
         /**
@@ -10580,7 +10580,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function addImageDimensions($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        private function addImageDimensions($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10590,7 +10590,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @param array               $parsed_block Parsed block.
          */
-        private function get_caption_styles(\MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, array $parsed_block) : string
+        private function get_caption_styles(\MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, array $parsed_block): string
         {
         }
         /**
@@ -10600,7 +10600,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @param string|null         $caption Caption.
          */
-        private function get_block_wrapper(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, ?string $caption) : string
+        private function get_block_wrapper(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, ?string $caption): string
         {
         }
         /**
@@ -10610,7 +10610,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array{tag_name: string, class_name?: string} $tag Tag to add style to.
          * @param string                                       $style Style to add.
          */
-        private function add_style_to_element($block_content, array $tag, string $style) : string
+        private function add_style_to_element($block_content, array $tag, string $style): string
         {
         }
         /**
@@ -10620,7 +10620,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array{tag_name: string, class_name?: string} $tag Tag to remove style from.
          * @param string                                       $style_name Name of the style to remove.
          */
-        private function remove_style_attribute_from_element($block_content, array $tag, string $style_name) : string
+        private function remove_style_attribute_from_element($block_content, array $tag, string $style_name): string
         {
         }
         /**
@@ -10629,7 +10629,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string $block_content Block content.
          * @return array{imageUrl: string, image: string, caption: string, class: string}|null
          */
-        private function parse_block_content(string $block_content) : ?array
+        private function parse_block_content(string $block_content): ?array
         {
         }
         /**
@@ -10637,7 +10637,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          *
          * @param string $content_html Content HTML.
          */
-        private function cleanup_image_html(string $content_html) : string
+        private function cleanup_image_html(string $content_html): string
         {
         }
     }
@@ -10655,7 +10655,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10670,7 +10670,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string $content Content.
          * @param array  $email_attrs Email attributes.
          */
-        protected function add_spacer($content, $email_attrs) : string
+        protected function add_spacer($content, $email_attrs): string
         {
         }
         /**
@@ -10681,7 +10681,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10697,7 +10697,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller) : string
+        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10708,7 +10708,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          *
          * @param string $block_content Block content.
          */
-        private function adjustStyleAttribute(string $block_content) : string
+        private function adjustStyleAttribute(string $block_content): string
         {
         }
     }
@@ -10722,7 +10722,7 @@ namespace MailPoet\EmailEditor\Integrations\Core {
         /**
          * Initializes the core blocks renderers.
          */
-        public function initialize() : void
+        public function initialize(): void
         {
         }
         /**
@@ -10730,7 +10730,7 @@ namespace MailPoet\EmailEditor\Integrations\Core {
          *
          * @param Blocks_Registry $blocks_registry Blocks registry.
          */
-        public function register_core_blocks_renderers(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry) : void
+        public function register_core_blocks_renderers(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry): void
         {
         }
         /**
@@ -10738,7 +10738,7 @@ namespace MailPoet\EmailEditor\Integrations\Core {
          *
          * @param \WP_Theme_JSON $editor_theme_json Editor theme JSON.
          */
-        public function adjust_theme_json(\WP_Theme_JSON $editor_theme_json) : \WP_Theme_JSON
+        public function adjust_theme_json(\WP_Theme_JSON $editor_theme_json): \WP_Theme_JSON
         {
         }
         /**
@@ -10746,7 +10746,7 @@ namespace MailPoet\EmailEditor\Integrations\Core {
          *
          * @param array|null $allowed_styles Allowed styles.
          */
-        public function allow_styles(?array $allowed_styles) : array
+        public function allow_styles(?array $allowed_styles): array
         {
         }
     }
@@ -10776,7 +10776,7 @@ namespace MailPoet\EmailEditor\Integrations\Utils {
          *
          * @param string $html_content The HTML content to load.
          */
-        private function load_html(string $html_content) : void
+        private function load_html(string $html_content): void
         {
         }
         /**
@@ -10784,7 +10784,7 @@ namespace MailPoet\EmailEditor\Integrations\Utils {
          *
          * @param string $tag_name The tag name to search for.
          */
-        public function find_element(string $tag_name) : ?\DOMElement
+        public function find_element(string $tag_name): ?\DOMElement
         {
         }
         /**
@@ -10793,7 +10793,7 @@ namespace MailPoet\EmailEditor\Integrations\Utils {
          * @param \DOMElement $element The element to get the attribute value from.
          * @param string      $attribute The attribute to get the value from.
          */
-        public function get_attribute_value(\DOMElement $element, string $attribute) : string
+        public function get_attribute_value(\DOMElement $element, string $attribute): string
         {
         }
         /**
@@ -10802,7 +10802,7 @@ namespace MailPoet\EmailEditor\Integrations\Utils {
          * @param string $tag_name The tag name to search for.
          * @param string $attribute The attribute to get the value from.
          */
-        public function get_attribute_value_by_tag_name(string $tag_name, string $attribute) : ?string
+        public function get_attribute_value_by_tag_name(string $tag_name, string $attribute): ?string
         {
         }
         /**
@@ -10810,7 +10810,7 @@ namespace MailPoet\EmailEditor\Integrations\Utils {
          *
          * @param \DOMElement $element The element to get the outer HTML from.
          */
-        public function get_outer_html(\DOMElement $element) : string
+        public function get_outer_html(\DOMElement $element): string
         {
         }
         /**
@@ -10818,7 +10818,7 @@ namespace MailPoet\EmailEditor\Integrations\Utils {
          *
          * @param \DOMElement $element The element to get the inner HTML from.
          */
-        public function get_element_inner_html(\DOMElement $element) : string
+        public function get_element_inner_html(\DOMElement $element): string
         {
         }
     }
@@ -10944,7 +10944,7 @@ namespace MailPoet\EmailEditor\Validator {
         /**
          * Returns the schema as an array.
          */
-        public function to_array() : array
+        public function to_array(): array
         {
         }
         /**
@@ -10952,7 +10952,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @throws \Exception When the schema cannot be converted to JSON.
          */
-        public function to_string() : string
+        public function to_string(): string
         {
         }
         /**
@@ -10979,7 +10979,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @return string[]
          */
-        protected function get_reserved_keywords() : array
+        protected function get_reserved_keywords(): array
         {
         }
         /**
@@ -10988,7 +10988,7 @@ namespace MailPoet\EmailEditor\Validator {
          * @param string $pattern Regular expression pattern.
          * @throws \Exception When the pattern is invalid.
          */
-        protected function validate_pattern(string $pattern) : void
+        protected function validate_pattern(string $pattern): void
         {
         }
     }
@@ -11017,13 +11017,13 @@ namespace MailPoet\EmailEditor\Validator\Schema {
         /**
          * Returns the schema as an array.
          */
-        public function nullable() : self
+        public function nullable(): self
         {
         }
         /**
          * Returns the schema as an array.
          */
-        public function non_nullable() : self
+        public function non_nullable(): self
         {
         }
     }
@@ -11044,7 +11044,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param Schema $schema Schema for the items in the array.
          */
-        public function items(\MailPoet\EmailEditor\Validator\Schema $schema) : self
+        public function items(\MailPoet\EmailEditor\Validator\Schema $schema): self
         {
         }
         /**
@@ -11052,7 +11052,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Minimum number of items in the array.
          */
-        public function minItems(int $value) : self
+        public function minItems(int $value): self
         {
         }
         /**
@@ -11060,13 +11060,13 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Maximum number of items in the array.
          */
-        public function maxItems(int $value) : self
+        public function maxItems(int $value): self
         {
         }
         /**
          * Sets the uniqueItems property to true.
          */
-        public function uniqueItems() : self
+        public function uniqueItems(): self
         {
         }
     }
@@ -11100,7 +11100,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Minimum value of the integer.
          */
-        public function minimum(int $value) : self
+        public function minimum(int $value): self
         {
         }
         /**
@@ -11108,7 +11108,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Minimum value of the integer.
          */
-        public function exclusiveMinimum(int $value) : self
+        public function exclusiveMinimum(int $value): self
         {
         }
         /**
@@ -11116,7 +11116,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Maximum value of the integer.
          */
-        public function maximum(int $value) : self
+        public function maximum(int $value): self
         {
         }
         /**
@@ -11124,7 +11124,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Maximum value of the integer.
          */
-        public function exclusiveMaximum(int $value) : self
+        public function exclusiveMaximum(int $value): self
         {
         }
         /**
@@ -11132,7 +11132,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Multiple of the integer.
          */
-        public function multipleOf(int $value) : self
+        public function multipleOf(int $value): self
         {
         }
     }
@@ -11166,7 +11166,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param float $value Minimum value of the number.
          */
-        public function minimum(float $value) : self
+        public function minimum(float $value): self
         {
         }
         /**
@@ -11174,7 +11174,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param float $value Minimum value of the number.
          */
-        public function exclusiveMinimum(float $value) : self
+        public function exclusiveMinimum(float $value): self
         {
         }
         /**
@@ -11182,7 +11182,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param float $value Maximum value of the number.
          */
-        public function maximum(float $value) : self
+        public function maximum(float $value): self
         {
         }
         /**
@@ -11190,7 +11190,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param float $value Maximum value of the number.
          */
-        public function exclusiveMaximum(float $value) : self
+        public function exclusiveMaximum(float $value): self
         {
         }
         /**
@@ -11198,7 +11198,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param float $value Multiple of the number.
          */
-        public function multipleOf(float $value) : self
+        public function multipleOf(float $value): self
         {
         }
     }
@@ -11219,7 +11219,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param array<string, Schema> $properties Required properties.
          */
-        public function properties(array $properties) : self
+        public function properties(array $properties): self
         {
         }
         /**
@@ -11227,13 +11227,13 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param Schema $schema Schema of the additional properties.
          */
-        public function additionalProperties(\MailPoet\EmailEditor\Validator\Schema $schema) : self
+        public function additionalProperties(\MailPoet\EmailEditor\Validator\Schema $schema): self
         {
         }
         /**
          * Disables additional properties.
          */
-        public function disableAdditionalProperties() : self
+        public function disableAdditionalProperties(): self
         {
         }
         /**
@@ -11242,7 +11242,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param array<string, Schema> $properties Regular expressions and their schemas.
          */
-        public function patternProperties(array $properties) : self
+        public function patternProperties(array $properties): self
         {
         }
         /**
@@ -11250,7 +11250,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Minimum number of properties in the object.
          */
-        public function minProperties(int $value) : self
+        public function minProperties(int $value): self
         {
         }
         /**
@@ -11258,7 +11258,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Maximum number of properties in the object.
          */
-        public function maxProperties(int $value) : self
+        public function maxProperties(int $value): self
         {
         }
     }
@@ -11285,13 +11285,13 @@ namespace MailPoet\EmailEditor\Validator\Schema {
         /**
          * Sets the schema as nullable.
          */
-        public function nullable() : self
+        public function nullable(): self
         {
         }
         /**
          * Sets the schema as non-nullable.
          */
-        public function non_nullable() : self
+        public function non_nullable(): self
         {
         }
     }
@@ -11312,7 +11312,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Minimum length.
          */
-        public function minLength(int $value) : self
+        public function minLength(int $value): self
         {
         }
         /**
@@ -11320,7 +11320,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param int $value Maximum length.
          */
-        public function maxLength(int $value) : self
+        public function maxLength(int $value): self
         {
         }
         /**
@@ -11329,43 +11329,43 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param string $pattern Regular expression pattern.
          */
-        public function pattern(string $pattern) : self
+        public function pattern(string $pattern): self
         {
         }
         /**
          * Set the format of the string according to DateTime.
          */
-        public function formatDateTime() : self
+        public function formatDateTime(): self
         {
         }
         /**
          * Set the format of the string according to email.
          */
-        public function formatEmail() : self
+        public function formatEmail(): self
         {
         }
         /**
          * Set the format of the string according to Hex color.
          */
-        public function formatHexColor() : self
+        public function formatHexColor(): self
         {
         }
         /**
          * Set the format of the string according to IP address.
          */
-        public function formatIp() : self
+        public function formatIp(): self
         {
         }
         /**
          * Set the format of the string according to uri.
          */
-        public function formatUri() : self
+        public function formatUri(): self
         {
         }
         /**
          * Set the format of the string according to uuid.
          */
-        public function formatUuid() : self
+        public function formatUuid(): self
         {
         }
     }
@@ -11380,31 +11380,31 @@ namespace MailPoet\EmailEditor\Validator {
         /**
          * Creates a schema for a string.
          */
-        public static function string() : \MailPoet\EmailEditor\Validator\Schema\String_Schema
+        public static function string(): \MailPoet\EmailEditor\Validator\Schema\String_Schema
         {
         }
         /**
          * Creates a schema for a number.
          */
-        public static function number() : \MailPoet\EmailEditor\Validator\Schema\Number_Schema
+        public static function number(): \MailPoet\EmailEditor\Validator\Schema\Number_Schema
         {
         }
         /**
          * Creates a schema for an integer.
          */
-        public static function integer() : \MailPoet\EmailEditor\Validator\Schema\Integer_Schema
+        public static function integer(): \MailPoet\EmailEditor\Validator\Schema\Integer_Schema
         {
         }
         /**
          * Creates a schema for a boolean.
          */
-        public static function boolean() : \MailPoet\EmailEditor\Validator\Schema\Boolean_Schema
+        public static function boolean(): \MailPoet\EmailEditor\Validator\Schema\Boolean_Schema
         {
         }
         /**
          * Creates a schema for null.
          */
-        public static function null() : \MailPoet\EmailEditor\Validator\Schema\Null_Schema
+        public static function null(): \MailPoet\EmailEditor\Validator\Schema\Null_Schema
         {
         }
         /**
@@ -11412,7 +11412,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param Schema|null $items Schema of the items in the array.
          */
-        public static function array(\MailPoet\EmailEditor\Validator\Schema $items = null) : \MailPoet\EmailEditor\Validator\Schema\Array_Schema
+        public static function array(\MailPoet\EmailEditor\Validator\Schema $items = null): \MailPoet\EmailEditor\Validator\Schema\Array_Schema
         {
         }
         /**
@@ -11420,7 +11420,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param array<string, Schema>|null $properties Properties of the object.
          */
-        public static function object(array $properties = null) : \MailPoet\EmailEditor\Validator\Schema\Object_Schema
+        public static function object(array $properties = null): \MailPoet\EmailEditor\Validator\Schema\Object_Schema
         {
         }
         /**
@@ -11428,7 +11428,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param Schema[] $schemas List of schemas.
          */
-        public static function one_of(array $schemas) : \MailPoet\EmailEditor\Validator\Schema\One_Of_Schema
+        public static function one_of(array $schemas): \MailPoet\EmailEditor\Validator\Schema\One_Of_Schema
         {
         }
         /**
@@ -11436,7 +11436,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param Schema[] $schemas List of schemas.
          */
-        public static function any_of(array $schemas) : \MailPoet\EmailEditor\Validator\Schema\Any_Of_Schema
+        public static function any_of(array $schemas): \MailPoet\EmailEditor\Validator\Schema\Any_Of_Schema
         {
         }
     }
@@ -11447,7 +11447,7 @@ namespace MailPoet\EmailEditor {
      */
     interface HttpAwareException
     {
-        public function getHttpStatusCode() : int;
+        public function getHttpStatusCode(): int;
     }
     /**
      * Frames all exceptions ("$e instanceof MailPoet\EmailEditor\Exception").
@@ -11456,7 +11456,7 @@ namespace MailPoet\EmailEditor {
     {
         /** @var string[] */
         private $errors = [];
-        public final function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
+        final public function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
         {
         }
         /** @return static */
@@ -11479,7 +11479,7 @@ namespace MailPoet\EmailEditor {
         public function withError(string $id, string $error)
         {
         }
-        public function getErrors() : array
+        public function getErrors(): array
         {
         }
     }
@@ -11496,7 +11496,7 @@ namespace MailPoet\EmailEditor {
      */
     class UnexpectedValueException extends \MailPoet\EmailEditor\RuntimeException implements \MailPoet\EmailEditor\HttpAwareException
     {
-        public function getHttpStatusCode() : int
+        public function getHttpStatusCode(): int
         {
         }
     }
@@ -11518,13 +11518,13 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param WP_Error $wp_error WP_Error instance.
          */
-        public static function create_from_wp_error(\WP_Error $wp_error) : self
+        public static function create_from_wp_error(\WP_Error $wp_error): self
         {
         }
         /**
          * Returns the WP_Error instance.
          */
-        public function get_wp_error() : \WP_Error
+        public function get_wp_error(): \WP_Error
         {
         }
     }
@@ -11597,7 +11597,7 @@ namespace MailPoet\EmailEditor\Validator {
          * @param string          $param The parameter name.
          * @param string|string[] $type The expected type.
          */
-        private function get_type_error(string $param, $type) : \WP_Error
+        private function get_type_error(string $param, $type): \WP_Error
         {
         }
     }
@@ -11629,7 +11629,7 @@ namespace MailPoet\EmailEditor {
          * @param callable $callback The callable that will be used to create the service.
          * @return void
          */
-        public function set(string $name, callable $callback) : void
+        public function set(string $name, callable $callback): void
         {
         }
         /**
@@ -11647,13 +11647,13 @@ namespace MailPoet\EmailEditor {
     class EmailCssInliner implements \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner
     {
         private \Pelago\Emogrifier\CssInliner $inliner;
-        public function from_html(string $unprocessed_html) : self
+        public function from_html(string $unprocessed_html): self
         {
         }
-        public function inline_css(string $css = '') : self
+        public function inline_css(string $css = ''): self
         {
         }
-        public function render() : string
+        public function render(): string
         {
         }
     }
@@ -11663,7 +11663,7 @@ namespace MailPoet\EmailEditor {
      */
     class AccessDeniedException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
     {
-        public function getHttpStatusCode() : int
+        public function getHttpStatusCode(): int
         {
         }
     }
@@ -11673,7 +11673,7 @@ namespace MailPoet\EmailEditor {
      */
     class NotFoundException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
     {
-        public function getHttpStatusCode() : int
+        public function getHttpStatusCode(): int
         {
         }
     }
@@ -11683,7 +11683,7 @@ namespace MailPoet\EmailEditor {
      */
     class ConflictException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
     {
-        public function getHttpStatusCode() : int
+        public function getHttpStatusCode(): int
         {
         }
     }
