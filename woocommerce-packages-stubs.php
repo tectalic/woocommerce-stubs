@@ -11412,7 +11412,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param Schema|null $items Schema of the items in the array.
          */
-        public static function array(\MailPoet\EmailEditor\Validator\Schema $items = null): \MailPoet\EmailEditor\Validator\Schema\Array_Schema
+        public static function array(?\MailPoet\EmailEditor\Validator\Schema $items = null): \MailPoet\EmailEditor\Validator\Schema\Array_Schema
         {
         }
         /**
@@ -11420,7 +11420,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param array<string, Schema>|null $properties Properties of the object.
          */
-        public static function object(array $properties = null): \MailPoet\EmailEditor\Validator\Schema\Object_Schema
+        public static function object(?array $properties = null): \MailPoet\EmailEditor\Validator\Schema\Object_Schema
         {
         }
         /**
