@@ -8189,52 +8189,2470 @@ namespace {
         }
     }
 }
-namespace MailPoet\EmailEditor {
-    class Bootstrap
+namespace Automattic\WooCommerce\Blueprint {
+    /**
+     * Built-in exporters.
+     */
+    class BuiltInExporters
     {
-        /** @var Email_Editor */
-        private $emailEditor;
-        /** @var CoreEmailEditorIntegration */
-        private $coreEmailEditorIntegration;
-        public function __construct(\MailPoet\EmailEditor\Engine\Email_Editor $emailEditor, \MailPoet\EmailEditor\Integrations\Core\Initializer $coreEmailEditorIntegration)
-        {
-        }
-        public function init()
-        {
-        }
-        public function initialize()
-        {
-        }
-        public function setupEmailEditorIntegrations()
+        /**
+         * Get all built-in exporters.
+         *
+         * @return array List of all built-in exporters.
+         */
+        public function get_all()
         {
         }
     }
     /**
-     * Main package class.
+     * Class BuiltInStepProcessors
+     *
+     * @package Automattic\WooCommerce\Blueprint
      */
-    class EmailEditorContainer
+    class BuiltInStepProcessors
     {
         /**
-         * Init method.
+         * BuiltInStepProcessors constructor.
          */
-        public static function init()
+        public function __construct()
         {
         }
         /**
-         * Loads the DI container for the Email editor.
+         * Returns an array of all step processors.
          *
-         * @internal This uses the Blocks DI container. This container will be replaced
-         * with a different compatible container.
-         *
-         * @param boolean $reset Used to reset the container to a fresh instance. Note: this means all dependencies will be reconstructed.
-         * @return mixed
+         * @return array The array of step processors.
          */
-        public static function container($reset = false)
+        public function get_all()
+        {
+        }
+        /**
+         * Creates the processor for installing plugins.
+         *
+         * @return ImportInstallPlugin The processor for installing plugins.
+         */
+        private function create_install_plugins_processor()
+        {
+        }
+        /**
+         * Creates the processor for installing themes.
+         *
+         * @return ImportInstallTheme The processor for installing themes.
+         */
+        private function create_install_themes_processor()
+        {
+        }
+    }
+    /**
+     * Class ClassExtractor
+     *
+     * Provides functionality to manipulate PHP class files by replacing variables,
+     * adding prefixes, and removing strict types declarations.
+     *
+     * This class is used to generate 'code' part for runPHP step from a template file.
+     */
+    class ClassExtractor
+    {
+        /**
+         * Path to the PHP file being processed.
+         *
+         * @var string
+         */
+        private string $file_path;
+        /**
+         * Whether the file contains a strict types declaration.
+         *
+         * @var bool
+         */
+        private bool $has_strict_types_declaration = false;
+        /**
+         * PHP code to prefix to the final output.
+         *
+         * @var string
+         */
+        private string $prefix = '';
+        /**
+         * Replacements for class variables.
+         *
+         * @var array
+         */
+        private array $class_variable_replacements = array();
+        /**
+         * Replacements for method variables.
+         *
+         * @var array
+         */
+        private array $method_variable_replacements = array();
+        /**
+         * Constructor.
+         *
+         * @param string $file_path Path to the PHP file to process.
+         *
+         * @throws \InvalidArgumentException If the file does not exist.
+         */
+        public function __construct(string $file_path)
+        {
+        }
+        /**
+         * Adds a prefix to include the WordPress wp-load.php file.
+         *
+         * @return $this
+         */
+        public function with_wp_load()
+        {
+        }
+        /**
+         * Replaces a class variable with a new value.
+         *
+         * @param string $variable_name Name of the class variable.
+         * @param mixed  $new_value The new value to assign to the variable.
+         *
+         * @return $this
+         */
+        public function replace_class_variable($variable_name, $new_value)
+        {
+        }
+        /**
+         * Replaces a variable inside a method with a new value.
+         *
+         * @param string $method_name Name of the method.
+         * @param string $variable_name Name of the variable to replace.
+         * @param mixed  $new_value The new value to assign to the variable.
+         *
+         * @return $this
+         */
+        public function replace_method_variable($method_name, $variable_name, $new_value)
+        {
+        }
+        /**
+         * Generates the processed PHP code with applied replacements and prefixes.
+         *
+         * @return string The modified PHP code.
+         */
+        public function get_code()
+        {
+        }
+        /**
+         * Applies a replacement to a class variable in the file content.
+         *
+         * @param string $file_content The content of the PHP file.
+         * @param string $variable_name The name of the variable to replace.
+         * @param mixed  $new_value The new value for the variable.
+         *
+         * @return string The updated file content.
+         */
+        private function apply_class_variable_replacement($file_content, $variable_name, $new_value)
+        {
+        }
+        /**
+         * Applies a replacement to a variable in a specific method.
+         *
+         * @param string $file_content The content of the PHP file.
+         * @param string $method_name The name of the method containing the variable.
+         * @param string $variable_name The name of the variable to replace.
+         * @param mixed  $new_value The new value for the variable.
+         *
+         * @return string The updated file content.
+         */
+        private function apply_variable_replacement($file_content, $method_name, $variable_name, $new_value)
+        {
+        }
+        /**
+         * Checks if the file has a strict types declaration.
+         *
+         * @return bool True if the file has a strict types declaration, false otherwise.
+         */
+        public function has_strict_type_declaration()
+        {
+        }
+    }
+    /**
+     * Class Cli.
+     *
+     * This class is included and execute from WC_CLI(class-wc-cli.php) to register
+     * WP CLI commands.
+     */
+    class Cli
+    {
+        /**
+         * Register WP CLI commands.
+         *
+         * @return void
+         */
+        public static function register_commands()
+        {
+        }
+    }
+    /**
+     * Trait UseWPFunctions
+     */
+    trait UseWPFunctions
+    {
+        /**
+         * Whether the filesystem has been initialized.
+         *
+         * @var bool
+         */
+        private $filesystem_initialized = false;
+        /**
+         * Adds a filter to a specified tag.
+         *
+         * @param string   $tag             The name of the filter to hook the $function_to_add to.
+         * @param callable $function_to_add The callback to be run when the filter is applied.
+         * @param int      $priority        Optional. Used to specify the order in which the functions
+         *                                  associated with a particular action are executed. Default 10.
+         * @param int      $accepted_args   Optional. The number of arguments the function accepts. Default 1.
+         */
+        public function wp_add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+        {
+        }
+        /**
+         * Adds an action to a specified tag.
+         *
+         * @param string   $tag             The name of the action to hook the $function_to_add to.
+         * @param callable $function_to_add The callback to be run when the action is triggered.
+         * @param int      $priority        Optional. Used to specify the order in which the functions
+         *                                  associated with a particular action are executed. Default 10.
+         * @param int      $accepted_args   Optional. The number of arguments the function accepts. Default 1.
+         */
+        public function wp_add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+        {
+        }
+        /**
+         * Calls the functions added to a filter hook.
+         *
+         * @param string $tag   The name of the filter hook.
+         * @param mixed  $value The value on which the filters hooked to $tag are applied on.
+         * @return mixed The filtered value after all hooked functions are applied to it.
+         */
+        // phpcs:ignore
+        public function wp_apply_filters($tag, $value)
+        {
+        }
+        /**
+         * Executes the functions hooked on a specific action hook.
+         *
+         * @param string $tag The name of the action to be executed.
+         * @param mixed  ...$args Optional. Additional arguments which are passed on to the functions hooked to the action.
+         */
+        public function wp_do_action($tag, ...$args)
+        {
+        }
+        /**
+         * Checks if a plugin is active.
+         *
+         * @param string $plugin Path to the plugin file relative to the plugins directory.
+         * @return bool True if the plugin is active, false otherwise.
+         */
+        public function wp_is_plugin_active(string $plugin)
+        {
+        }
+        /**
+         * Retrieves plugin information from the WordPress Plugin API.
+         *
+         * @param string $action The type of information to retrieve from the API.
+         * @param array  $args Optional. Arguments to pass to the API.
+         * @return object|WP_Error The API response object or WP_Error on failure.
+         */
+        public function wp_plugins_api($action, $args = array())
+        {
+        }
+        /**
+         * Retrieves all plugins.
+         *
+         * @param string $plugin_folder Optional. Path to the plugin folder to scan.
+         * @return array Array of plugins.
+         */
+        public function wp_get_plugins(string $plugin_folder = '')
+        {
+        }
+        /**
+         * Retrieves all themes.
+         *
+         * @param array $args Optional. Arguments to pass to the API.
+         * @return array Array of themes.
+         */
+        public function wp_get_themes($args = array())
+        {
+        }
+        /**
+         * Retrieves a theme.
+         *
+         * @param string|null $stylesheet Optional. The theme's stylesheet name.
+         * @return WP_Theme The theme object.
+         */
+        public function wp_get_theme($stylesheet = null)
+        {
+        }
+        /**
+         * Retrieves theme information from the WordPress Theme API.
+         *
+         * @param string $action The type of information to retrieve from the API.
+         * @param array  $args Optional. Arguments to pass to the API.
+         * @return object|WP_Error The API response object or WP_Error on failure.
+         */
+        public function wp_themes_api($action, $args = array())
+        {
+        }
+        /**
+         * Activates a plugin.
+         *
+         * @param string $plugin Path to the plugin file relative to the plugins directory.
+         * @param string $redirect Optional. URL to redirect to after activation.
+         * @param bool   $network_wide Optional. Whether to enable the plugin for all sites in the network.
+         * @param bool   $silent Optional. Whether to prevent calling activation hooks.
+         * @return WP_Error|null WP_Error on failure, null on success.
+         */
+        public function wp_activate_plugin($plugin, $redirect = '', $network_wide = false, $silent = false)
+        {
+        }
+        /**
+         * Deletes plugins.
+         *
+         * @param array $plugins List of plugins to delete.
+         * @return array|WP_Error|null Array of results or WP_Error on failure, null if filesystem credentials are required to proceed.
+         */
+        public function wp_delete_plugins($plugins)
+        {
+        }
+        /**
+         * Updates an option in the database.
+         *
+         * @param string      $option Name of the option to update.
+         * @param mixed       $value New value for the option.
+         * @param string|null $autoload Optional. Whether to load the option when WordPress starts up.
+         * @return bool True if option was updated, false otherwise.
+         */
+        public function wp_update_option($option, $value, $autoload = null)
+        {
+        }
+        /**
+         * Retrieves an option from the database.
+         *
+         * @param string $option Name of the option to retrieve.
+         * @param mixed  $default_value Optional. Default value to return if the option does not exist.
+         * @return mixed Value of the option or $default if the option does not exist.
+         */
+        public function wp_get_option($option, $default_value = false)
+        {
+        }
+        /**
+         * Switches the current theme.
+         *
+         * @param string $name The name of the theme to switch to.
+         */
+        public function wp_switch_theme($name)
+        {
+        }
+        /**
+         * Initializes the WordPress filesystem.
+         *
+         * @return bool
+         */
+        public function wp_init_filesystem()
+        {
+        }
+        /**
+         * Unzips a file to a specified location.
+         *
+         * @param string $path Path to the ZIP file.
+         * @param string $to Destination directory.
+         * @return bool|WP_Error True on success, WP_Error on failure.
+         */
+        public function wp_unzip_file($path, $to)
+        {
+        }
+        /**
+         * Retrieves the upload directory information.
+         *
+         * @return array Array of upload directory information.
+         */
+        public function wp_upload_dir()
+        {
+        }
+        /**
+         * Retrieves the root directory of the current theme.
+         *
+         * @return string The root directory of the current theme.
+         */
+        public function wp_get_theme_root()
+        {
+        }
+        /**
+         * Checks if a variable is a WP_Error.
+         *
+         * @param mixed $thing Variable to check.
+         * @return bool True if the variable is a WP_Error, false otherwise.
+         */
+        public function is_wp_error($thing)
+        {
+        }
+        /**
+         * Downloads a file from a URL.
+         *
+         * @param string $url The URL of the file to download.
+         * @return string|WP_Error The local file path on success, WP_Error on failure.
+         */
+        public function wp_download_url($url)
+        {
+        }
+        /**
+         * Alias for WP_Filesystem::put_contents().
+         *
+         * @param string $file_path The path to the file to write.
+         * @param mixed  $content    The data to write to the file.
+         *
+         * @return bool True on success, false on failure.
+         */
+        public function wp_filesystem_put_contents($file_path, $content)
+        {
+        }
+        /**
+         * Alias for WP_Filesystem::get_contents().
+         *
+         * @param string $file_path The path to the file to read.
+         * @return string|false The contents of the file, or false on failure.
+         */
+        public function wp_filesystem_get_contents($file_path)
+        {
+        }
+        /**
+         * Retrieves the current user's ID.
+         *
+         * @return int The current user's ID.
+         */
+        public function wp_get_current_user_id()
         {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine\Patterns {
+namespace Automattic\WooCommerce\Blueprint\Cli {
+    /**
+     * Class ExportCli
+     *
+     * This class handles the CLI commands for exporting schemas.
+     *
+     * @package Automattic\WooCommerce\Blueprint\Cli
+     */
+    class ExportCli
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * The path where the exported schema will be saved.
+         *
+         * @var string The path where the exported schema will be saved.
+         */
+        private string $save_to;
+        /**
+         * ExportCli constructor.
+         *
+         * @param string $save_to The path where the exported schema will be saved.
+         */
+        public function __construct($save_to)
+        {
+        }
+        /**
+         * Run the export process.
+         *
+         * @param array $args The arguments for the export process.
+         */
+        public function run($args = array())
+        {
+        }
+    }
+    /**
+     * Class ImportCli
+     */
+    class ImportCli
+    {
+        /**
+         * Schema path
+         *
+         * @var string $schema_path The path to the schema file.
+         */
+        private $schema_path;
+        /**
+         * ImportCli constructor.
+         *
+         * @param string $schema_path The path to the schema file.
+         */
+        public function __construct($schema_path)
+        {
+        }
+        /**
+         * Run the import process.
+         *
+         * @param array $optional_args Optional arguments.
+         *
+         * @return void
+         */
+        public function run($optional_args)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint {
+    trait UsePubSub
+    {
+        /**
+         * Subscribers.
+         *
+         * @var array
+         */
+        private array $subscribers = array();
+        /**
+         * Subscribe to an event with a callback.
+         *
+         * @param string   $event The event name.
+         * @param callable $callback The callback to execute when the event is published.
+         * @return void
+         */
+        public function subscribe(string $event, callable $callback): void
+        {
+        }
+        /**
+         * Publish an event to all subscribers.
+         *
+         * @param string $event The event name.
+         * @param mixed  ...$args Arguments to pass to the callbacks.
+         * @return void
+         */
+        public function publish(string $event, ...$args): void
+        {
+        }
+        /**
+         * Unsubscribe a specific callback from an event.
+         *
+         * @param string   $event The event name.
+         * @param callable $callback The callback to remove.
+         * @return void
+         */
+        public function unsubscribe(string $event, callable $callback): void
+        {
+        }
+    }
+    /**
+     * Class ExportSchema
+     *
+     * Handles the export schema functionality for WooCommerce.
+     *
+     * @package Automattic\WooCommerce\Blueprint
+     */
+    class ExportSchema
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        use \Automattic\WooCommerce\Blueprint\UsePubSub;
+        /**
+         * Step exporters.
+         *
+         * @var StepExporter[] Array of step exporters.
+         */
+        protected array $exporters = array();
+        /**
+         * ExportSchema constructor.
+         *
+         * @param StepExporter[] $exporters Array of step exporters.
+         */
+        public function __construct($exporters = array())
+        {
+        }
+        /**
+         * Export the schema steps.
+         *
+         * @param string[] $steps Array of step names to export, optional.
+         *
+         * @return array|WP_Error The exported schema array or a WP_Error if the export fails.
+         */
+        public function export($steps = array())
+        {
+        }
+        /**
+         * Subscribe to the onBeforeExport event.
+         *
+         * @param string   $step_name The step name to subscribe to.
+         * @param callable $callback  The callback to execute.
+         */
+        public function on_before_export($step_name, $callback)
+        {
+        }
+        /**
+         * Add export result to the schema array.
+         *
+         * @param array      $schema Schema array to add steps to.
+         * @param array|Step $step   Step or array of steps to add.
+         */
+        private function add_result_to_schema(array &$schema, $step): void
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint\Exporters {
+    /**
+     * Interface StepExporter
+     *
+     * A Step Exporter is responsible collecting data needed for a Step object and exporting it.
+     * Refer to the Step class for the data needed as each step may require different data.
+     */
+    interface StepExporter
+    {
+        /**
+         * Collect data needed for a Step object and export it.
+         *
+         * @return Step
+         */
+        public function export();
+        /**
+         * Returns the name of the step class it exports.
+         *
+         * @return string
+         */
+        public function get_step_name();
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities(): bool;
+    }
+    /**
+     * Class ExportInstallPluginSteps
+     *
+     * @package Automattic\WooCommerce\Blueprint\Exporters
+     */
+    class ExportInstallPluginSteps implements \Automattic\WooCommerce\Blueprint\Exporters\StepExporter
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Filter callback.
+         *
+         * @var callable
+         */
+        private $filter_callback;
+        /**
+         * Whether to include private plugins in the export.
+         *
+         * @var bool Whether to include private plugins in the export.
+         */
+        private bool $include_private_plugins = false;
+        /**
+         * Set whether to include private plugins in the export.
+         *
+         * @param bool $boolean Whether to include private plugins.
+         */
+        public function include_private_plugins(bool $boolean)
+        {
+        }
+        /**
+         * Register a filter callback to filter the plugins to export.
+         *
+         * @param callable $callback Filter callback.
+         *
+         * @return void
+         */
+        public function filter(callable $callback)
+        {
+        }
+        /**
+         * Export the steps required to install plugins.
+         *
+         * @return array The array of InstallPlugin steps.
+         */
+        public function export()
+        {
+        }
+        /**
+         * Sort plugins by dependencies -- put the dependencies at the top.
+         *
+         * @param array $plugins List of plugins to sort (from wp_get_plugins function).
+         *
+         * @return array
+         */
+        public function sort_plugins_by_dep(array $plugins)
+        {
+        }
+        /**
+         * Get the name of the step.
+         *
+         * @return string The step name.
+         */
+        public function get_step_name()
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities(): bool
+        {
+        }
+    }
+    /**
+     * Class ExportInstallThemeSteps
+     *
+     * Exporter for the InstallTheme step.
+     *
+     * @package Automattic\WooCommerce\Blueprint\Exporters
+     */
+    class ExportInstallThemeSteps implements \Automattic\WooCommerce\Blueprint\Exporters\StepExporter
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Filter callback.
+         *
+         * @var callable
+         */
+        private $filter_callback;
+        /**
+         * Register a filter callback to filter the plugins to export.
+         *
+         * @param callable $callback Filter callback.
+         *
+         * @return void
+         */
+        public function filter(callable $callback)
+        {
+        }
+        /**
+         * Export the steps.
+         *
+         * @return array
+         */
+        public function export()
+        {
+        }
+        /**
+         * Get the step name.
+         *
+         * @return string
+         */
+        public function get_step_name()
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities(): bool
+        {
+        }
+    }
+    /**
+     * Allows a step to have an alias.
+     *
+     * An alias is useful for selective export.
+     *
+     * Let's say you have three exporters and all of them use `setSiteOptions` step.
+     *
+     * Step A: Exports options from WooCommerce -> Settings
+     * Step B: Exports options for the core profiler selection.
+     * Step C: Exports options for the task list.
+     *
+     * You also have a UI where a client can select which steps to export. In this case, we have three checkboxes.
+     *
+     * [ ] WooCommerce Settings
+     * [ ] WooCommerce Core Profiler
+     * [ ] WooCommerce Task List
+     *
+     * Without alias, the client would see three `setSiteOptions` steps and it's not possible
+     * to distinguish between them from the ExportSchema class.
+     *
+     * With alias, you can give each step a unique alias while keeping the step name the same.
+     *
+     * @todo Link to an example class that uses this interface.
+     *
+     * Interface HasAlias
+     */
+    interface HasAlias
+    {
+        /**
+         * Get the alias for the step.
+         *
+         * @return string The alias for the step.
+         */
+        public function get_alias();
+    }
+}
+namespace Automattic\WooCommerce\Blueprint {
+    /**
+     * Class ImportSchema
+     *
+     * Handles the import schema functionality for WooCommerce.
+     *
+     * @package Automattic\WooCommerce\Blueprint
+     */
+    class ImportSchema
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * JsonSchema object.
+         *
+         * @var JsonSchema The schema instance.
+         */
+        private \Automattic\WooCommerce\Blueprint\Schemas\JsonSchema $schema;
+        /**
+         * Validator object.
+         *
+         * @var Validator The JSON schema validator instance.
+         */
+        private \Opis\JsonSchema\Validator $validator;
+        /**
+         * ImportSchema constructor.
+         *
+         * @param JsonSchema     $schema The schema instance.
+         * @param Validator|null $validator The validator instance, optional.
+         */
+        public function __construct(\Automattic\WooCommerce\Blueprint\Schemas\JsonSchema $schema, ?\Opis\JsonSchema\Validator $validator = null)
+        {
+        }
+        /**
+         * Get the schema.
+         *
+         * @return JsonSchema The schema.
+         */
+        public function get_schema()
+        {
+        }
+        /**
+         * Create an ImportSchema instance from a file.
+         *
+         * @param string $file The file path.
+         * @return ImportSchema The created ImportSchema instance.
+         *
+         * @throws \RuntimeException If the JSON file cannot be read.
+         * @throws \InvalidArgumentException If the JSON is invalid or missing 'steps' field.
+         */
+        public static function create_from_file($file)
+        {
+        }
+        /**
+         * Create an ImportSchema instance from a JSON file.
+         *
+         * @param string $json_path The JSON file path.
+         * @return ImportSchema The created ImportSchema instance.
+         *
+         * @throws \RuntimeException If the JSON file cannot be read.
+         * @throws \InvalidArgumentException If the JSON is invalid or missing 'steps' field.
+         */
+        public static function create_from_json($json_path)
+        {
+        }
+        /**
+         * Import the schema steps.
+         *
+         * @return StepProcessorResult[]
+         */
+        public function import()
+        {
+        }
+    }
+    /**
+     * Class ImportStep
+     *
+     * Import a single step from a JSON definition.
+     *
+     * @package Automattic\WooCommerce\Blueprint
+     */
+    class ImportStep
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Step definition.
+         *
+         * @var object The step definition.
+         */
+        private object $step_definition;
+        /**
+         * Validator object.
+         *
+         * @var Validator The JSON schema validator instance.
+         */
+        private \Opis\JsonSchema\Validator $validator;
+        /**
+         * Built-in step processors.
+         *
+         * @var BuiltInStepProcessors The built-in step processors instance.
+         */
+        private \Automattic\WooCommerce\Blueprint\BuiltInStepProcessors $builtin_step_processors;
+        /**
+         * Importers.
+         *
+         * @var array|mixed The importers.
+         */
+        private array $importers;
+        /**
+         * Indexed importers.
+         *
+         * @var array The indexed importers by step name.
+         */
+        private array $indexed_importers;
+        /**
+         * ImportStep constructor.
+         *
+         * @param object         $step_definition The step definition.
+         * @param Validator|null $validator The validator instance, optional.
+         */
+        public function __construct($step_definition, ?\Opis\JsonSchema\Validator $validator = null)
+        {
+        }
+        /**
+         * Import the schema steps.
+         *
+         * @return StepProcessorResult
+         */
+        public function import()
+        {
+        }
+        /**
+         * Check if the step can be imported.
+         *
+         * @param StepProcessorResult $result The result object to add messages to.
+         *
+         * @return bool True if the step can be imported, false otherwise.
+         */
+        protected function can_import(&$result)
+        {
+        }
+        /**
+         * Validate the step schemas.
+         *
+         * @param StepProcessor       $importer The importer.
+         * @param StepProcessorResult $result The result object to add messages to.
+         *
+         * @return bool True if the step schemas are valid, false otherwise.
+         */
+        protected function validate_step_schemas(\Automattic\WooCommerce\Blueprint\StepProcessor $importer, \Automattic\WooCommerce\Blueprint\StepProcessorResult $result)
+        {
+        }
+    }
+    /**
+     * Interface StepProcessor
+     */
+    interface StepProcessor
+    {
+        /**
+         * Process the schema.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return StepProcessorResult
+         */
+        public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult;
+        /**
+         * Get the step class.
+         *
+         * @return string
+         */
+        public function get_step_class(): string;
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities($schema): bool;
+    }
+    trait UsePluginHelpers
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Activate a plugin by its slug.
+         *
+         * Searches for the plugin with the specified slug in the installed plugins
+         * and activates it.
+         *
+         * @param string $slug The slug of the plugin to activate.
+         *
+         * @return false|null|WP_Error Null on success, WP_Error on invalid file, false if not found.
+         */
+        public function activate_plugin_by_slug($slug)
+        {
+        }
+        /**
+         * Check if a plugin with the specified slug is installed.
+         *
+         * @param string $slug The slug of the plugin to check.
+         *
+         * @return bool
+         */
+        public function is_plugin_dir($slug)
+        {
+        }
+        /**
+         * Deactivate and delete a plugin by its slug.
+         *
+         * Searches for the plugin with the specified slug in the installed plugins,
+         * deactivates it if active, and then deletes it.
+         *
+         * @param string $slug The slug of the plugin to delete.
+         *
+         * @return bool|WP_Error True if the plugin was deleted, false otherwise.
+         */
+        public function delete_plugin_by_slug($slug)
+        {
+        }
+        /**
+         * Deactivate a plugin by its slug.
+         *
+         * Searches for the plugin with the specified slug in the installed plugins
+         * and deactivates it.
+         *
+         * @param string $slug The slug of the plugin to deactivate.
+         *
+         * @return bool True if the plugin was deactivated, false otherwise.
+         */
+        public function deactivate_plugin_by_slug($slug)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint\Importers {
+    /**
+     * Class ImportActivatePlugin
+     */
+    class ImportActivatePlugin implements \Automattic\WooCommerce\Blueprint\StepProcessor
+    {
+        use \Automattic\WooCommerce\Blueprint\UsePluginHelpers;
+        /**
+         * Process the schema.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return StepProcessorResult
+         */
+        public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult
+        {
+        }
+        /**
+         * Get the step class.
+         *
+         * @return string
+         */
+        public function get_step_class(): string
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities($schema): bool
+        {
+        }
+    }
+    /**
+     * Class ImportActivateTheme
+     *
+     * @package Automattic\WooCommerce\Blueprint\Importers
+     */
+    class ImportActivateTheme implements \Automattic\WooCommerce\Blueprint\StepProcessor
+    {
+        use \Automattic\WooCommerce\Blueprint\UsePluginHelpers;
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Process the step.
+         *
+         * @param object $schema The schema for the step.
+         *
+         * @return StepProcessorResult
+         */
+        public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult
+        {
+        }
+        /**
+         * Returns the class name of the step this processor handles.
+         *
+         * @return string The class name of the step this processor handles.
+         */
+        public function get_step_class(): string
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities($schema): bool
+        {
+        }
+    }
+    /**
+     * Class ImportInstallPlugin
+     *
+     * Handles the installation and activation of plugins based on a schema.
+     */
+    class ImportInstallPlugin implements \Automattic\WooCommerce\Blueprint\StepProcessor
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Resource storage instance for handling plugin files.
+         *
+         * @var ResourceStorages
+         */
+        private \Automattic\WooCommerce\Blueprint\ResourceStorages $storage;
+        /**
+         * Array of paths to installed plugins.
+         *
+         * @var array
+         */
+        private array $installed_plugin_paths = array();
+        /**
+         * Constructor.
+         *
+         * @param ResourceStorages $storage Resource storage instance.
+         */
+        public function __construct(\Automattic\WooCommerce\Blueprint\ResourceStorages $storage)
+        {
+        }
+        /**
+         * Processes the schema to install and optionally activate a plugin.
+         *
+         * @param object $schema Schema object containing plugin information.
+         * @return StepProcessorResult Result of the processing.
+         */
+        public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult
+        {
+        }
+        /**
+         * Installs a plugin from the given local path.
+         *
+         * @param string $local_plugin_path Path to the local plugin file.
+         * @return bool|WP_Error True on success, WP_Error on failure.
+         */
+        protected function install($local_plugin_path)
+        {
+        }
+        /**
+         * Activates an installed plugin by its slug.
+         *
+         * @param string $slug Plugin slug.
+         * @return \WP_Error|null WP_Error on failure, null on success.
+         */
+        protected function activate($slug)
+        {
+        }
+        /**
+         * Retrieves an array of installed plugins and their paths.
+         *
+         * @return array Array of installed plugins and their paths.
+         */
+        protected function get_installed_plugins_paths()
+        {
+        }
+        /**
+         * Returns the class name of the step being processed.
+         *
+         * @return string Class name of the step.
+         */
+        public function get_step_class(): string
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities($schema): bool
+        {
+        }
+    }
+    /**
+     * Class ImportInstallTheme
+     *
+     * This class handles the import process for installing themes.
+     *
+     * @package Automattic\WooCommerce\Blueprint\Importers
+     */
+    class ImportInstallTheme implements \Automattic\WooCommerce\Blueprint\StepProcessor
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Collection of resource storages.
+         *
+         * @var ResourceStorages The resource storage used for downloading themes.
+         */
+        private \Automattic\WooCommerce\Blueprint\ResourceStorages $storage;
+        /**
+         * The result of the step processing.
+         *
+         * @var StepProcessorResult The result of the step processing.
+         */
+        private \Automattic\WooCommerce\Blueprint\StepProcessorResult $result;
+        /**
+         * ImportInstallTheme constructor.
+         *
+         * @param ResourceStorages $storage The resource storage used for downloading themes.
+         */
+        public function __construct(\Automattic\WooCommerce\Blueprint\ResourceStorages $storage)
+        {
+        }
+        /**
+         * Process the schema to install the theme.
+         *
+         * @param object $schema The schema containing theme installation details.
+         *
+         * @return StepProcessorResult The result of the step processing.
+         */
+        public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult
+        {
+        }
+        /**
+         * Attempt to activate the theme if the schema specifies to do so.
+         *
+         * @param object $schema installTheme schema.
+         *
+         * @return void
+         */
+        protected function activate_theme($schema)
+        {
+        }
+        /**
+         * Install the theme from the local path.
+         *
+         * @param string $local_path The local path of the theme to be installed.
+         *
+         * @return bool True if the installation was successful, false otherwise.
+         */
+        protected function install($local_path)
+        {
+        }
+        /**
+         * Get the class name of the step.
+         *
+         * @return string The class name of the step.
+         */
+        public function get_step_class(): string
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities($schema): bool
+        {
+        }
+    }
+    /**
+     * Processes SQL execution steps in the Blueprint.
+     *
+     * Handles the execution of SQL queries with safety checks to prevent
+     * unauthorized modifications to sensitive WordPress data.
+     *
+     * @package Automattic\WooCommerce\Blueprint\Importers
+     */
+    class ImportRunSql implements \Automattic\WooCommerce\Blueprint\StepProcessor
+    {
+        use \Automattic\WooCommerce\Blueprint\UsePluginHelpers;
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * List of allowed SQL query types.
+         *
+         * @var array
+         */
+        private const ALLOWED_QUERY_TYPES = array('INSERT', 'UPDATE', 'REPLACE INTO');
+        /**
+         * Process the SQL execution step.
+         *
+         * Validates and executes the SQL query while ensuring:
+         * 1. Only allowed query types are executed
+         * 2. No modifications to admin users or roles
+         * 3. No unauthorized changes to user capabilities
+         *
+         * @param object $schema The schema containing the SQL query to execute.
+         * @return StepProcessorResult The result of the SQL execution.
+         */
+        public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult
+        {
+        }
+        /**
+         * Returns the class name of the step this processor handles.
+         *
+         * @return string The class name of the step this processor handles.
+         */
+        public function get_step_class(): string
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities($schema): bool
+        {
+        }
+        /**
+         * Check if the SQL query type is allowed.
+         *
+         * @param string $sql_content The SQL query to check.
+         * @return bool True if the query type is allowed, false otherwise.
+         */
+        private function is_allowed_query_type(string $sql_content): bool
+        {
+        }
+        /**
+         * Check for suspicious comment patterns that might hide malicious code.
+         *
+         * This method detects various types of SQL comments that might be used
+         * to hide malicious SQL commands or bypass security filters.
+         *
+         * @param string $sql_content The SQL query to check.
+         * @return bool True if suspicious comments found, false otherwise.
+         */
+        private function contains_suspicious_comments(string $sql_content): bool
+        {
+        }
+        /**
+         * Check for common SQL injection patterns.
+         *
+         * @param string $sql_content The SQL query to check.
+         * @return bool True if potential injection patterns found, false otherwise.
+         */
+        private function contains_sql_injection_patterns(string $sql_content): bool
+        {
+        }
+        /**
+         * Check if the SQL query affects protected user tables.
+         *
+         * @param string $sql_content The SQL query to check.
+         * @return bool True if the query affects protected tables, false otherwise.
+         */
+        private function affects_protected_tables(string $sql_content): bool
+        {
+        }
+        /**
+         * Check if the SQL query affects user capabilities in wp_options.
+         *
+         * @param string $sql_content The SQL query to check.
+         * @return bool True if the query affects user capabilities, false otherwise.
+         */
+        private function affects_user_capabilities(string $sql_content): bool
+        {
+        }
+    }
+    /**
+     * Class ImportSetSiteOptions
+     *
+     * Importer for the SetSiteOptions step.
+     *
+     * @package Automattic\WooCommerce\Blueprint\Importers
+     */
+    class ImportSetSiteOptions implements \Automattic\WooCommerce\Blueprint\StepProcessor
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * List of WordPress options that should not be modified.
+         *
+         * @var array<string>
+         */
+        private const RESTRICTED_OPTIONS = array('siteurl', 'home', 'active_plugins', 'template', 'stylesheet', 'admin_email', 'unfiltered_html', 'users_can_register', 'default_role', 'db_version', 'cron', 'rewrite_rules', 'wp_user_roles');
+        /**
+         * Process the step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return StepProcessorResult
+         */
+        public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult
+        {
+        }
+        /**
+         * Get the step class.
+         *
+         * @return string
+         */
+        public function get_step_class(): string
+        {
+        }
+        /**
+         * Check if the current user has the required capabilities for this step.
+         *
+         * @param object $schema The schema to process.
+         *
+         * @return bool True if the user has the required capabilities. False otherwise.
+         */
+        public function check_step_capabilities($schema): bool
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint {
+    /**
+     * Class Logger
+     */
+    class Logger
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * WooCommerce logger class instance.
+         *
+         * @var \WC_Logger_Interface
+         */
+        private $logger;
+        /**
+         * Constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Log a message as a debug log entry.
+         *
+         * @param string $message The message to log.
+         * @param string $level   The log level.
+         * @param array  $context The context of the log.
+         */
+        public function log(string $message, string $level = \WC_Log_Levels::DEBUG, $context = array())
+        {
+        }
+        /**
+         * Log the start of an export operation.
+         *
+         * @param array $exporters Array of exporters.
+         */
+        public function start_export(array $exporters)
+        {
+        }
+        /**
+         * Log the completion of an export operation.
+         *
+         * @param array $exporters Array of exporters.
+         */
+        public function complete_export(array $exporters)
+        {
+        }
+        /**
+         * Extract export step names and exporter classes from exporters.
+         *
+         * @param array $exporters Array of exporters.
+         * @return array Associative array with 'steps' and 'exporters' keys.
+         */
+        private function get_export_data(array $exporters)
+        {
+        }
+        /**
+         * Log an export step failure.
+         *
+         * @param string     $step_name The name of the step that failed.
+         * @param \Throwable $exception The exception that was thrown.
+         */
+        public function export_step_failed(string $step_name, \Throwable $exception)
+        {
+        }
+        /**
+         * Log the start of an import step.
+         *
+         * @param string $step_name      The name of the step being imported.
+         * @param string $importer_class The class name of the importer.
+         */
+        public function start_import(string $step_name, string $importer_class)
+        {
+        }
+        /**
+         * Log the successful completion of an import step.
+         *
+         * @param string              $step_name The name of the step that was imported.
+         * @param StepProcessorResult $result    The result of the import.
+         */
+        public function complete_import(string $step_name, \Automattic\WooCommerce\Blueprint\StepProcessorResult $result)
+        {
+        }
+        /**
+         * Log an import step failure.
+         *
+         * @param string              $step_name The name of the step that failed.
+         * @param StepProcessorResult $result    The result of the import.
+         */
+        public function import_step_failed(string $step_name, \Automattic\WooCommerce\Blueprint\StepProcessorResult $result)
+        {
+        }
+    }
+    /**
+     * Class ResourceStorages
+     */
+    class ResourceStorages
+    {
+        /**
+         * Storage collection.
+         *
+         * @var ResourceStorages[]
+         */
+        protected array $storages = array();
+        /**
+         * Add a downloader.
+         *
+         * @param ResourceStorage $downloader The downloader to add.
+         *
+         * @return void
+         */
+        public function add_storage(\Automattic\WooCommerce\Blueprint\ResourceStorages\ResourceStorage $downloader)
+        {
+        }
+        /**
+         * Check if the resource is supported.
+         *
+         * @param string $resource_type The resource type to check.
+         *
+         * @return bool
+         */
+        public function is_supported_resource($resource_type)
+        {
+        }
+        /**
+         * Download the resource.
+         *
+         * @param string $slug The slug of the resource to download.
+         * @param string $resource_type The resource type to download.
+         *
+         * @return false|string
+         */
+        public function download($slug, $resource_type)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint\ResourceStorages {
+    /**
+     * Interface ResourceStorage
+     *
+     * ResourceStorage is an abstraction layer for various storages for WordPress files
+     * such as plugins and themes. It provides a common interface for downloading
+     * the files whether they are stored locally or remotely.
+     *
+     * @package Automattic\WooCommerce\Blueprint\ResourceStorages
+     */
+    interface ResourceStorage
+    {
+        /**
+         * Return supported resource type.
+         *
+         * @return string
+         */
+        public function get_supported_resource(): string;
+        /**
+         * Download the resource.
+         *
+         * @param string $slug resource slug.
+         *
+         * @return string|null downloaded local path.
+         */
+        public function download($slug): ?string;
+    }
+    /**
+     * Class LocalPluginResourceStorage
+     */
+    class LocalPluginResourceStorage implements \Automattic\WooCommerce\Blueprint\ResourceStorages\ResourceStorage
+    {
+        /**
+         * Paths to the directories containing the plugins.
+         *
+         * @var array The paths to the directories containing the plugins.
+         */
+        protected array $paths = array();
+        /**
+         * Suffix of the plugin files.
+         *
+         * @var string The suffix of the plugin files.
+         */
+        protected string $suffix = 'plugins';
+        /**
+         * LocalPluginResourceStorage constructor.
+         *
+         * @param string $path The path to the directory containing the plugins.
+         */
+        public function __construct($path)
+        {
+        }
+        /**
+         * Local plugins are already included (downloaded) in the zip file.
+         * Return the full path.
+         *
+         * @param string $slug The slug of the plugin to be downloaded.
+         *
+         * @return string|null
+         */
+        public function download($slug): ?string
+        {
+        }
+        /**
+         * Get the supported resource.
+         *
+         * @return string The supported resource.
+         */
+        public function get_supported_resource(): string
+        {
+        }
+    }
+    /**
+     * Class LocalThemeResourceStorage
+     */
+    class LocalThemeResourceStorage extends \Automattic\WooCommerce\Blueprint\ResourceStorages\LocalPluginResourceStorage
+    {
+        /**
+         * The suffix.
+         *
+         * @var string The suffix.
+         */
+        protected string $suffix = 'themes';
+        /**
+         * Get the supported resource.
+         *
+         * @return string The supported resource.
+         */
+        public function get_supported_resource(): string
+        {
+        }
+    }
+    /**
+     * Class OrgPluginResourceStorage
+     *
+     * This class handles the storage and downloading of plugins from wordpress.org.
+     *
+     * @package Automattic\WooCommerce\Blueprint\ResourceStorages
+     */
+    class OrgPluginResourceStorage implements \Automattic\WooCommerce\Blueprint\ResourceStorages\ResourceStorage
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * Download the plugin from wordpress.org
+         *
+         * @param string $slug The slug of the plugin to be downloaded.
+         *
+         * @return string|false The path to the downloaded plugin file, or false on failure.
+         */
+        public function download($slug): ?string
+        {
+        }
+        /**
+         * Download the file from the given URL.
+         *
+         * @param string $url The URL to download the file from.
+         *
+         * @return string|WP_Error The path to the downloaded file, or WP_Error on failure.
+         */
+        protected function download_url($url)
+        {
+        }
+        /**
+         * Get the download link for a plugin from wordpress.org.
+         *
+         * @param string $slug The slug of the plugin.
+         *
+         * @return string|null The download link, or null if not found.
+         */
+        protected function get_download_link($slug): ?string
+        {
+        }
+        /**
+         * Get the supported resource type.
+         *
+         * @return string The supported resource type.
+         */
+        public function get_supported_resource(): string
+        {
+        }
+    }
+    /**
+     * Class OrgThemeResourceStorage
+     */
+    class OrgThemeResourceStorage extends \Automattic\WooCommerce\Blueprint\ResourceStorages\OrgPluginResourceStorage
+    {
+        /**
+         * Get the download link.
+         *
+         * @param string $slug The slug of the theme to be downloaded.
+         *
+         * @return string|null The download link.
+         */
+        protected function get_download_link($slug): ?string
+        {
+        }
+        /**
+         * Get the supported resource.
+         *
+         * @return string The supported resource.
+         */
+        public function get_supported_resource(): string
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint\ResultFormatters {
+    /**
+     * Class CliResultFormatter
+     */
+    class CliResultFormatter
+    {
+        /**
+         * The results to format.
+         *
+         * @var StepProcessorResult[]
+         */
+        private array $results;
+        /**
+         * CliResultFormatter constructor.
+         *
+         * @param array $results The results to format.
+         */
+        public function __construct(array $results)
+        {
+        }
+        /**
+         * Format the results.
+         *
+         * @param string $message_type The message type to format.
+         *
+         * @return void
+         *
+         * @throws \Exception If WP CLI Utils is not found.
+         */
+        public function format($message_type = 'debug')
+        {
+        }
+        /**
+         * Check if all results are successful.
+         *
+         * @return bool True if all results are successful, false otherwise.
+         */
+        public function is_success()
+        {
+        }
+    }
+    /**
+     * Class JsonResultFormatter
+     */
+    class JsonResultFormatter
+    {
+        /**
+         * The results to format.
+         *
+         * @var StepProcessorResult[]
+         */
+        private array $results;
+        /**
+         * JsonResultFormatter constructor.
+         *
+         * @param array $results The results to format.
+         */
+        public function __construct(array $results)
+        {
+        }
+        /**
+         * Format the results.
+         *
+         * @param string $message_type The message type to format.
+         *
+         * @return array
+         */
+        public function format($message_type = 'all')
+        {
+        }
+        /**
+         * Check if all results are successful.
+         *
+         * @return bool True if all results are successful, false otherwise.
+         */
+        public function is_success()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint\Schemas {
+    /**
+     * Class JsonSchema
+     */
+    class JsonSchema
+    {
+        use \Automattic\WooCommerce\Blueprint\UseWPFunctions;
+        /**
+         * The schema.
+         *
+         * @var object The schema.
+         */
+        protected $schema;
+        /**
+         * JsonSchema constructor.
+         *
+         * @param string $json_path The path to the JSON file.
+         *
+         * @throws \RuntimeException If the JSON file cannot be read.
+         * @throws \InvalidArgumentException If the JSON is invalid or missing 'steps' field.
+         */
+        public function __construct($json_path)
+        {
+        }
+        /**
+         * Returns the steps from the schema.
+         *
+         * @return array
+         */
+        public function get_steps()
+        {
+        }
+        /**
+         * Returns steps by name.
+         *
+         * @param string $name The name of the step.
+         *
+         * @return array
+         */
+        public function get_step($name)
+        {
+        }
+        /**
+         * Just makes sure that the JSON contains 'steps' field.
+         *
+         * We're going to validate 'steps' later because we can't know the exact schema
+         * ahead of time. 3rd party plugins can add their step processors.
+         *
+         * @return bool[
+         */
+        public function validate()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint {
+    /**
+     * A class returned by StepProcessor classes containing result of the process and messages.
+     */
+    class StepProcessorResult
+    {
+        const MESSAGE_TYPES = array('error', 'info', 'debug', 'warn');
+        /**
+         * Messages
+         *
+         * @var array $messages
+         */
+        private array $messages = array();
+        /**
+         * Indicate whether the process was success or not
+         *
+         * @var bool $success
+         */
+        private bool $success;
+        /**
+         * Step name
+         *
+         * @var string $step_name
+         */
+        private string $step_name;
+        /**
+         * Construct.
+         *
+         * @param bool   $success Indicate whether the process was success or not.
+         * @param string $step_name The name of the step.
+         */
+        public function __construct(bool $success, string $step_name)
+        {
+        }
+        /**
+         * Get messages.
+         *
+         * @param string $step_name The name of the step.
+         *
+         * @return void
+         */
+        public function set_step_name($step_name)
+        {
+        }
+        /**
+         * Create a new instance with $success = true.
+         *
+         * @param string $stp_name The name of the step.
+         *
+         * @return StepProcessorResult
+         */
+        public static function success(string $stp_name): self
+        {
+        }
+        /**
+         * Add a new message.
+         *
+         * @param string $message message.
+         * @param string $type one of error, info.
+         *
+         * @throws InvalidArgumentException When incorrect type is given.
+         * @return void
+         */
+        public function add_message(string $message, string $type = 'error')
+        {
+        }
+        /**
+         * Merge messages from another StepProcessorResult instance.
+         *
+         * @param StepProcessorResult $other The other StepProcessorResult instance.
+         *
+         * @return void
+         */
+        public function merge_messages(\Automattic\WooCommerce\Blueprint\StepProcessorResult $other)
+        {
+        }
+        /**
+         * Add a new error message.
+         *
+         * @param string $message message.
+         *
+         * @return void
+         */
+        public function add_error(string $message)
+        {
+        }
+        /**
+         * Add a new debug message.
+         *
+         * @param string $message message.
+         *
+         * @return void
+         */
+        public function add_debug(string $message)
+        {
+        }
+        /**
+         * Add a new info message.
+         *
+         * @param string $message message.
+         *
+         * @return void
+         */
+        public function add_info(string $message)
+        {
+        }
+        /**
+         * Add a new warn message.
+         *
+         * @param string $message message.
+         *
+         * @return void
+         */
+        public function add_warn(string $message)
+        {
+        }
+        /**
+         * Filter messages.
+         *
+         * @param string $type one of all, error, and info.
+         *
+         * @return array
+         */
+        public function get_messages(string $type = 'all'): array
+        {
+        }
+        /**
+         * Check to see if the result was success.
+         *
+         * @return bool
+         */
+        public function is_success(): bool
+        {
+        }
+        /**
+         * Get the name of the step.
+         *
+         * @return string The name of the step.
+         */
+        public function get_step_name()
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint\Steps {
+    /**
+     * Abstract class Step
+     *
+     * This class defines the structure for a Step that requires arguments to perform an action.
+     * You can think it as a function described in JSON format.
+     *
+     * A Step should also be capable of returning formatted data that can be imported later.
+     * Additionally, a Step can validate data.
+     */
+    abstract class Step
+    {
+        /**
+         * Meta values for the step.
+         *
+         * @var array $meta_values
+         */
+        protected array $meta_values = array();
+        /**
+         * Get the step name.
+         *
+         * @return string
+         */
+        abstract public static function get_step_name(): string;
+        /**
+         * Get the schema for this step.
+         *
+         * @param int $version The schema version.
+         *
+         * @return array
+         */
+        abstract public static function get_schema(int $version = 1): array;
+        /**
+         * Prepare the JSON array for this step.
+         *
+         * @return array The JSON array for the step.
+         */
+        abstract public function prepare_json_array(): array;
+        /**
+         * Set meta values for the step.
+         *
+         * @param array $meta_values The meta values.
+         *
+         * @return void
+         */
+        public function set_meta_values(array $meta_values)
+        {
+        }
+        /**
+         * Get the JSON array for the step.
+         *
+         * @return mixed
+         */
+        public function get_json_array()
+        {
+        }
+    }
+    /**
+     * Class ActivatePlugin
+     *
+     * @package Automattic\WooCommerce\Blueprint\Steps
+     */
+    class ActivatePlugin extends \Automattic\WooCommerce\Blueprint\Steps\Step
+    {
+        /**
+         * The name of the plugin to be activated.
+         *
+         * @var string The name of the plugin to be activated.
+         */
+        private string $plugin_name;
+        /**
+         * The path to the plugin file relative to the plugins directory.
+         *
+         * @var string  The path to the plugin file relative to the plugins directory.
+         */
+        private string $plugin_path;
+        /**
+         * ActivatePlugin constructor.
+         *
+         * @param string $plugin_path Path to the plugin file relative to the plugins directory.
+         * @param string $plugin_name The name of the plugin to be activated.
+         */
+        public function __construct($plugin_path, $plugin_name = '')
+        {
+        }
+        /**
+         * Returns the name of this step.
+         *
+         * @return string The step name.
+         */
+        public static function get_step_name(): string
+        {
+        }
+        /**
+         * Returns the schema for the JSON representation of this step.
+         *
+         * @param int $version The version of the schema to return.
+         * @return array The schema array.
+         */
+        public static function get_schema(int $version = 1): array
+        {
+        }
+        /**
+         * Prepares an associative array for JSON encoding.
+         *
+         * @return array Array of data to be encoded as JSON.
+         */
+        public function prepare_json_array(): array
+        {
+        }
+    }
+    /**
+     * Class ActivateTheme
+     *
+     * @package Automattic\WooCommerce\Blueprint\Steps
+     */
+    class ActivateTheme extends \Automattic\WooCommerce\Blueprint\Steps\Step
+    {
+        /**
+         * The name of the theme to be activated.
+         *
+         * @var string The name of the theme to be activated.
+         */
+        private string $theme_folder_name;
+        /**
+         * ActivateTheme constructor.
+         *
+         * @param string $theme_folder_name The name of the theme to be activated.
+         */
+        public function __construct($theme_folder_name)
+        {
+        }
+        /**
+         * Returns the name of this step.
+         *
+         * @return string The step name.
+         */
+        public static function get_step_name(): string
+        {
+        }
+        /**
+         * Returns the schema for the JSON representation of this step.
+         *
+         * @param int $version The version of the schema to return.
+         * @return array The schema array.
+         */
+        public static function get_schema(int $version = 1): array
+        {
+        }
+        /**
+         * Prepares an associative array for JSON encoding.
+         *
+         * @return array Array of data to be encoded as JSON.
+         */
+        public function prepare_json_array(): array
+        {
+        }
+    }
+    /**
+     * Class InstallPlugin
+     *
+     * This class represents a step in the installation process of a WooCommerce plugin.
+     * It includes methods to prepare the data for the plugin installation step and to provide
+     * the schema for the JSON representation of this step.
+     *
+     * @package Automattic\WooCommerce\Blueprint\Steps
+     */
+    class InstallPlugin extends \Automattic\WooCommerce\Blueprint\Steps\Step
+    {
+        /**
+         * The slug of the plugin to be installed.
+         *
+         * @var string The slug of the plugin to be installed.
+         */
+        private string $slug;
+        /**
+         * The resource URL or path to the plugin's ZIP file.
+         *
+         * @var string The resource URL or path to the plugin's ZIP file.
+         */
+        private string $resource;
+        /**
+         * Additional options for the plugin installation.
+         *
+         * @var array Additional options for the plugin installation.
+         */
+        private array $options;
+        /**
+         * InstallPlugin constructor.
+         *
+         * @param string $slug The slug of the plugin to be installed.
+         * @param string $resource The resource URL or path to the plugin's ZIP file.
+         * @param array  $options Additional options for the plugin installation.
+         */
+        // phpcs:ignore
+        public function __construct($slug, $resource, array $options = array())
+        {
+        }
+        /**
+         * Prepares an associative array for JSON encoding.
+         *
+         * @return array Array representing this installation step.
+         */
+        public function prepare_json_array(): array
+        {
+        }
+        /**
+         * Returns the schema for the JSON representation of this step.
+         *
+         * @param int $version The version of the schema to return.
+         * @return array The schema array.
+         */
+        public static function get_schema(int $version = 1): array
+        {
+        }
+        /**
+         * Returns the name of this step.
+         *
+         * @return string The step name.
+         */
+        public static function get_step_name(): string
+        {
+        }
+    }
+    /**
+     * Class InstallTheme
+     *
+     * This class represents a step in the installation process of a WooCommerce theme.
+     * It includes methods to prepare the data for the theme installation step and to provide
+     * the schema for the JSON representation of this step.
+     *
+     * @package Automattic\WooCommerce\Blueprint\Steps
+     */
+    class InstallTheme extends \Automattic\WooCommerce\Blueprint\Steps\Step
+    {
+        /**
+         * The slug of the theme to be installed.
+         *
+         * @var string The slug of the theme to be installed.
+         */
+        private string $slug;
+        /**
+         * The resource URL or path to the theme's ZIP file.
+         *
+         * @var string The resource URL or path to the theme's ZIP file.
+         */
+        private string $resource;
+        /**
+         * Additional options for the theme installation.
+         *
+         * @var array Additional options for the theme installation.
+         */
+        private array $options;
+        /**
+         * InstallTheme constructor.
+         *
+         * @param string $slug The slug of the theme to be installed.
+         * @param string $resource The resource URL or path to the theme's ZIP file.
+         * @param array  $options Additional options for the theme installation.
+         */
+        // phpcs:ignore
+        public function __construct($slug, $resource, array $options = array())
+        {
+        }
+        /**
+         * Prepares an associative array for JSON encoding.
+         *
+         * @return array The JSON-encoded array representing this installation step.
+         */
+        public function prepare_json_array(): array
+        {
+        }
+        /**
+         * Returns the schema for the JSON representation of this step.
+         *
+         * @param int $version The version of the schema to return.
+         * @return array The schema array.
+         */
+        public static function get_schema(int $version = 1): array
+        {
+        }
+        /**
+         * Returns the name of this step.
+         *
+         * @return string The step name.
+         */
+        public static function get_step_name(): string
+        {
+        }
+    }
+    /**
+     * Class RunSql
+     *
+     * @package Automattic\WooCommerce\Blueprint\Steps
+     */
+    class RunSql extends \Automattic\WooCommerce\Blueprint\Steps\Step
+    {
+        /**
+         * Sql code to run.
+         *
+         * @var string
+         */
+        protected string $sql = '';
+        /**
+         * Name of the sql file.
+         *
+         * @var string
+         */
+        protected string $name = 'schema.sql';
+        /**
+         * Constructor.
+         *
+         * @param string $sql Sql code to run.
+         * @param string $name Name of the sql file.
+         */
+        public function __construct(string $sql, $name = 'schema.sql')
+        {
+        }
+        /**
+         * Returns the name of this step.
+         *
+         * @return string The step name.
+         */
+        public static function get_step_name(): string
+        {
+        }
+        /**
+         * Returns the schema for the JSON representation of this step.
+         *
+         * @param int $version The version of the schema to return.
+         * @return array The schema array.
+         */
+        public static function get_schema(int $version = 1): array
+        {
+        }
+        /**
+         * Prepares an associative array for JSON encoding.
+         *
+         * @return array Array of data to be encoded as JSON.
+         */
+        public function prepare_json_array(): array
+        {
+        }
+    }
+    /**
+     * Set site options step.
+     */
+    class SetSiteOptions extends \Automattic\WooCommerce\Blueprint\Steps\Step
+    {
+        /**
+         * Site options.
+         *
+         * @var array site options
+         */
+        private array $options;
+        /**
+         * Constructor.
+         *
+         * @param array $options site options.
+         */
+        public function __construct(array $options = array())
+        {
+        }
+        /**
+         * Get the name of the step.
+         *
+         * @return string step name
+         */
+        public static function get_step_name(): string
+        {
+        }
+        /**
+         * Get the schema for the step.
+         *
+         * @param int $version schema version.
+         *
+         * @return array schema for the step
+         */
+        public static function get_schema(int $version = 1): array
+        {
+        }
+        /**
+         * Prepare the step for JSON serialization.
+         *
+         * @return array array representation of the step
+         */
+        public function prepare_json_array(): array
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\Blueprint {
+    /**
+     * Utility functions.
+     */
+    class Util
+    {
+        /**
+         * Ensure that the given path is a valid path within the WP_CONTENT_DIR.
+         *
+         * @param string $path The path to be validated.
+         *
+         * @return string
+         * @throws \InvalidArgumentException If the path is invalid.
+         */
+        public static function ensure_wp_content_path($path)
+        {
+        }
+        /**
+         * Convert an array to an insert SQL query.
+         *
+         * @param array  $row Array row with key and value.
+         * @param string $table Name of the table.
+         * @param string $type One of insert, insert ignore, replace into.
+         *
+         * @return false|string
+         */
+        public static function array_to_insert_sql($row, $table, $type = 'insert ignore')
+        {
+        }
+        /**
+         * Convert a string from snake_case to camelCase.
+         *
+         * @param string $string_to_convert The string to be converted.
+         *
+         * @return string
+         */
+        public static function snake_to_camel($string_to_convert)
+        {
+        }
+        /**
+         * Flatten an array.
+         *
+         * @param array $array_to_flatten The array to be flattened.
+         *
+         * @return \RecursiveIteratorIterator
+         */
+        public static function array_flatten($array_to_flatten)
+        {
+        }
+        /**
+         * Convert a string from camelCase to snake_case.
+         *
+         * @param string $input The string to be converted.
+         *
+         * @return string
+         */
+        public static function camel_to_snake($input)
+        {
+        }
+        /**
+         * Index an array using a callback function.
+         *
+         * @param array    $array The array to be indexed.
+         * @param callable $callback The callback function to be called for each element.
+         *
+         * @return array
+         */
+        // phpcs:ignore
+        public static function index_array($array, $callback)
+        {
+        }
+        /**
+         * Check to see if given string is a valid WordPress plugin slug.
+         *
+         * @param string $slug The slug to be validated.
+         *
+         * @return bool
+         */
+        public static function is_valid_wp_plugin_slug($slug)
+        {
+        }
+        /**
+         * Recursively delete a directory.
+         *
+         * @param string $dir_path The path to the directory.
+         *
+         * @return void
+         * @throws \InvalidArgumentException If $dir_path is not a directory.
+         */
+        public static function delete_dir($dir_path)
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\EmailEditor\Engine\Patterns {
     /**
      * Abstract class for block patterns.
      */
@@ -8356,7 +10774,7 @@ namespace MailPoet\EmailEditor\Engine\Patterns {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
+namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
     /**
      * Class based on WP_HTML_Tag_Processor which is extended to replace
      * tokens with their values in the email content.
@@ -8531,7 +10949,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          * @param Personalization_Tag $tag The personalization tag to register.
          * @return void
          */
-        public function register(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag $tag): void
+        public function register(\Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag $tag): void
         {
         }
         /**
@@ -8541,7 +10959,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
          * @param string $token The token of the personalization tag.
          * @return Personalization_Tag|null The array data or null if not found.
          */
-        public function get_by_token(string $token): ?\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag
+        public function get_by_token(string $token): ?\Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag
         {
         }
         /**
@@ -8554,7 +10972,7 @@ namespace MailPoet\EmailEditor\Engine\PersonalizationTags {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
+namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
     /**
      * This class provides functionality to render inner blocks of a block that supports reduced flex layout.
      */
@@ -8567,7 +10985,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        public function render_inner_blocks_in_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        public function render_inner_blocks_in_layout(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -8578,7 +10996,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
          * @param float               $flex_gap Flex gap.
          * @return array
          */
-        private function compute_widths_for_flex_layout(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, float $flex_gap): array
+        private function compute_widths_for_flex_layout(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, float $flex_gap): array
         {
         }
         /**
@@ -8597,7 +11015,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
+namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
     /**
      * Interface for postprocessors.
      */
@@ -8612,9 +11030,91 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
         public function postprocess(string $html): string;
     }
     /**
+     * Postprocessor that handles border-style declarations to ensure consistent rendering across email clients.
+     *
+     * This postprocessor addresses two main issues:
+     *
+     * 1. Normalize border-style declarations:
+     *    When using a uniform border-style declaration with non-uniform border-widths,
+     *    some email clients (like Outlook) will incorrectly display borders on all sides
+     *    even when the width is 0. For example:
+     *    `border-color: #000000; border-style: solid; border-width: 0 1px 0 0;`
+     *    would render borders on all sides in Outlook. This postprocessor normalizes
+     *    the border-style declarations to only set styles for sides where border-width > 0:
+     *    `border-color: currentColor; border-width: 0 1px 0 0; border-right-style: solid;`
+     *
+     * 2. Add fallback border styles:
+     *    The block editor provides a default solid style for borders that have a width
+     *    but no style specified. This postprocessor adds the same `border-style: solid`
+     *    fallback to ensure the email rendering matches what users see in the editor.
+     *
+     * The postprocessor handles all border cases including:
+     * - Shorthand border declarations (border: 1px solid black)
+     * - Individual side declarations (border-top, border-right, etc.)
+     * - Individual property declarations (border-width, border-style, etc.)
+     * - Mixed combinations of the above
+     */
+    class Border_Style_Postprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor
+    {
+        /**
+         * Postprocess the HTML.
+         *
+         * @param string $html HTML to postprocess.
+         * @return string
+         */
+        public function postprocess(string $html): string
+        {
+        }
+        /**
+         * Processes a style string to ensure border-style is set for borders with width > 0 and removes extra border-style properties.
+         *
+         * @param string $style The style attribute value.
+         * @return string
+         */
+        private function process_style(string $style): string
+        {
+        }
+        /**
+         * Expands shorthand border width and style values into individual properties.
+         *
+         * @param string $value The shorthand border value.
+         * @return array<string, string> The expanded border values.
+         */
+        private function expand_shorthand_value(string $value): array
+        {
+        }
+        /**
+         * Extracts the width from a shorthand value.
+         *
+         * @param string $value The shorthand value.
+         * @return string|null The extracted width or null if no width is found.
+         */
+        private function extract_width_from_shorthand_value(string $value): ?string
+        {
+        }
+        /**
+         * Extracts the style from a shorthand value.
+         *
+         * @param string $value The shorthand value.
+         * @return string|null The extracted style or null if no style is found.
+         */
+        private function extract_style_from_shorthand_value(string $value): ?string
+        {
+        }
+        /**
+         * Checks if a border width is nonzero.
+         *
+         * @param string $width The width value.
+         * @return bool
+         */
+        private function is_nonzero_width(string $width): bool
+        {
+        }
+    }
+    /**
      * This postprocessor replaces <mark> tags with <span> tags because mark tags are not supported across all email clients
      */
-    class Highlighting_Postprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor
+    class Highlighting_Postprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor
     {
         /**
          * Postprocess the HTML.
@@ -8631,20 +11131,20 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
      * For example when spacing is set from a preset the inline styles contain var(--wp--preset--spacing--10), var(--wp--preset--spacing--20) etc.
      * This postprocessor uses variables from theme.json and replaces the CSS variables with their values in final email HTML.
      */
-    class Variables_Postprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor
+    class Variables_Postprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor
     {
         /**
          * Instance of Theme_Controller.
          *
          * @var Theme_Controller Theme controller.
          */
-        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller;
         /**
          * Constructor.
          *
          * @param Theme_Controller $theme_controller Theme controller.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller)
         {
         }
         /**
@@ -8658,7 +11158,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
+namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
     /**
      * Interface Preprocessor
      */
@@ -8678,7 +11178,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
      * This class sets the width of the blocks based on the layout width or column count.
      * The final width in pixels is stored in the email_attrs array because we would like to avoid changing the original attributes.
      */
-    class Blocks_Width_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    class Blocks_Width_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
     {
         /**
          * Method to preprocess the content before rendering
@@ -8725,7 +11225,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
     /**
      * Class Cleanup_Preprocessor
      */
-    class Cleanup_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    class Cleanup_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
     {
         /**
          * Method to preprocess the content before rendering
@@ -8740,10 +11240,58 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
         }
     }
     /**
+     * Class Quote_Preprocessor
+     */
+    class Quote_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    {
+        /**
+         * Method to preprocess the content before rendering
+         *
+         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @return array
+         */
+        public function preprocess(array $parsed_blocks, array $layout, array $styles): array
+        {
+        }
+        /**
+         * Recursively process blocks to handle quote block alignment and typography
+         *
+         * @param array $blocks The blocks to process.
+         * @param array $styles The styles from the theme.
+         * @return array The processed blocks.
+         */
+        private function process_blocks(array $blocks, array $styles): array
+        {
+        }
+        /**
+         * Apply text alignment to child blocks that don't have their own text alignment set
+         *
+         * @param array       $blocks The blocks to process.
+         * @param string|null $text_align The text alignment to apply.
+         * @return array The processed blocks.
+         */
+        private function apply_alignment_to_children(array $blocks, ?string $text_align = null): array
+        {
+        }
+        /**
+         * Apply typography styles to immediate paragraph children
+         *
+         * @param array $blocks The blocks to process.
+         * @param array $quote_typography The typography styles from the quote block.
+         * @param array $styles The styles from the theme.
+         * @return array The processed blocks.
+         */
+        private function apply_typography_to_children(array $blocks, array $quote_typography, array $styles): array
+        {
+        }
+    }
+    /**
      * This preprocessor is responsible for setting default spacing values for blocks.
      * In the early development phase, we are setting only margin-top for blocks that are not first or last in the columns block.
      */
-    class Spacing_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    class Spacing_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
     {
         /**
          * Preprocesses the parsed blocks.
@@ -8771,7 +11319,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
     /**
      * This preprocessor is responsible for setting default typography values for blocks.
      */
-    class Typography_Preprocessor implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    class Typography_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
     {
         /**
          * List of styles that should be copied from parent to children.
@@ -8790,7 +11338,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
          *
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller)
         {
         }
         /**
@@ -8843,7 +11391,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
+namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
     /**
      * Interface Block_Renderer
      */
@@ -8857,7 +11405,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string;
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string;
     }
     /**
      * Class Blocks_Parser
@@ -8903,7 +11451,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param string         $block_name Block name.
          * @param Block_Renderer $renderer Block renderer.
          */
-        public function add_block_renderer(string $block_name, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
+        public function add_block_renderer(string $block_name, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
         {
         }
         /**
@@ -8911,7 +11459,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @param Block_Renderer $renderer Fallback renderer.
          */
-        public function add_fallback_renderer(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
+        public function add_fallback_renderer(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
         {
         }
         /**
@@ -8929,7 +11477,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param string $block_name Block name.
          * @return Block_Renderer|null
          */
-        public function get_block_renderer(string $block_name): ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+        public function get_block_renderer(string $block_name): ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
         {
         }
         /**
@@ -8937,7 +11485,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @return Block_Renderer|null
          */
-        public function get_fallback_renderer(): ?\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+        public function get_fallback_renderer(): ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
         {
         }
         /**
@@ -8965,32 +11513,56 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @var Blocks_Registry
          */
-        private \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry;
         /**
          * Process manager
          *
          * @var Process_Manager
          */
-        private \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $process_manager;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $process_manager;
         /**
          * Settings controller
          *
          * @var Settings_Controller
          */
-        private \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller;
         /**
          * Theme controller
          *
          * @var Theme_Controller
          */
-        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller;
         const CONTENT_STYLES_FILE = 'content.css';
         /**
          * CSS inliner
          *
          * @var Css_Inliner
          */
-        private \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
+        /**
+         * Property to store the backup of the current template content.
+         *
+         * @var string|null
+         */
+        private $backup_template_content;
+        /**
+         * Property to store the backup of the current template ID.
+         *
+         * @var int|null
+         */
+        private $backup_template_id;
+        /**
+         * Property to store the backup of the current post.
+         *
+         * @var WP_Post|null
+         */
+        private $backup_post;
+        /**
+         * Property to store the backup of the current query.
+         *
+         * @var \WP_Query|null
+         */
+        private $backup_query;
         /**
          * Content_Renderer constructor.
          *
@@ -9000,7 +11572,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param Css_Inliner         $css_inliner Css inliner.
          * @param Theme_Controller    $theme_controller Theme controller.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $preprocess_manager, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $preprocess_manager, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller)
         {
         }
         /**
@@ -9052,11 +11624,11 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
         /**
          * Set template globals
          *
-         * @param WP_Post           $post Post object.
+         * @param WP_Post           $email_post Post object.
          * @param WP_Block_Template $template Block template.
          * @return void
          */
-        private function set_template_globals(\WP_Post $post, \WP_Block_Template $template)
+        private function set_template_globals(\WP_Post $email_post, \WP_Block_Template $template)
         {
         }
         /**
@@ -9102,10 +11674,12 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param Blocks_Width_Preprocessor  $blocks_width_preprocessor Blocks width preprocessor.
          * @param Typography_Preprocessor    $typography_preprocessor Typography preprocessor.
          * @param Spacing_Preprocessor       $spacing_preprocessor Spacing preprocessor.
+         * @param Quote_Preprocessor         $quote_preprocessor Quote preprocessor.
          * @param Highlighting_Postprocessor $highlighting_postprocessor Highlighting postprocessor.
          * @param Variables_Postprocessor    $variables_postprocessor Variables postprocessor.
+         * @param Border_Style_Postprocessor $border_style_postprocessor Border style postprocessor.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Cleanup_Preprocessor $cleanup_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Blocks_Width_Preprocessor $blocks_width_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Typography_Preprocessor $typography_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Spacing_Preprocessor $spacing_preprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Highlighting_Postprocessor $highlighting_postprocessor, \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Variables_Postprocessor $variables_postprocessor)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Cleanup_Preprocessor $cleanup_preprocessor, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Blocks_Width_Preprocessor $blocks_width_preprocessor, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Typography_Preprocessor $typography_preprocessor, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Spacing_Preprocessor $spacing_preprocessor, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Quote_Preprocessor $quote_preprocessor, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Highlighting_Postprocessor $highlighting_postprocessor, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Variables_Postprocessor $variables_postprocessor, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Border_Style_Postprocessor $border_style_postprocessor)
         {
         }
         /**
@@ -9133,7 +11707,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @param Preprocessor $preprocessor Preprocessor.
          */
-        public function register_preprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor $preprocessor): void
+        public function register_preprocessor(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor $preprocessor): void
         {
         }
         /**
@@ -9141,12 +11715,12 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer {
          *
          * @param Postprocessor $postprocessor Postprocessor.
          */
-        public function register_postprocessor(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor $postprocessor): void
+        public function register_postprocessor(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Postprocessor $postprocessor): void
         {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine\Renderer {
+namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
     /**
      * Class Renderer
      */
@@ -9157,25 +11731,25 @@ namespace MailPoet\EmailEditor\Engine\Renderer {
          *
          * @var Theme_Controller
          */
-        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller;
         /**
          * Content renderer
          *
          * @var Content_Renderer
          */
-        private \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer;
         /**
          * Templates
          *
          * @var Templates
          */
-        private \MailPoet\EmailEditor\Engine\Templates\Templates $templates;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates;
         /**
          * Css inliner
          *
          * @var Css_Inliner
          */
-        private \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
         const TEMPLATE_FILE = 'template-canvas.php';
         const TEMPLATE_STYLES_FILE = 'template-canvas.css';
         /**
@@ -9186,7 +11760,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer {
          * @param Css_Inliner      $css_inliner CSS Inliner.
          * @param Theme_Controller $theme_controller Theme controller.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer, \MailPoet\EmailEditor\Engine\Templates\Templates $templates, \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller)
         {
         }
         /**
@@ -9247,7 +11821,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer {
         public function render(): string;
     }
 }
-namespace MailPoet\EmailEditor\Engine\Templates {
+namespace Automattic\WooCommerce\EmailEditor\Engine\Templates {
     /**
      * The class represents a template
      */
@@ -9391,17 +11965,17 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          * @param Template $template The template to register.
          * @return void
          */
-        public function register(\MailPoet\EmailEditor\Engine\Templates\Template $template): void
+        public function register(\Automattic\WooCommerce\EmailEditor\Engine\Templates\Template $template): void
         {
         }
         /**
          * Retrieve a template by its name.
-         * Example: get_by_name( 'mailpoet//email-general' ) will return the instance of Template with identical name.
+         * Example: get_by_name( 'woocommerce//email-general' ) will return the instance of Template with identical name.
          *
          * @param string $name The name of the template.
          * @return Template|null The template object or null if not found.
          */
-        public function get_by_name(string $name): ?\MailPoet\EmailEditor\Engine\Templates\Template
+        public function get_by_name(string $name): ?\Automattic\WooCommerce\EmailEditor\Engine\Templates\Template
         {
         }
         /**
@@ -9411,7 +11985,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          * @param string $slug The slug of the template.
          * @return Template|null The template object or null if not found.
          */
-        public function get_by_slug(string $slug): ?\MailPoet\EmailEditor\Engine\Templates\Template
+        public function get_by_slug(string $slug): ?\Automattic\WooCommerce\EmailEditor\Engine\Templates\Template
         {
         }
         /**
@@ -9433,7 +12007,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @var string $plugin_slug
          */
-        private string $template_prefix = 'mailpoet';
+        private string $template_prefix = 'woocommerce';
         /**
          * The post type.
          *
@@ -9451,13 +12025,13 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @var Templates_Registry $templates_registry
          */
-        private \MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates_Registry $templates_registry;
         /**
          * Constructor of the class.
          *
          * @param Templates_Registry $templates_registry The templates registry.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates_Registry $templates_registry)
         {
         }
         /**
@@ -9482,7 +12056,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
          *
          * @param Templates_Registry $templates_registry The templates registry.
          */
-        public function register_templates(\MailPoet\EmailEditor\Engine\Templates\Templates_Registry $templates_registry): \MailPoet\EmailEditor\Engine\Templates\Templates_Registry
+        public function register_templates(\Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates_Registry $templates_registry): \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates_Registry
         {
         }
         /**
@@ -9522,7 +12096,7 @@ namespace MailPoet\EmailEditor\Engine\Templates {
         }
     }
 }
-namespace MailPoet\EmailEditor\Engine {
+namespace Automattic\WooCommerce\EmailEditor\Engine {
     /**
      * This class is responsible checking the dependencies of the email editor.
      */
@@ -9555,13 +12129,13 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @var Personalization_Tags_Registry
          */
-        private \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
+        private \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
         /**
          * Email_Api_Controller constructor with all dependencies.
          *
          * @param Personalization_Tags_Registry $personalization_tags_registry Personalization tags registry.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry)
         {
         }
         /**
@@ -9615,37 +12189,37 @@ namespace MailPoet\EmailEditor\Engine {
      */
     class Email_Editor
     {
-        public const MAILPOET_EMAIL_META_THEME_TYPE = 'mailpoet_email_theme';
+        public const WOOCOMMERCE_EMAIL_META_THEME_TYPE = 'woocommerce_email_theme';
         /**
          * Property for the email API controller.
          *
          * @var Email_Api_Controller Email API controller.
          */
-        private \MailPoet\EmailEditor\Engine\Email_Api_Controller $email_api_controller;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Email_Api_Controller $email_api_controller;
         /**
          * Property for the templates.
          *
          * @var Templates Templates.
          */
-        private \MailPoet\EmailEditor\Engine\Templates\Templates $templates;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates;
         /**
          * Property for the patterns.
          *
          * @var Patterns Patterns.
          */
-        private \MailPoet\EmailEditor\Engine\Patterns\Patterns $patterns;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Patterns\Patterns $patterns;
         /**
          * Property for the send preview email controller.
          *
          * @var Send_Preview_Email Send Preview controller.
          */
-        private \MailPoet\EmailEditor\Engine\Send_Preview_Email $send_preview_email;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Send_Preview_Email $send_preview_email;
         /**
          * Property for Personalization_Tags_Controller that allows initializing personalization tags.
          *
          * @var Personalization_Tags_Registry Personalization tags registry.
          */
-        private \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
+        private \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
         /**
          * Constructor.
          *
@@ -9655,7 +12229,7 @@ namespace MailPoet\EmailEditor\Engine {
          * @param Send_Preview_Email            $send_preview_email Preview email controller.
          * @param Personalization_Tags_Registry $personalization_tags_controller Personalization tags registry that allows initializing personalization tags.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Email_Api_Controller $email_api_controller, \MailPoet\EmailEditor\Engine\Templates\Templates $templates, \MailPoet\EmailEditor\Engine\Patterns\Patterns $patterns, \MailPoet\EmailEditor\Engine\Send_Preview_Email $send_preview_email, \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Api_Controller $email_api_controller, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Patterns\Patterns $patterns, \Automattic\WooCommerce\EmailEditor\Engine\Send_Preview_Email $send_preview_email, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_controller)
         {
         }
         /**
@@ -9684,7 +12258,7 @@ namespace MailPoet\EmailEditor\Engine {
         }
         /**
          * Register all custom post types that should be edited via the email editor
-         * The post types are added via mailpoet_email_editor_post_types filter.
+         * The post types are added via woocommerce_email_editor_post_types filter.
          *
          * @return void
          */
@@ -9693,7 +12267,7 @@ namespace MailPoet\EmailEditor\Engine {
         }
         /**
          * Register all personalization tags registered via
-         * the mailpoet_email_editor_register_personalization_tags filter.
+         * the woocommerce_email_editor_register_personalization_tags filter.
          *
          * @return void
          */
@@ -9793,7 +12367,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @var Personalization_Tags_Registry
          */
-        private \MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $tags_registry;
+        private \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $tags_registry;
         /**
          * Context for personalization tags.
          *
@@ -9815,7 +12389,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @param Personalization_Tags_Registry $tags_registry Personalization tags registry.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $tags_registry)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $tags_registry)
         {
         }
         /**
@@ -9833,6 +12407,18 @@ namespace MailPoet\EmailEditor\Engine {
          * @return void
          */
         public function set_context(array $context)
+        {
+        }
+        /**
+         * Get the current context.
+         *
+         * The `context` is an associative array containing recipient-specific or
+         * campaign-specific data. This data is used to resolve personalization tags
+         * and provide input for tag callbacks during email content processing.
+         *
+         * @return array<string, mixed> The current context.
+         */
+        public function get_context(): array
         {
         }
         /**
@@ -9872,7 +12458,7 @@ namespace MailPoet\EmailEditor\Engine {
      * This class is responsible for handling the functionality to send preview emails.
      * It is part of the email editor integrations utilities.
      *
-     * @package MailPoet\EmailEditor\Integrations\Utils
+     * @package Automattic\WooCommerce\EmailEditor\Integrations\Utils
      */
     class Send_Preview_Email
     {
@@ -9881,20 +12467,20 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @var Renderer $renderer
          */
-        private \MailPoet\EmailEditor\Engine\Renderer\Renderer $renderer;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer $renderer;
         /**
          * Instance of the Personalizer class used for rendering personalization tags.
          *
          * @var Personalizer $personalizer
          */
-        private \MailPoet\EmailEditor\Engine\Personalizer $personalizer;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Personalizer $personalizer;
         /**
          * Send_Preview_Email constructor.
          *
          * @param Renderer     $renderer renderer instance.
          * @param Personalizer $personalizer personalizer instance.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\Renderer $renderer, \MailPoet\EmailEditor\Engine\Personalizer $personalizer)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\Renderer $renderer, \Automattic\WooCommerce\EmailEditor\Engine\Personalizer $personalizer)
         {
         }
         /**
@@ -9972,14 +12558,14 @@ namespace MailPoet\EmailEditor\Engine {
      */
     class Settings_Controller
     {
-        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/paragraph', 'core/heading', 'core/column', 'core/columns', 'core/image', 'core/list', 'core/list-item', 'core/group', 'core/spacer');
+        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer');
         const DEFAULT_SETTINGS = array('enableCustomUnits' => array('px', '%'));
         /**
          * Theme controller.
          *
          * @var Theme_Controller
          */
-        private \MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller;
+        private \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller;
         /**
          * Assets for iframe editor (component styles, scripts, etc.)
          *
@@ -9991,7 +12577,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @param Theme_Controller $theme_controller Theme controller.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Theme_Controller $theme_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller)
         {
         }
         /**
@@ -10113,7 +12699,7 @@ namespace MailPoet\EmailEditor\Engine {
          *
          * @var User_Theme
          */
-        private \MailPoet\EmailEditor\Engine\User_Theme $user_theme;
+        private \Automattic\WooCommerce\EmailEditor\Engine\User_Theme $user_theme;
         /**
          * Theme_Controller constructor.
          */
@@ -10242,7 +12828,7 @@ namespace MailPoet\EmailEditor\Engine {
      */
     class User_Theme
     {
-        private const USER_THEME_POST_NAME = 'wp-global-styles-mailpoet-email';
+        private const USER_THEME_POST_NAME = 'wp-global-styles-woocommerce-email';
         private const INITIAL_THEME_DATA = array('version' => 3, 'isGlobalStylesUserThemeJSON' => true);
         /**
          * Core theme loaded from the WordPress core.
@@ -10279,11 +12865,11 @@ namespace MailPoet\EmailEditor\Engine {
         }
     }
 }
-namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
+namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     /**
      * Shared functionality for block renderers.
      */
-    abstract class Abstract_Block_Renderer implements \MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+    abstract class Abstract_Block_Renderer implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
     {
         /**
          * Wrapper for wp_style_engine_get_styles which ensures all values are returned.
@@ -10322,7 +12908,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller The settings controller.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10333,7 +12919,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller The settings controller.
          * @return string
          */
-        abstract protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string;
+        abstract protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string;
     }
     /**
      * Renders a button block.
@@ -10341,7 +12927,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
      * @see https://www.activecampaign.com/blog/email-buttons
      * @see https://documentation.mjml.io/#mj-button
      */
-    class Button extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Button extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Get styles for the wrapper element.
@@ -10369,7 +12955,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10380,14 +12966,14 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
     /**
      * Renders a buttons block.
      */
-    class Buttons extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Buttons extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Provides the Flex_Layout_Renderer instance.
@@ -10400,7 +12986,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          *
          * @param Flex_Layout_Renderer $flex_layout_renderer Flex layout renderer.
          */
-        public function __construct(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout\Flex_Layout_Renderer $flex_layout_renderer)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Layout\Flex_Layout_Renderer $flex_layout_renderer)
         {
         }
         /**
@@ -10411,14 +12997,14 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
     /**
      * Renders a column block.
      */
-    class Column extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Column extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Override this method to disable spacing (block gap) for columns.
@@ -10438,7 +13024,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10448,14 +13034,14 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
     /**
      * Renders a columns block.
      */
-    class Columns extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Columns extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Override this method to disable spacing (block gap) for columns.
@@ -10465,7 +13051,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10475,7 +13061,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function getBlockWrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function getBlockWrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
@@ -10488,7 +13074,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
      *
      * We need to find a better abstraction/architecture for this.
      */
-    class Fallback extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Fallback extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Renders the block content.
@@ -10498,14 +13084,14 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
     /**
      * Renders a group block.
      */
-    class Group extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Group extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Renders the block content.
@@ -10515,7 +13101,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10525,14 +13111,14 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function get_block_wrapper(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
     /**
      * Renders an image block.
      */
-    class Image extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Image extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Renders the block content.
@@ -10541,7 +13127,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10560,7 +13146,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string              $image_url Image URL.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function add_image_size_when_missing(array $parsed_block, string $image_url, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): array
+        private function add_image_size_when_missing(array $parsed_block, string $image_url, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): array
         {
         }
         /**
@@ -10580,7 +13166,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        private function addImageDimensions($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function addImageDimensions($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10590,7 +13176,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @param array               $parsed_block Parsed block.
          */
-        private function get_caption_styles(\MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, array $parsed_block): string
+        private function get_caption_styles(\Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, array $parsed_block): string
         {
         }
         /**
@@ -10600,7 +13186,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @param string|null         $caption Caption.
          */
-        private function get_block_wrapper(array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller, ?string $caption): string
+        private function get_block_wrapper(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, ?string $caption): string
         {
         }
         /**
@@ -10645,7 +13231,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
      * Renders a list block.
      * We have to avoid using keyword `List`
      */
-    class List_Block extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class List_Block extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Renders the block content.
@@ -10655,14 +13241,14 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
     /**
      * Renders a list item block.
      */
-    class List_Item extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class List_Item extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Override this method to disable spacing (block gap) for list items.
@@ -10681,14 +13267,51 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Settings_Controller $settings_controller Settings controller.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        {
+        }
+    }
+    /**
+     * Renders a quote block.
+     */
+    class Quote extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        {
+        }
+        /**
+         * Returns the citation content with a wrapper.
+         *
+         * @param string $citation_content The citation text.
+         * @param array  $parsed_block Parsed block.
+         * @return string The wrapped citation HTML or empty string if no citation.
+         */
+        private function get_citation_wrapper(string $citation_content, array $parsed_block): string
+        {
+        }
+        /**
+         * Returns the block wrapper.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         */
+        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
     }
     /**
      * This renderer covers both core/paragraph and core/heading blocks
      */
-    class Text extends \MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    class Text extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
          * Renders the block content.
@@ -10697,7 +13320,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param array               $parsed_block Parsed block.
          * @param Settings_Controller $settings_controller Settings controller.
          */
-        protected function render_content(string $block_content, array $parsed_block, \MailPoet\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
         {
         }
         /**
@@ -10713,7 +13336,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
     }
 }
-namespace MailPoet\EmailEditor\Integrations\Core {
+namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
     /**
      * Initializes the core blocks renderers.
      */
@@ -10730,7 +13353,7 @@ namespace MailPoet\EmailEditor\Integrations\Core {
          *
          * @param Blocks_Registry $blocks_registry Blocks registry.
          */
-        public function register_core_blocks_renderers(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry): void
+        public function register_core_blocks_renderers(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry): void
         {
         }
         /**
@@ -10751,7 +13374,7 @@ namespace MailPoet\EmailEditor\Integrations\Core {
         }
     }
 }
-namespace MailPoet\EmailEditor\Integrations\Utils {
+namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
     /**
      * This class should guarantee that our work with the DOMDocument is unified and safe.
      */
@@ -10823,43 +13446,7 @@ namespace MailPoet\EmailEditor\Integrations\Utils {
         }
     }
 }
-namespace MailPoet\EmailEditor {
-    /**
-     * Main package class.
-     */
-    class Package
-    {
-        /**
-         * Version.
-         *
-         * @var string
-         */
-        const VERSION = '0.1.0';
-        /**
-         * Init the package.
-         */
-        public static function init()
-        {
-        }
-        /**
-         * Return the version of the package.
-         *
-         * @return string
-         */
-        public static function get_version()
-        {
-        }
-        /**
-         * Return the path to the package.
-         *
-         * @return string
-         */
-        public static function get_path()
-        {
-        }
-    }
-}
-namespace MailPoet\EmailEditor\Validator {
+namespace Automattic\WooCommerce\EmailEditor\Validator {
     /**
      * Represents abastract schema.
      */
@@ -10993,12 +13580,12 @@ namespace MailPoet\EmailEditor\Validator {
         }
     }
 }
-namespace MailPoet\EmailEditor\Validator\Schema {
+namespace Automattic\WooCommerce\EmailEditor\Validator\Schema {
     /**
      * Represents a schema that allows a value to match any of the given schemas.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#oneof-and-anyof
      */
-    class Any_Of_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class Any_Of_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11031,7 +13618,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema for an array.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#arrays
      */
-    class Array_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class Array_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11044,7 +13631,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param Schema $schema Schema for the items in the array.
          */
-        public function items(\MailPoet\EmailEditor\Validator\Schema $schema): self
+        public function items(\Automattic\WooCommerce\EmailEditor\Validator\Schema $schema): self
         {
         }
         /**
@@ -11074,7 +13661,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema for a boolean.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#primitive-types
      */
-    class Boolean_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class Boolean_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11087,7 +13674,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema for an integer.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#numbers
      */
-    class Integer_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class Integer_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11140,7 +13727,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema for a null.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#primitive-types
      */
-    class Null_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class Null_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11153,7 +13740,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema for a number.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#numbers
      */
-    class Number_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class Number_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11206,7 +13793,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema for an object.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#objects
      */
-    class Object_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class Object_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11227,7 +13814,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
          *
          * @param Schema $schema Schema of the additional properties.
          */
-        public function additionalProperties(\MailPoet\EmailEditor\Validator\Schema $schema): self
+        public function additionalProperties(\Automattic\WooCommerce\EmailEditor\Validator\Schema $schema): self
         {
         }
         /**
@@ -11266,7 +13853,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema that allows a value to match one of the given schemas.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#oneof-and-anyof
      */
-    class One_Of_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class One_Of_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11299,7 +13886,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
      * Represents a schema for a string.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#strings
      */
-    class String_Schema extends \MailPoet\EmailEditor\Validator\Schema
+    class String_Schema extends \Automattic\WooCommerce\EmailEditor\Validator\Schema
     {
         /**
          * Schema definition.
@@ -11370,7 +13957,7 @@ namespace MailPoet\EmailEditor\Validator\Schema {
         }
     }
 }
-namespace MailPoet\EmailEditor\Validator {
+namespace Automattic\WooCommerce\EmailEditor\Validator {
     /**
      * Builder for creating schema objects.
      * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/
@@ -11380,31 +13967,31 @@ namespace MailPoet\EmailEditor\Validator {
         /**
          * Creates a schema for a string.
          */
-        public static function string(): \MailPoet\EmailEditor\Validator\Schema\String_Schema
+        public static function string(): \Automattic\WooCommerce\EmailEditor\Validator\Schema\String_Schema
         {
         }
         /**
          * Creates a schema for a number.
          */
-        public static function number(): \MailPoet\EmailEditor\Validator\Schema\Number_Schema
+        public static function number(): \Automattic\WooCommerce\EmailEditor\Validator\Schema\Number_Schema
         {
         }
         /**
          * Creates a schema for an integer.
          */
-        public static function integer(): \MailPoet\EmailEditor\Validator\Schema\Integer_Schema
+        public static function integer(): \Automattic\WooCommerce\EmailEditor\Validator\Schema\Integer_Schema
         {
         }
         /**
          * Creates a schema for a boolean.
          */
-        public static function boolean(): \MailPoet\EmailEditor\Validator\Schema\Boolean_Schema
+        public static function boolean(): \Automattic\WooCommerce\EmailEditor\Validator\Schema\Boolean_Schema
         {
         }
         /**
          * Creates a schema for null.
          */
-        public static function null(): \MailPoet\EmailEditor\Validator\Schema\Null_Schema
+        public static function null(): \Automattic\WooCommerce\EmailEditor\Validator\Schema\Null_Schema
         {
         }
         /**
@@ -11412,7 +13999,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param Schema|null $items Schema of the items in the array.
          */
-        public static function array(?\MailPoet\EmailEditor\Validator\Schema $items = null): \MailPoet\EmailEditor\Validator\Schema\Array_Schema
+        public static function array(?\Automattic\WooCommerce\EmailEditor\Validator\Schema $items = null): \Automattic\WooCommerce\EmailEditor\Validator\Schema\Array_Schema
         {
         }
         /**
@@ -11420,7 +14007,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param array<string, Schema>|null $properties Properties of the object.
          */
-        public static function object(?array $properties = null): \MailPoet\EmailEditor\Validator\Schema\Object_Schema
+        public static function object(?array $properties = null): \Automattic\WooCommerce\EmailEditor\Validator\Schema\Object_Schema
         {
         }
         /**
@@ -11428,7 +14015,7 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param Schema[] $schemas List of schemas.
          */
-        public static function one_of(array $schemas): \MailPoet\EmailEditor\Validator\Schema\One_Of_Schema
+        public static function one_of(array $schemas): \Automattic\WooCommerce\EmailEditor\Validator\Schema\One_Of_Schema
         {
         }
         /**
@@ -11436,12 +14023,12 @@ namespace MailPoet\EmailEditor\Validator {
          *
          * @param Schema[] $schemas List of schemas.
          */
-        public static function any_of(array $schemas): \MailPoet\EmailEditor\Validator\Schema\Any_Of_Schema
+        public static function any_of(array $schemas): \Automattic\WooCommerce\EmailEditor\Validator\Schema\Any_Of_Schema
         {
         }
     }
 }
-namespace MailPoet\EmailEditor {
+namespace Automattic\WooCommerce\EmailEditor {
     /**
      * Provides information for converting exceptions to HTTP responses.
      */
@@ -11450,7 +14037,7 @@ namespace MailPoet\EmailEditor {
         public function getHttpStatusCode(): int;
     }
     /**
-     * Frames all exceptions ("$e instanceof MailPoet\EmailEditor\Exception").
+     * Frames all exceptions ("$e instanceof Automattic\WooCommerce\EmailEditor\Exception").
      */
     abstract class Exception extends \Exception
     {
@@ -11487,25 +14074,25 @@ namespace MailPoet\EmailEditor {
      * USE: Generic runtime error. When possible, use a more specific exception instead.
      * API: 500 Server Error (not HTTP-aware)
      */
-    class RuntimeException extends \MailPoet\EmailEditor\Exception
+    class RuntimeException extends \Automattic\WooCommerce\EmailEditor\Exception
     {
     }
     /**
      * USE: When wrong data VALUE is received.
      * API: 400 Bad Request
      */
-    class UnexpectedValueException extends \MailPoet\EmailEditor\RuntimeException implements \MailPoet\EmailEditor\HttpAwareException
+    class UnexpectedValueException extends \Automattic\WooCommerce\EmailEditor\RuntimeException implements \Automattic\WooCommerce\EmailEditor\HttpAwareException
     {
         public function getHttpStatusCode(): int
         {
         }
     }
 }
-namespace MailPoet\EmailEditor\Validator {
+namespace Automattic\WooCommerce\EmailEditor\Validator {
     /**
      * Exception thrown when validation fails.
      */
-    class Validation_Exception extends \MailPoet\EmailEditor\UnexpectedValueException
+    class Validation_Exception extends \Automattic\WooCommerce\EmailEditor\UnexpectedValueException
     {
         /**
          * WP_Error instance.
@@ -11542,7 +14129,7 @@ namespace MailPoet\EmailEditor\Validator {
          * @param string $param_name The parameter name.
          * @return mixed
          */
-        public function validate(\MailPoet\EmailEditor\Validator\Schema $schema, $value, string $param_name = 'value')
+        public function validate(\Automattic\WooCommerce\EmailEditor\Validator\Schema $schema, $value, string $param_name = 'value')
         {
         }
         /**
@@ -11602,11 +14189,56 @@ namespace MailPoet\EmailEditor\Validator {
         }
     }
 }
-namespace MailPoet\EmailEditor {
+namespace Automattic\WooCommerce\EmailEditor {
+    /**
+     * Bootstrap class for initializing the Email Editor functionality.
+     */
+    class Bootstrap
+    {
+        /**
+         * Email editor instance.
+         *
+         * @var Email_Editor
+         */
+        private $email_editor;
+        /**
+         * Core email editor integration instance.
+         *
+         * @var CoreEmailEditorIntegration
+         */
+        private $core_email_editor_integration;
+        /**
+         * Constructor.
+         *
+         * @param Email_Editor               $email_editor Email editor instance.
+         * @param CoreEmailEditorIntegration $core_email_editor_integration  Core email editor integration instance.
+         */
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Editor $email_editor, \Automattic\WooCommerce\EmailEditor\Integrations\Core\Initializer $core_email_editor_integration)
+        {
+        }
+        /**
+         * Initialize the email editor functionality.
+         */
+        public function init()
+        {
+        }
+        /**
+         * Initialize the email editor.
+         */
+        public function initialize()
+        {
+        }
+        /**
+         * Setup email editor integrations.
+         */
+        public function setup_email_editor_integrations()
+        {
+        }
+    }
     /**
      * Class Container is a simple dependency injection container.
      *
-     * @package MailPoet\EmailEditor
+     * @package Automattic\WooCommerce\EmailEditor
      */
     class Container
     {
@@ -11644,16 +14276,101 @@ namespace MailPoet\EmailEditor {
         {
         }
     }
-    class EmailCssInliner implements \MailPoet\EmailEditor\Engine\Renderer\Css_Inliner
+    /**
+     * Class for inlining CSS in HTML emails.
+     */
+    class Email_Css_Inliner implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner
     {
+        /**
+         * The CSS inliner instance.
+         *
+         * @var CssInliner
+         */
         private \Pelago\Emogrifier\CssInliner $inliner;
+        /**
+         * Creates a new instance from HTML content.
+         *
+         * @param string $unprocessed_html The HTML content to process.
+         * @return self
+         */
         public function from_html(string $unprocessed_html): self
         {
         }
+        /**
+         * Inlines the provided CSS.
+         *
+         * @param string $css The CSS to inline.
+         * @return self
+         * @throws \LogicException If from_html() was not called first.
+         */
         public function inline_css(string $css = ''): self
         {
         }
+        /**
+         * Renders the HTML with inlined CSS.
+         *
+         * @return string The processed HTML.
+         * @throws \LogicException If from_html() was not called first.
+         */
         public function render(): string
+        {
+        }
+    }
+    /**
+     * Main package class.
+     */
+    class Email_Editor_Container
+    {
+        /**
+         * Init method.
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Loads the DI container for the Email editor.
+         *
+         * @internal This uses the Blocks DI container. This container will be replaced
+         * with a different compatible container.
+         *
+         * @param boolean $reset Used to reset the container to a fresh instance. Note: this means all dependencies will be reconstructed.
+         * @return mixed
+         */
+        public static function container($reset = false)
+        {
+        }
+    }
+    /**
+     * Main package class.
+     */
+    class Package
+    {
+        /**
+         * Version.
+         *
+         * @var string
+         */
+        const VERSION = '0.1.0';
+        /**
+         * Init the package.
+         */
+        public static function init()
+        {
+        }
+        /**
+         * Return the version of the package.
+         *
+         * @return string
+         */
+        public static function get_version()
+        {
+        }
+        /**
+         * Return the path to the package.
+         *
+         * @return string
+         */
+        public static function get_path()
         {
         }
     }
@@ -11661,7 +14378,7 @@ namespace MailPoet\EmailEditor {
      * USE: When an action is forbidden for given actor (although generally valid).
      * API: 403 Forbidden
      */
-    class AccessDeniedException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
+    class AccessDeniedException extends \Automattic\WooCommerce\EmailEditor\UnexpectedValueException implements \Automattic\WooCommerce\EmailEditor\HttpAwareException
     {
         public function getHttpStatusCode(): int
         {
@@ -11671,7 +14388,7 @@ namespace MailPoet\EmailEditor {
      * USE: When the main resource we're interested in doesn't exist.
      * API: 404 Not Found
      */
-    class NotFoundException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
+    class NotFoundException extends \Automattic\WooCommerce\EmailEditor\UnexpectedValueException implements \Automattic\WooCommerce\EmailEditor\HttpAwareException
     {
         public function getHttpStatusCode(): int
         {
@@ -11681,7 +14398,7 @@ namespace MailPoet\EmailEditor {
      * USE: When the main action produces conflict (i.e. duplicate key).
      * API: 409 Conflict
      */
-    class ConflictException extends \MailPoet\EmailEditor\UnexpectedValueException implements \MailPoet\EmailEditor\HttpAwareException
+    class ConflictException extends \Automattic\WooCommerce\EmailEditor\UnexpectedValueException implements \Automattic\WooCommerce\EmailEditor\HttpAwareException
     {
         public function getHttpStatusCode(): int
         {
@@ -11691,10 +14408,10 @@ namespace MailPoet\EmailEditor {
      * USE: An application state that should not occur. Can be subclassed for feature-specific exceptions.
      * API: 500 Server Error (not HTTP-aware)
      */
-    class InvalidStateException extends \MailPoet\EmailEditor\RuntimeException
+    class InvalidStateException extends \Automattic\WooCommerce\EmailEditor\RuntimeException
     {
     }
-    class NewsletterProcessingException extends \MailPoet\EmailEditor\Exception
+    class NewsletterProcessingException extends \Automattic\WooCommerce\EmailEditor\Exception
     {
     }
 }
