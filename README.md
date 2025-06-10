@@ -41,6 +41,6 @@ parameters:
 ## Generate new version
 
 1. Make sure the new version has already been added to the [`woocommerce-dist`](https://github.com/tectalic/woocommerce-dist) repo.
-2. Update [Private Packagist](https://packagist.com/orgs/tectalic/packages/3389306) if needed.
+2. Update [Private Packagist](https://packagist.com/orgs/tectalic/packages/4439867) if needed.
 3. Run the `./generate.sh` script with the new version, e.g., `./generate.sh 7.0.0-beta.1`.
 4. Update [Private Packagist](https://packagist.com/orgs/tectalic/packages/4013311) so it shows the newly generated version.
