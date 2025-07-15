@@ -10652,6 +10652,330 @@ namespace Automattic\WooCommerce\Blueprint {
         }
     }
 }
+namespace Automattic\WooCommerce\EmailEditor\Engine\Logger {
+    /**
+     * Interface for email editor loggers.
+     */
+    interface Email_Editor_Logger_Interface
+    {
+        /**
+         * System is unusable.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function emergency(string $message, array $context = array()): void;
+        /**
+         * Action must be taken immediately.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function alert(string $message, array $context = array()): void;
+        /**
+         * Critical conditions.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function critical(string $message, array $context = array()): void;
+        /**
+         * Runtime errors that do not require immediate action but should typically
+         * be logged and monitored.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function error(string $message, array $context = array()): void;
+        /**
+         * Exceptional occurrences that are not errors.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function warning(string $message, array $context = array()): void;
+        /**
+         * Normal but significant events.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function notice(string $message, array $context = array()): void;
+        /**
+         * Interesting events.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function info(string $message, array $context = array()): void;
+        /**
+         * Detailed debug information.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function debug(string $message, array $context = array()): void;
+        /**
+         * Logs with an arbitrary level.
+         *
+         * @param string $level   The log level.
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function log(string $level, string $message, array $context = array()): void;
+    }
+    /**
+     * Default implementation of the email editor logger that writes to WordPress debug log.
+     */
+    class Default_Email_Editor_Logger implements \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger_Interface
+    {
+        /**
+         * Log levels.
+         */
+        public const EMERGENCY = 'emergency';
+        public const ALERT = 'alert';
+        public const CRITICAL = 'critical';
+        public const ERROR = 'error';
+        public const WARNING = 'warning';
+        public const NOTICE = 'notice';
+        public const INFO = 'info';
+        public const DEBUG = 'debug';
+        /**
+         * Path to the log file.
+         *
+         * @var string
+         */
+        private $log_file;
+        /**
+         * Constructor.
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * System is unusable.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function emergency(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Action must be taken immediately.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function alert(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Critical conditions.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function critical(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Runtime errors that do not require immediate action but should typically
+         * be logged and monitored.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function error(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Exceptional occurrences that are not errors.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function warning(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Normal but significant events.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function notice(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Interesting events.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function info(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Detailed debug information.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function debug(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Logs with an arbitrary level.
+         *
+         * @param string $level   The log level.
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function log(string $level, string $message, array $context = array()): void
+        {
+        }
+    }
+    /**
+     * Email Editor Logger class.
+     * A wrapper that sets the logger to use. If no logger is provided, it defaults to the Default_Email_Editor_Logger.
+     */
+    class Email_Editor_Logger implements \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger_Interface
+    {
+        /**
+         * Logger instance to delegate to.
+         *
+         * @var Email_Editor_Logger_Interface
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger_Interface $logger;
+        /**
+         * Constructor.
+         *
+         * @param Email_Editor_Logger_Interface|null $logger Logger instance.
+         */
+        public function __construct(?\Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger_Interface $logger = null)
+        {
+        }
+        /**
+         * Set the logger.
+         *
+         * @param Email_Editor_Logger_Interface $logger Logger instance.
+         * @return void
+         */
+        public function set_logger(\Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger_Interface $logger): void
+        {
+        }
+        /**
+         * Adds emergency level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function emergency(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Adds alert level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function alert(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Adds critical level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function critical(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Adds error level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function error(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Adds warning level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function warning(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Adds notice level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function notice(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Adds info level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function info(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Adds debug level log message.
+         *
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function debug(string $message, array $context = array()): void
+        {
+        }
+        /**
+         * Logs with an arbitrary level.
+         *
+         * @param string $level   The log level.
+         * @param string $message The log message.
+         * @param array  $context The log context.
+         * @return void
+         */
+        public function log(string $level, string $message, array $context = array()): void
+        {
+        }
+    }
+}
 namespace Automattic\WooCommerce\EmailEditor\Engine\Patterns {
     /**
      * Abstract class for block patterns.
@@ -10929,11 +11253,25 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
     class Personalization_Tags_Registry
     {
         /**
+         * Logger instance.
+         *
+         * @var Email_Editor_Logger
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger;
+        /**
          * List of registered personalization tags.
          *
          * @var Personalization_Tag[]
          */
         private $tags = array();
+        /**
+         * Constructor.
+         *
+         * @param Email_Editor_Logger $logger Logger instance.
+         */
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger)
+        {
+        }
         /**
          * Initialize the personalization tags registry.
          * This method should be called only once.
@@ -12156,10 +12494,11 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
-         * Sends preview email
+         * Sends preview email.
          *
-         * @param WP_REST_Request $request route request.
+         * @param WP_REST_Request $request Route request parameters.
          * @return WP_REST_Response
+         * @phpstan-param WP_REST_Request<array{_locale: string, email: string, postId: int}> $request
          */
         public function send_preview_email_data(\WP_REST_Request $request): \WP_REST_Response
         {
@@ -12221,6 +12560,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
         /**
+         * Property for the logger.
+         *
+         * @var Email_Editor_Logger Logger instance.
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger;
+        /**
          * Constructor.
          *
          * @param Email_Api_Controller          $email_api_controller Email API controller.
@@ -12228,8 +12573,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          * @param Patterns                      $patterns Patterns.
          * @param Send_Preview_Email            $send_preview_email Preview email controller.
          * @param Personalization_Tags_Registry $personalization_tags_controller Personalization tags registry that allows initializing personalization tags.
+         * @param Email_Editor_Logger           $logger Logger instance.
          */
-        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Api_Controller $email_api_controller, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Patterns\Patterns $patterns, \Automattic\WooCommerce\EmailEditor\Engine\Send_Preview_Email $send_preview_email, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Api_Controller $email_api_controller, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Patterns\Patterns $patterns, \Automattic\WooCommerce\EmailEditor\Engine\Send_Preview_Email $send_preview_email, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_controller, \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger)
         {
         }
         /**
@@ -12334,12 +12680,31 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
+         * Check if the current post type is an email post type.
+         *
+         * @param string $current_post_type The current post type.
+         * @return bool
+         */
+        private function current_post_is_email_post_type($current_post_type): bool
+        {
+        }
+        /**
          * Use a custom page template for the email editor frontend rendering.
          *
          * @param string $template post template.
          * @return string
          */
         public function load_email_preview_template($template)
+        {
+        }
+        /**
+         * Update the preview post link to remove the preview nonce.
+         *
+         * @param string  $preview_link The preview post link.
+         * @param WP_Post $post The post object.
+         * @return string
+         */
+        public function update_preview_post_link($preview_link, $post)
         {
         }
     }
@@ -12434,7 +12799,7 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          * Parse a personalization tag to the token and attributes.
          *
          * @param string $token The token to parse.
-         * @return array{token: string, arguments: array} The parsed token.
+         * @return array{token: string, arguments: array<string, string>} The parsed token.
          */
         private function parse_token(string $token): array
         {
@@ -12558,7 +12923,7 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
      */
     class Settings_Controller
     {
-        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer');
+        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links');
         const DEFAULT_SETTINGS = array('enableCustomUnits' => array('px', '%'));
         /**
          * Theme controller.
@@ -12605,7 +12970,8 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          *     padding: array{bottom: string, left: string, right: string, top: string}
          *   },
          *   color: array{
-         *     background: string
+         *     background: string,
+         *     text: string
          *   },
          *   typography: array{
          *     fontFamily: string
@@ -12715,7 +13081,7 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
-         * Gets combined theme data from the core and base theme.
+         * Gets combined theme data from the core and base theme and some handpicked settings from the site theme.
          *
          * @return WP_Theme_JSON
          */
@@ -13309,6 +13675,126 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
     }
     /**
+     * Renders a social link block.
+     */
+    class Social_Link extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        {
+        }
+    }
+    /**
+     * Renders the social links block.
+     */
+    class Social_Links extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Cache of the core social link services.
+         *
+         * @var array<string, array>
+         */
+        private $core_social_link_services_cache = array();
+        /**
+         * Supported image types.
+         *
+         * @var array<string>
+         */
+        private $supported_image_types = array('white', 'brand');
+        /**
+         * Renders the block content.
+         *
+         * @param string              $block_content Block content.
+         * @param array               $parsed_block Parsed block.
+         * @param Settings_Controller $settings_controller Settings controller.
+         * @return string
+         */
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        {
+        }
+        /**
+         * Generates the social link content.
+         *
+         * @param array $block The block data.
+         * @param array $parent_block_attrs The parent block attributes.
+         * @return string The generated content.
+         */
+        private function generate_social_link_content($block, $parent_block_attrs)
+        {
+        }
+        /**
+         * Gets the block wrapper.
+         *
+         * @param string $block_content The block content.
+         * @param array  $parsed_block The parsed block.
+         * @return string The block wrapper HTML.
+         */
+        private function get_block_wrapper($block_content, $parsed_block)
+        {
+        }
+        /**
+         * Adjusts the block content.
+         * Returns css classes and styles compatible with email clients.
+         *
+         * @param string $block_content The block content.
+         * @param array  $parsed_block The parsed block.
+         * @return array The adjusted block content.
+         */
+        private function adjust_block_content($block_content, $parsed_block)
+        {
+        }
+        /**
+         * 1) We need to remove padding because we render padding on wrapping table cell
+         * 2) We also need to replace font-size to avoid clamp() because clamp() is not supported in many email clients.
+         * The font size values is automatically converted to clamp() when WP site theme is configured to use fluid layouts.
+         * Currently (WP 6.5), there is no way to disable this behavior.
+         *
+         * @param string $block_content Block content.
+         */
+        private function adjust_style_attribute(string $block_content): string
+        {
+        }
+        /**
+         * Gets the service icon URL.
+         *
+         * Default image type is 'white'.
+         *
+         * @param string $service The service name.
+         * @param string $image_type The image type. e.g 'white', 'brand'.
+         * @return string The service icon URL.
+         */
+        public function get_service_icon_url($service, $image_type = '')
+        {
+        }
+        /**
+         * Gets the service PNG URL.
+         *
+         * @param string $service The service name.
+         * @param string $image_type The image type. e.g 'white', 'brand'.
+         * @return string The service PNG URL.
+         */
+        public function get_service_png_url($service, $image_type = 'white')
+        {
+        }
+        /**
+         * Gets the service PNG path.
+         *
+         * @param string $service The service name.
+         * @param string $image_type The image type. e.g 'white', 'brand'.
+         * @return string The service PNG path.
+         */
+        public function get_service_png_path($service, $image_type = 'white')
+        {
+        }
+    }
+    /**
      * This renderer covers both core/paragraph and core/heading blocks
      */
     class Text extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
@@ -13442,6 +13928,52 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * @param \DOMElement $element The element to get the inner HTML from.
          */
         public function get_element_inner_html(\DOMElement $element): string
+        {
+        }
+    }
+    /**
+     * This class should provide helper functions for the Social Links block.
+     */
+    class Social_Links_Helper
+    {
+        /**
+         * Detects if the input color is whiteish.
+         * This is a helper function to detect if the input color is white or white-ish colors when
+         * provided an input color in format #ffffff or #fff.
+         *
+         * @param string $input_color The input color.
+         * @return bool True if the color is whiteish, false otherwise.
+         */
+        public static function detect_whiteish_color($input_color)
+        {
+        }
+        /**
+         * Gets the brand color for a given service.
+         *
+         * From core: https://github.com/WordPress/gutenberg/blob/edbd36057d3d25b7140af9e90a2adcca02a9201c/packages/block-library/src/social-link/socials-without-bg.scss
+         *
+         * @param string $service_name The name of the service.
+         * @return string The brand color for the service.
+         */
+        public static function get_service_brand_color($service_name)
+        {
+        }
+        /**
+         * Gets the default social link size.
+         *
+         * @return string The default social link size.
+         */
+        public static function get_default_social_link_size()
+        {
+        }
+        /**
+         * Gets the size option value for a given size.
+         * Source: https://github.com/WordPress/gutenberg/blob/c7c09cfe16c78f9a949956e5d0088cd4c747bdca/packages/block-library/src/social-links/style.scss#L36-L56
+         *
+         * @param string $size The size.
+         * @return string The size option value.
+         */
+        public static function get_social_link_size_option_value($size)
         {
         }
     }
@@ -14043,11 +14575,11 @@ namespace Automattic\WooCommerce\EmailEditor {
     {
         /** @var string[] */
         private $errors = [];
-        final public function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
+        final public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
         {
         }
         /** @return static */
-        public static function create(\Throwable $previous = null)
+        public static function create(?\Throwable $previous = null)
         {
         }
         /** @return static */
@@ -14058,7 +14590,10 @@ namespace Automattic\WooCommerce\EmailEditor {
         public function withCode(int $code)
         {
         }
-        /** @return static */
+        /**
+         * @param string[] $errors
+         * @return static
+         */
         public function withErrors(array $errors)
         {
         }
@@ -14066,6 +14601,9 @@ namespace Automattic\WooCommerce\EmailEditor {
         public function withError(string $id, string $error)
         {
         }
+        /**
+         * @return string[]
+         */
         public function getErrors(): array
         {
         }
@@ -14219,19 +14757,19 @@ namespace Automattic\WooCommerce\EmailEditor {
         /**
          * Initialize the email editor functionality.
          */
-        public function init()
+        public function init(): void
         {
         }
         /**
          * Initialize the email editor.
          */
-        public function initialize()
+        public function initialize(): void
         {
         }
         /**
          * Setup email editor integrations.
          */
-        public function setup_email_editor_integrations()
+        public function setup_email_editor_integrations(): bool
         {
         }
     }
@@ -14245,34 +14783,38 @@ namespace Automattic\WooCommerce\EmailEditor {
         /**
          * A list of registered services
          *
-         * @var array $services
+         * @var array<string, callable> $services
          */
         protected array $services = array();
         /**
          * A list of created instances
          *
-         * @var array
+         * @var array<string, object> $instances
          */
         protected array $instances = array();
         /**
-         * The method for registering a new service
+         * The method for registering a new service.
          *
-         * @param string   $name    The name of the service.
+         * @param string   $name     The name of the service.
          * @param callable $callback The callable that will be used to create the service.
          * @return void
+         * @phpstan-template T of object
+         * @phpstan-param class-string<T> $name
          */
         public function set(string $name, callable $callback): void
         {
         }
         /**
-         * Method for getting a registered service
+         * Method for getting a registered service.
          *
-         * @template T
-         * @param class-string<T> $name The name of the service.
-         * @return T
+         * @param string $name The name of the service.
+         * @return object The service instance.
          * @throws \Exception If the service is not found.
+         * @phpstan-template T of object
+         * @phpstan-param class-string<T> $name
+         * @phpstan-return T
          */
-        public function get($name)
+        public function get(string $name): object
         {
         }
     }
@@ -14323,6 +14865,8 @@ namespace Automattic\WooCommerce\EmailEditor {
     {
         /**
          * Init method.
+         *
+         * @return void
          */
         public static function init()
         {
@@ -14334,7 +14878,7 @@ namespace Automattic\WooCommerce\EmailEditor {
          * with a different compatible container.
          *
          * @param boolean $reset Used to reset the container to a fresh instance. Note: this means all dependencies will be reconstructed.
-         * @return mixed
+         * @return Container
          */
         public static function container($reset = false)
         {
@@ -14353,6 +14897,8 @@ namespace Automattic\WooCommerce\EmailEditor {
         const VERSION = '0.1.0';
         /**
          * Init the package.
+         *
+         * @return void
          */
         public static function init()
         {
