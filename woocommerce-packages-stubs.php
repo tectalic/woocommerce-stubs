@@ -2326,6 +2326,47 @@ namespace {
         }
     }
     /**
+     * Class ActionScheduler_RecurringActionScheduler
+     *
+     * This class ensures that the `action_scheduler_ensure_recurring_actions` hook is triggered on a daily interval. This
+     * simplifies the process for other plugins to register their recurring actions without requiring each plugin to query
+     * or schedule actions independently on every request.
+     */
+    class ActionScheduler_RecurringActionScheduler
+    {
+        /**
+         * @var string The hook of the scheduled recurring action that is run to trigger the
+         *      `action_scheduler_ensure_recurring_actions` hook that plugins should use.  We can't directly have the
+         *      scheduled action hook be the hook plugins should use because the actions will show as failed if no plugin
+         *      was actively hooked into it.
+         */
+        private const RUN_SCHEDULED_RECURRING_ACTIONS_HOOK = 'action_scheduler_run_recurring_actions_schedule_hook';
+        /**
+         * Initialize the instance.  Should only be run on a single instance per request.
+         *
+         * @return void
+         */
+        public function init(): void
+        {
+        }
+        /**
+         * Schedule the recurring `action_scheduler_ensure_recurring_actions` action if not already scheduled.
+         *
+         * @return void
+         */
+        public function schedule_recurring_scheduler_hook(): void
+        {
+        }
+        /**
+         * Trigger the hook to allow other plugins to schedule their recurring actions.
+         *
+         * @return void
+         */
+        public function run_recurring_scheduler_hook(): void
+        {
+        }
+    }
+    /**
      * Provides information about active and registered instances of Action Scheduler.
      */
     class ActionScheduler_SystemInformation
@@ -5597,6 +5638,16 @@ namespace {
         {
         }
         /**
+         * Determines whether the database supports using SKIP LOCKED. This logic mimicks the $wpdb::has_cap() logic.
+         *
+         * SKIP_LOCKED support was added to MariaDB in 10.6.0 and to MySQL in 8.0.1
+         *
+         * @return bool
+         */
+        private function db_supports_skip_locked()
+        {
+        }
+        /**
          * Get the number of active claims.
          *
          * @return int
@@ -5623,7 +5674,7 @@ namespace {
         {
         }
         /**
-         * Release actions from a claim and delete the claim.
+         * Release pending actions from a claim and delete the claim.
          *
          * @param ActionScheduler_ActionClaim $claim Claim object.
          * @throws \RuntimeException When unable to release actions from claim.
@@ -5935,7 +5986,7 @@ namespace {
         {
         }
         /**
-         * Release a claim in the table data store.
+         * Release a claim in the table data store on any pending actions.
          *
          * @param ActionScheduler_ActionClaim $claim Claim object.
          */
@@ -6423,7 +6474,7 @@ namespace {
         {
         }
         /**
-         * Release claim.
+         * Release pending actions from a claim.
          *
          * @param ActionScheduler_ActionClaim $claim Claim object to release.
          * @return void
@@ -7659,7 +7710,7 @@ namespace {
          *
          * @var int
          */
-        protected $schema_version = 7;
+        protected $schema_version = 8;
         /**
          * Construct.
          */
@@ -11319,22 +11370,21 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Lay
         /**
          * Render inner blocks in flex layout.
          *
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        public function render_inner_blocks_in_layout(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        public function render_inner_blocks_in_layout(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Compute widths for blocks in flex layout.
          *
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
-         * @param float               $flex_gap Flex gap.
+         * @param array $parsed_block Parsed block.
+         * @param float $flex_gap Flex gap.
          * @return array
          */
-        private function compute_widths_for_flex_layout(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, float $flex_gap): array
+        private function compute_widths_for_flex_layout(array $parsed_block, float $flex_gap): array
         {
         }
         /**
@@ -11738,12 +11788,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         /**
          * Renders the block content
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string;
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string;
     }
     /**
      * Class Blocks_Parser
@@ -11767,91 +11817,10 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         }
     }
     /**
-     * Class Blocks_Registry
-     */
-    class Blocks_Registry
-    {
-        /**
-         * Fallback renderer.
-         *
-         * @var ?Block_Renderer $fallback_renderer
-         */
-        private $fallback_renderer = null;
-        /**
-         * Array of block renderers.
-         *
-         * @var Block_Renderer[] $block_renderers_map
-         */
-        private array $block_renderers_map = array();
-        /**
-         * Adds block renderer to the registry.
-         *
-         * @param string         $block_name Block name.
-         * @param Block_Renderer $renderer Block renderer.
-         */
-        public function add_block_renderer(string $block_name, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
-        {
-        }
-        /**
-         * Adds fallback renderer to the registry.
-         *
-         * @param Block_Renderer $renderer Fallback renderer.
-         */
-        public function add_fallback_renderer(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer $renderer): void
-        {
-        }
-        /**
-         * Checks if block renderer is registered.
-         *
-         * @param string $block_name Block name.
-         * @return bool
-         */
-        public function has_block_renderer(string $block_name): bool
-        {
-        }
-        /**
-         * Returns block renderer by block name.
-         *
-         * @param string $block_name Block name.
-         * @return Block_Renderer|null
-         */
-        public function get_block_renderer(string $block_name): ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
-        {
-        }
-        /**
-         * Returns fallback renderer.
-         *
-         * @return Block_Renderer|null
-         */
-        public function get_fallback_renderer(): ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
-        {
-        }
-        /**
-         * Removes all block renderers from the registry.
-         */
-        public function remove_all_block_renderers(): void
-        {
-        }
-        /**
-         * Removes block renderer from the registry.
-         *
-         * @param string $block_name Block name.
-         */
-        private function remove_block_renderer(string $block_name): void
-        {
-        }
-    }
-    /**
      * Class Content_Renderer
      */
     class Content_Renderer
     {
-        /**
-         * Blocks registry
-         *
-         * @var Blocks_Registry
-         */
-        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry;
         /**
          * Process manager
          *
@@ -11859,18 +11828,18 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $process_manager;
         /**
-         * Settings controller
-         *
-         * @var Settings_Controller
-         */
-        private \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller;
-        /**
          * Theme controller
          *
          * @var Theme_Controller
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller;
         const CONTENT_STYLES_FILE = 'content.css';
+        /**
+         * WordPress Block Type Registry.
+         *
+         * @var WP_Block_Type_Registry
+         */
+        private \WP_Block_Type_Registry $block_type_registry;
         /**
          * CSS inliner
          *
@@ -11902,15 +11871,26 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          */
         private $backup_query;
         /**
+         * Fallback renderer that is used when render_email_callback is not set for the rendered blockType.
+         *
+         * @var Fallback
+         */
+        private \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Fallback $fallback_renderer;
+        /**
+         * Logger instance.
+         *
+         * @var Email_Editor_Logger
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger;
+        /**
          * Content_Renderer constructor.
          *
          * @param Process_Manager     $preprocess_manager Preprocess manager.
-         * @param Blocks_Registry     $blocks_registry Blocks registry.
-         * @param Settings_Controller $settings_controller Settings controller.
          * @param Css_Inliner         $css_inliner Css inliner.
          * @param Theme_Controller    $theme_controller Theme controller.
+         * @param Email_Editor_Logger $logger Logger instance.
          */
-        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $preprocess_manager, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $preprocess_manager, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller, \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger)
         {
         }
         /**
@@ -12057,6 +12037,79 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
     }
+    /**
+     * Class Rendering_Context
+     */
+    class Rendering_Context
+    {
+        /**
+         * Instance of the WP Theme.
+         *
+         * @var WP_Theme_JSON
+         */
+        private \WP_Theme_JSON $theme_json;
+        /**
+         * Rendering_Context constructor.
+         *
+         * @param WP_Theme_JSON $theme_json Theme Json used in the email.
+         */
+        public function __construct(\WP_Theme_JSON $theme_json)
+        {
+        }
+        /**
+         * Returns WP_Theme_JSON instance that should be used during the email rendering.
+         *
+         * @return WP_Theme_JSON
+         */
+        public function get_theme_json(): \WP_Theme_JSON
+        {
+        }
+        /**
+         * Get the email theme styles.
+         *
+         * @return array{
+         *   spacing: array{
+         *     blockGap: string,
+         *     padding: array{bottom: string, left: string, right: string, top: string}
+         *   },
+         *   color: array{
+         *     background: string,
+         *     text: string
+         *   },
+         *   typography: array{
+         *     fontFamily: string
+         *   }
+         * }
+         */
+        public function get_theme_styles(): array
+        {
+        }
+        /**
+         * Get settings from the theme.
+         *
+         * @return array
+         */
+        public function get_theme_settings()
+        {
+        }
+        /**
+         * Returns the width of the layout without padding.
+         *
+         * @return string
+         */
+        public function get_layout_width_without_padding(): string
+        {
+        }
+        /**
+         * Translate color slug to color.
+         *
+         * @param string $color_slug Color slug.
+         * @return string
+         */
+        public function translate_slug_to_color(string $color_slug): string
+        {
+        }
+    }
 }
 namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
     /**
@@ -12088,17 +12141,30 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
          * @var Css_Inliner
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
+        /**
+         * Personalization tags registry
+         *
+         * @var Personalization_Tags_Registry
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry;
+        /**
+         * Map of placeholders to full HTML comment tags for restoration.
+         *
+         * @var array
+         */
+        private array $personalization_tag_placeholders = array();
         const TEMPLATE_FILE = 'template-canvas.php';
         const TEMPLATE_STYLES_FILE = 'template-canvas.css';
         /**
          * Renderer constructor.
          *
-         * @param Content_Renderer $content_renderer Content renderer.
-         * @param Templates        $templates Templates.
-         * @param Css_Inliner      $css_inliner CSS Inliner.
-         * @param Theme_Controller $theme_controller Theme controller.
+         * @param Content_Renderer              $content_renderer Content renderer.
+         * @param Templates                     $templates Templates.
+         * @param Css_Inliner                   $css_inliner CSS Inliner.
+         * @param Theme_Controller              $theme_controller Theme controller.
+         * @param Personalization_Tags_Registry $personalization_tags_registry Personalization tags registry.
          */
-        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry)
         {
         }
         /**
@@ -12106,12 +12172,13 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
          *
          * @param \WP_Post $post Post object.
          * @param string   $subject Email subject.
-         * @param string   $pre_header Email preheader.
+         * @param string   $pre_header An email preheader or preview text is the short snippet of text that follows the subject line in an inbox. See https://kb.mailpoet.com/article/418-preview-text.
          * @param string   $language Email language.
-         * @param string   $meta_robots Email meta robots.
+         * @param string   $meta_robots Optional string. Can be left empty for sending, but you can provide a value (e.g. noindex, nofollow) when you want to display email html in a browser.
+         * @param string   $template_slug Optional block template slug used for cases when email doesn't have associated template.
          * @return array
          */
-        public function render(\WP_Post $post, string $subject, string $pre_header, string $language, $meta_robots = ''): array
+        public function render(\WP_Post $post, string $subject, string $pre_header, string $language, string $meta_robots = '', string $template_slug = ''): array
         {
         }
         /**
@@ -12124,12 +12191,30 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
         {
         }
         /**
-         * Renders the text version of the email template
+         * Renders the text version of the email template.
          *
          * @param string $template HTML template.
          * @return string
          */
         private function render_text_version($template)
+        {
+        }
+        /**
+         * Preserves personalization tags by replacing them with unique placeholders (not inside comments).
+         *
+         * @param string $template HTML template.
+         * @return string
+         */
+        private function preserve_personalization_tags(string $template): string
+        {
+        }
+        /**
+         * Restores personalization tags from placeholders
+         *
+         * @param string $text Text content.
+         * @return string
+         */
+        private function restore_personalization_tags(string $text): string
         {
         }
     }
@@ -12672,6 +12757,14 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
+         * Enqueue admin styles that are needed by the email editor.
+         *
+         * @return void
+         */
+        public function enqueue_admin_styles(): void
+        {
+        }
+        /**
          * Get the current post object
          *
          * @return array|mixed|WP_Post|null
@@ -12923,7 +13016,6 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
      */
     class Settings_Controller
     {
-        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links');
         const DEFAULT_SETTINGS = array('enableCustomUnits' => array('px', '%'));
         /**
          * Theme controller.
@@ -13269,23 +13361,23 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Render the block.
          *
-         * @param string              $block_content The block content.
-         * @param array               $parsed_block The parsed block.
-         * @param Settings_Controller $settings_controller The settings controller.
+         * @param string            $block_content The block content.
+         * @param array             $parsed_block The parsed block.
+         * @param Rendering_Context $rendering_context The rendering context.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Render the block content.
          *
-         * @param string              $block_content The block content.
-         * @param array               $parsed_block The parsed block.
-         * @param Settings_Controller $settings_controller The settings controller.
+         * @param string            $block_content The block content.
+         * @param array             $parsed_block The parsed block.
+         * @param Rendering_Context $rendering_context The rendering context.
          * @return string
          */
-        abstract protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string;
+        abstract protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string;
     }
     /**
      * Renders a button block.
@@ -13298,41 +13390,43 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Get styles for the wrapper element.
          *
-         * @param array $block_styles Block styles.
-         * @return object{css: string, classname: string}
+         * @param array             $block_attributes Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return array
          */
-        private function get_wrapper_styles(array $block_styles)
+        private function get_wrapper_styles(array $block_attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context)
         {
         }
         /**
          * Get styles for the link element.
          *
-         * @param array $block_styles Block styles.
-         * @return object{css: string, classname: string}
+         * @param array             $block_attributes Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return array
          */
-        private function get_link_styles(array $block_styles)
+        private function get_link_styles(array $block_attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context)
         {
         }
         /**
          * Renders the block.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Renders the block content.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13358,12 +13452,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Renders the block content.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13385,22 +13479,22 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Renders the block content.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Based on MJML <mj-column>
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          */
-        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13413,21 +13507,22 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * Override this method to disable spacing (block gap) for columns.
          * Spacing is applied on wrapping columns block. Columns are rendered side by side so no spacer is needed.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Based on MJML <mj-section>
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          */
-        private function getBlockWrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function getBlockWrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13443,14 +13538,14 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     class Fallback extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
-         * Renders the block content.
+         * Renders the block content
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13460,24 +13555,24 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     class Group extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
-         * Renders the block content.
+         * Renders the block content
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Returns the block wrapper.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          */
-        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13487,13 +13582,14 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     class Image extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
-         * Renders the block content.
+         * Renders the block content
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
@@ -13508,11 +13604,10 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * When the width is not set, it's important to get it for the image to be displayed correctly
          *
-         * @param array               $parsed_block Parsed block.
-         * @param string              $image_url Image URL.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param array  $parsed_block Parsed block.
+         * @param string $image_url Image URL.
          */
-        private function add_image_size_when_missing(array $parsed_block, string $image_url, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): array
+        private function add_image_size_when_missing(array $parsed_block, string $image_url): array
         {
         }
         /**
@@ -13528,31 +13623,30 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Settings width and height attributes for images is important for MS Outlook.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string $block_content Block content.
+         * @param array  $parsed_block Parsed block.
          */
-        private function addImageDimensions($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function add_image_dimensions(string $block_content, array $parsed_block): string
         {
         }
         /**
          * This method configure the font size of the caption because it's set to 0 for the parent element to avoid unexpected white spaces
          * We try to use font-size passed down from the parent element $parsedBlock['email_attrs']['font-size'], but if it's not set, we use the default font-size from the email theme.
          *
-         * @param Settings_Controller $settings_controller Settings controller.
-         * @param array               $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @param array             $parsed_block Parsed block.
          */
-        private function get_caption_styles(\Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, array $parsed_block): string
+        private function get_caption_styles(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, array $parsed_block): string
         {
         }
         /**
          * Based on MJML <mj-image> but because MJML doesn't support captions, our solution is a bit different
          *
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
-         * @param string|null         $caption Caption.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @param string|null       $caption Caption.
          */
-        private function get_block_wrapper(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, ?string $caption): string
+        private function get_block_wrapper(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, ?string $caption): string
         {
         }
         /**
@@ -13600,14 +13694,14 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     class List_Block extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
-         * Renders the block content.
+         * Renders the block content
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13628,12 +13722,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Renders the block content.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13643,34 +13737,35 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     class Quote extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
-         * Renders the block content.
+         * Renders the block content
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Returns the citation content with a wrapper.
          *
-         * @param string $citation_content The citation text.
-         * @param array  $parsed_block Parsed block.
+         * @param string            $citation_content The citation text.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context instance.
          * @return string The wrapped citation HTML or empty string if no citation.
          */
-        private function get_citation_wrapper(string $citation_content, array $parsed_block): string
+        private function get_citation_wrapper(string $citation_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Returns the block wrapper.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          */
-        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13682,12 +13777,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Renders the block content.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -13711,12 +13806,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Renders the block content.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
@@ -13802,11 +13897,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Renders the block content.
          *
-         * @param string              $block_content Block content.
-         * @param array               $parsed_block Parsed block.
-         * @param Settings_Controller $settings_controller Settings controller.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
          */
-        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller): string
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
@@ -13829,17 +13925,19 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
     class Initializer
     {
         /**
+         * List of supported blocks in the email editor.
+         */
+        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links');
+        /**
+         * Cache renderers by block name.
+         *
+         * @var array<string, Abstract_Block_Renderer>
+         */
+        private array $renderers = array();
+        /**
          * Initializes the core blocks renderers.
          */
         public function initialize(): void
-        {
-        }
-        /**
-         * Register core blocks email renderers when the blocks renderer is initialized.
-         *
-         * @param Blocks_Registry $blocks_registry Blocks registry.
-         */
-        public function register_core_blocks_renderers(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry $blocks_registry): void
         {
         }
         /**
@@ -13856,6 +13954,35 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
          * @param array|null $allowed_styles Allowed styles.
          */
         public function allow_styles(?array $allowed_styles): array
+        {
+        }
+        /**
+         * Set `supports.email = true` and configure render_email_callback for supported blocks.
+         *
+         * @param array $settings Block settings.
+         * @return array
+         */
+        public function update_block_settings(array $settings): array
+        {
+        }
+        /**
+         * Returns the block content rendered by the block renderer.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block settings.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        public function render_block(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Return an instance of Abstract_Block_Renderer by the block name.
+         *
+         * @param string $block_name Block name.
+         * @return Abstract_Block_Renderer
+         */
+        private function get_block_renderer(string $block_name): \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
         {
         }
     }
@@ -13974,6 +14101,171 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * @return string The size option value.
          */
         public static function get_social_link_size_option_value($size)
+        {
+        }
+    }
+    /**
+     * This class should guarantee that our work with the DOMDocument is unified and safe.
+     */
+    class Styles_Helper
+    {
+        /**
+         * Default empty styles block structure.
+         *
+         * @var array
+         */
+        public static $empty_block_styles = array('css' => '', 'declarations' => array(), 'classnames' => '');
+        /**
+         * Parse number value from a string.
+         *
+         * @param string $value String value with value and unit.
+         * @return float
+         */
+        public static function parse_value(string $value): float
+        {
+        }
+        /**
+         * Parse styles string to array.
+         *
+         * @param string $styles Styles string.
+         * @return array
+         */
+        public static function parse_styles_to_array(string $styles): array
+        {
+        }
+        /**
+         * Get normalized block styles by translating color slugs to actual color values.
+         *
+         * This method handles the normalization of color-related attributes like backgroundColor,
+         * textColor, borderColor, and linkColor by translating them from slugs to actual color values
+         * using the rendering context.
+         *
+         * @param array             $block_attributes Block attributes containing color slugs.
+         * @param Rendering_Context $rendering_context Rendering context for color translation.
+         * @return array Normalized block styles with translated color values.
+         */
+        public static function get_normalized_block_styles(array $block_attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): array
+        {
+        }
+        /**
+         * Wrapper for wp_style_engine_get_styles which ensures all values are returned.
+         *
+         * @param array $block_styles Array of block styles.
+         * @param bool  $skip_convert_vars If true, --wp_preset--spacing--x type values will be left in the original var:preset:spacing:x format.
+         * @return array {
+         *     @type string   $css          A CSS ruleset or declarations block
+         *                                  formatted to be placed in an HTML `style` attribute or tag.
+         *     @type string[] $declarations An associative array of CSS definitions,
+         *                                  e.g. `array( "$property" => "$value", "$property" => "$value" )`.
+         *     @type string   $classnames   Classnames separated by a space.
+         * }
+         */
+        public static function get_styles_from_block(array $block_styles, $skip_convert_vars = false)
+        {
+        }
+        /**
+         * Extend block styles with CSS declarations.
+         *
+         * @param array $block_styles WP_Style_Engine styles array (must contain 'declarations' and 'css' keys).
+         * @param array $css_declarations An associative array of CSS definitions,
+         *                                e.g. `array( "$property" => "$value", "$property" => "$value" )`.
+         * @return array {
+         *     @type string   $css          A CSS ruleset or declarations block
+         *                                  formatted to be placed in an HTML `style` attribute or tag.
+         *     @type string[] $declarations An associative array of CSS definitions,
+         *                                  e.g. `array( "$property" => "$value", "$property" => "$value" )`.
+         *     @type string   $classnames   Classnames separated by a space.
+         * }
+         */
+        public static function extend_block_styles(array $block_styles, array $css_declarations)
+        {
+        }
+        /**
+         * Get block styles.
+         *
+         * @param array             $block_attributes   Block attributes.
+         * @param Rendering_Context $rendering_context  Rendering context.
+         * @param array             $properties         List of style properties to include. Supported values:
+         *                                              'spacing', 'padding', 'margin',
+         *                                              'border', 'border-width', 'border-style', 'border-radius', 'border-color',
+         *                                              'background', 'background-color', 'color',
+         *                                              'typography', 'font-size', 'font-family', 'font-weight', 'text-align'.
+         * @return array {
+         *     @type string   $css          A CSS ruleset or declarations block
+         *                                  formatted to be placed in an HTML `style` attribute or tag.
+         *     @type string[] $declarations An associative array of CSS definitions,
+         *                                  e.g. `array( "$property" => "$value", "$property" => "$value" )`.
+         *     @type string   $classnames   Classnames separated by a space.
+         * }
+         */
+        public static function get_block_styles(array $block_attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, array $properties)
+        {
+        }
+    }
+    /**
+     * Helper class for generating table wrappers for email blocks.
+     */
+    class Table_Wrapper_Helper
+    {
+        /**
+         * Default table attributes.
+         *
+         * @var array<string, string>
+         */
+        private const DEFAULT_TABLE_ATTRS = array('border' => '0', 'cellpadding' => '0', 'cellspacing' => '0', 'role' => 'presentation');
+        /**
+         * Render a table cell.
+         *
+         * @param string $content The content to wrap.
+         * @param array  $cell_attrs Cell attributes.
+         * @return string The generated table cell HTML.
+         */
+        public static function render_table_cell(string $content, array $cell_attrs = array()): string
+        {
+        }
+        /**
+         * Render an Outlook-specific table cell using conditional comments.
+         *
+         * @param string $content The content to wrap.
+         * @param array  $cell_attrs Cell attributes.
+         * @return string The generated table cell HTML with Outlook conditionals.
+         */
+        public static function render_outlook_table_cell(string $content, array $cell_attrs = array()): string
+        {
+        }
+        /**
+         * Render a table wrapper for email blocks.
+         *
+         * @param string $content The content to wrap (e.g., '{block_content}').
+         * @param array  $table_attrs Table attributes to merge with defaults.
+         * @param array  $cell_attrs Cell attributes.
+         * @param array  $row_attrs Row attributes.
+         * @param bool   $render_cell Whether to render the td wrapper (default true).
+         * @return string The generated table wrapper HTML.
+         */
+        public static function render_table_wrapper(string $content, array $table_attrs = array(), array $cell_attrs = array(), array $row_attrs = array(), bool $render_cell = true): string
+        {
+        }
+        /**
+         * Render an Outlook-specific table wrapper using conditional comments.
+         *
+         * @param string $content The content to wrap (e.g., '{block_content}').
+         * @param array  $table_attrs Table attributes to merge with defaults.
+         * @param array  $cell_attrs Cell attributes.
+         * @param array  $row_attrs Row attributes.
+         * @param bool   $render_cell Whether to render the td wrapper (default true).
+         * @return string The generated table wrapper HTML.
+         */
+        public static function render_outlook_table_wrapper(string $content, array $table_attrs = array(), array $cell_attrs = array(), array $row_attrs = array(), bool $render_cell = true): string
+        {
+        }
+        /**
+         * Build an HTML attributes string from an array.
+         *
+         * @param array<string, string> $attributes The attributes array.
+         * @return string The attributes string.
+         */
+        private static function build_attributes_string(array $attributes): string
         {
         }
     }
@@ -14967,14 +15259,14 @@ namespace {
     /**
      * Registers this version of Action Scheduler.
      */
-    function action_scheduler_register_3_dot_9_dot_2()
+    function action_scheduler_register_3_dot_9_dot_3()
     {
     }
     // phpcs:disable Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace
     /**
      * Initializes this version of Action Scheduler.
      */
-    function action_scheduler_initialize_3_dot_9_dot_2()
+    function action_scheduler_initialize_3_dot_9_dot_3()
     {
     }
     /**
@@ -15278,6 +15570,18 @@ namespace {
      * @return ActionScheduler_DateTime
      */
     function as_get_datetime_object($date_string = \null, $timezone = 'UTC')
+    {
+    }
+    /**
+     * Check if a specific feature is supported by the current version of Action Scheduler.
+     *
+     * @since 3.9.3
+     *
+     * @param string $feature The feature to check support for.
+     *
+     * @return bool True if the feature is supported, false otherwise.
+     */
+    function as_supports(string $feature): bool
     {
     }
 }
