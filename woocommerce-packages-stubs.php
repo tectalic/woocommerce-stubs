@@ -11058,6 +11058,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Patterns {
          */
         protected $template_types = array();
         /**
+         * List of supported post types.
+         *
+         * @var string[] $post_types
+         */
+        protected $post_types = array();
+        /**
          * Flag to enable/disable inserter.
          *
          * @var bool $inserter
@@ -11223,6 +11229,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
          */
         private string $value_to_insert;
         /**
+         * The list of supported post types.
+         *
+         * @var string[]
+         */
+        private array $post_types;
+        /**
          * Personalization_Tag constructor.
          *
          * Example usage:
@@ -11243,8 +11255,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
          * @param callable    $callback The callback function which returns the value of the personalization tag.
          * @param array       $attributes The attributes which are used in the Personalization Tag UI.
          * @param string|null $value_to_insert The value that is inserted via the UI. When the value is null the token is generated based on $token attribute and $attributes.
+         * @param string[]    $post_types The list of supported post types.
          */
-        public function __construct(string $name, string $token, string $category, callable $callback, array $attributes = array(), ?string $value_to_insert = null)
+        public function __construct(string $name, string $token, string $category, callable $callback, array $attributes = array(), ?string $value_to_insert = null, array $post_types = array())
         {
         }
         /**
@@ -11285,6 +11298,14 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
          * @return string
          */
         public function get_value_to_insert(): string
+        {
+        }
+        /**
+         * Returns the list of supported post types.
+         *
+         * @return array|string[]
+         */
+        public function get_post_types(): array
         {
         }
         /**
@@ -12113,6 +12134,169 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
 }
 namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
     /**
+     * Exception thrown when HTML to text conversion fails
+     */
+    class Html2Text_Exception extends \Exception
+    {
+        /**
+         * Additional information about the error
+         *
+         * @var string
+         */
+        private string $more_info;
+        /**
+         * Constructor
+         *
+         * @param string $message Error message.
+         * @param string $more_info Additional error information.
+         */
+        public function __construct(string $message = '', string $more_info = '')
+        {
+        }
+        /**
+         * Returns additional error information
+         *
+         * @return string Additional error information.
+         */
+        public function get_more_info(): string
+        {
+        }
+    }
+    /**
+     * Converts HTML into plain text format suitable for email display
+     *
+     * Features:
+     * - Maintains links with href copied over
+     * - Information in the <head> is lost
+     * - Handles various HTML elements appropriately for text conversion
+     */
+    class Html2Text
+    {
+        /**
+         * Default options for HTML to text conversion
+         *
+         * @return array<string, bool|string> Default options array.
+         */
+        public static function default_options(): array
+        {
+        }
+        /**
+         * Converts HTML into plain text format
+         *
+         * @param string                             $html    The input HTML.
+         * @param boolean|array<string, bool|string> $options Conversion options.
+         * @return string The HTML converted to text.
+         * @throws Html2Text_Exception|\InvalidArgumentException If the HTML could not be loaded or invalid options are provided.
+         */
+        public static function convert(string $html, $options = array()): string
+        {
+        }
+        /**
+         * Unify newlines
+         *
+         * Converts \r\n to \n, and \r to \n. This means that all newlines
+         * (Unix, Windows, Mac) all become \ns.
+         *
+         * @param string $text Text with any number of \r, \r\n and \n combinations.
+         * @return string The fixed text.
+         */
+        public static function fix_newlines(string $text): string
+        {
+        }
+        /**
+         * Get non-breaking space character codes
+         *
+         * @return array<string> Array of nbsp codes.
+         */
+        public static function nbsp_codes(): array
+        {
+        }
+        /**
+         * Get zero-width non-joiner character codes
+         *
+         * @return array<string> Array of zwnj codes.
+         */
+        public static function zwnj_codes(): array
+        {
+        }
+        /**
+         * Remove leading or trailing spaces and excess empty lines from provided multiline text
+         *
+         * @param string $text Multiline text with any number of leading or trailing spaces or excess lines.
+         * @return string The fixed text.
+         */
+        public static function process_whitespace_newlines(string $text): string
+        {
+        }
+        /**
+         * Can we guess that this HTML is generated by Microsoft Office?
+         *
+         * @param string $html The HTML content.
+         * @return bool True if this appears to be an Office document.
+         */
+        public static function is_office_document(string $html): bool
+        {
+        }
+        /**
+         * Check if text is whitespace
+         *
+         * @param string $text The text to check.
+         * @return bool True if the text is whitespace.
+         */
+        public static function is_whitespace(string $text): bool
+        {
+        }
+        /**
+         * Parse HTML into a DOMDocument
+         *
+         * @param string                     $html    The input HTML.
+         * @param array<string, bool|string> $options Parsing options.
+         * @return \DOMDocument The parsed document tree.
+         * @throws Html2Text_Exception If the HTML could not be loaded.
+         */
+        private static function get_document(string $html, array $options): \DOMDocument
+        {
+        }
+        /**
+         * Replace any special characters with simple text versions
+         *
+         * This prevents output issues:
+         * - Convert non-breaking spaces to regular spaces; and
+         * - Convert zero-width non-joiners to '' (nothing).
+         *
+         * This is to match our goal of rendering documents as they would be rendered
+         * by a browser.
+         *
+         * @param string $text The text to process.
+         * @return string The processed text.
+         */
+        private static function render_text(string $text): string
+        {
+        }
+        /**
+         * Get the next child name
+         *
+         * @param \DOMNode|null $node The node to check.
+         * @return string|null The next child name.
+         */
+        private static function next_child_name(?\DOMNode $node): ?string
+        {
+        }
+        /**
+         * Iterate over a DOM node and convert to text
+         *
+         * @param \DOMNode                   $node                The DOM node.
+         * @param string|null                $prev_name           Previous node name.
+         * @param bool                       $in_pre              Whether we're in a pre block.
+         * @param bool                       $is_office_document  Whether this is an Office document.
+         * @param array<string, bool|string> $options             Conversion options.
+         * @return string The converted text.
+         */
+        private static function iterate_over_node(\DOMNode $node, ?string $prev_name, bool $in_pre, bool $is_office_document, array $options): string
+        {
+        }
+    }
+    /**
      * Class Renderer
      */
     class Renderer
@@ -12521,6 +12705,115 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Templates {
 }
 namespace Automattic\WooCommerce\EmailEditor\Engine {
     /**
+     * Class responsible for managing email editor assets.
+     */
+    class Assets_Manager
+    {
+        /**
+         * Settings controller instance.
+         *
+         * @var Settings_Controller
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller;
+        /**
+         * Theme controller instance.
+         *
+         * @var Theme_Controller
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller;
+        /**
+         * User theme instance.
+         *
+         * @var User_Theme
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\User_Theme $user_theme;
+        /**
+         * Email editor assets path.
+         *
+         * @var string
+         */
+        private string $assets_path = '';
+        /**
+         * Email editor assets URL.
+         *
+         * @var string
+         */
+        private string $assets_url = '';
+        /**
+         * Logger instance.
+         *
+         * @var Email_Editor_Logger
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger;
+        /**
+         * Assets Manager constructor with all dependencies.
+         *
+         * @param Settings_Controller $settings_controller Settings controller instance.
+         * @param Theme_Controller    $theme_controller Theme controller instance.
+         * @param User_Theme          $user_theme User theme instance.
+         * @param Email_Editor_Logger $logger Email editor logger instance.
+         */
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller $settings_controller, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller, \Automattic\WooCommerce\EmailEditor\Engine\User_Theme $user_theme, \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger)
+        {
+        }
+        /**
+         * Sets the path for the email editor assets.
+         *
+         * @param string $assets_path The path to the email editor assets directory.
+         * @return void
+         */
+        public function set_assets_path(string $assets_path): void
+        {
+        }
+        /**
+         *  Sets the URL for the email editor assets.
+         *
+         * @param string $assets_url The URL to the email editor assets directory.
+         * @return void
+         */
+        public function set_assets_url(string $assets_url): void
+        {
+        }
+        /**
+         * Initialize the assets manager.
+         */
+        public function initialize(): void
+        {
+        }
+        /**
+         * Enqueue admin styles that are needed by the email editor.
+         */
+        public function enqueue_admin_styles(): void
+        {
+        }
+        /**
+         * Render the email editor's required HTML and admin header.
+         *
+         * @param string $element_id Optional. The ID of the main container element. Default is 'woocommerce-email-editor'.
+         */
+        public function render_email_editor_html(string $element_id = 'woocommerce-email-editor'): void
+        {
+        }
+        /**
+         * Load editor assets.
+         *
+         * @param \WP_Post|\WP_Block_Template $edited_item The edited post or template.
+         * @param string                      $script_name The name of the registered script.
+         */
+        public function load_editor_assets($edited_item, string $script_name): void
+        {
+        }
+        /**
+         * Preload REST API data for the email editor.
+         *
+         * @param int|string $post_id  The post ID.
+         * @param string     $post_type The post type.
+         */
+        private function preload_rest_api_data($post_id, string $post_type): void
+        {
+        }
+    }
+    /**
      * This class is responsible checking the dependencies of the email editor.
      */
     class Dependency_Check
@@ -12651,6 +12944,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger;
         /**
+         * Property for Assets Manager that should be initialized.
+         *
+         * @var Assets_Manager Assets manager instance.
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Assets_Manager $assets_manager;
+        /**
          * Constructor.
          *
          * @param Email_Api_Controller          $email_api_controller Email API controller.
@@ -12659,8 +12958,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          * @param Send_Preview_Email            $send_preview_email Preview email controller.
          * @param Personalization_Tags_Registry $personalization_tags_controller Personalization tags registry that allows initializing personalization tags.
          * @param Email_Editor_Logger           $logger Logger instance.
+         * @param Assets_Manager                $assets_manager Assets manager instance.
          */
-        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Api_Controller $email_api_controller, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Patterns\Patterns $patterns, \Automattic\WooCommerce\EmailEditor\Engine\Send_Preview_Email $send_preview_email, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_controller, \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Api_Controller $email_api_controller, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Patterns\Patterns $patterns, \Automattic\WooCommerce\EmailEditor\Engine\Send_Preview_Email $send_preview_email, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_controller, \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger, \Automattic\WooCommerce\EmailEditor\Engine\Assets_Manager $assets_manager)
         {
         }
         /**
@@ -12754,14 +13054,6 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          * @return WP_Theme_JSON
          */
         public function extend_email_theme_styles(\WP_Theme_JSON $theme, \WP_Post $post): \WP_Theme_JSON
-        {
-        }
-        /**
-         * Enqueue admin styles that are needed by the email editor.
-         *
-         * @return void
-         */
-        public function enqueue_admin_styles(): void
         {
         }
         /**
@@ -13024,6 +13316,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller;
         /**
+         * Allowed iframe style handles.
+         *
+         * @var string[]
+         */
+        private array $allowed_iframe_style_handles = array();
+        /**
          * Assets for iframe editor (component styles, scripts, etc.)
          *
          * @var array
@@ -13126,11 +13424,195 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
+         * Get the allowed iframe style handles.
+         *
+         * @return array
+         */
+        private function get_allowed_iframe_style_handles()
+        {
+        }
+        /**
          * Method to initialize iframe assets.
          *
          * @return void
          */
         private function init_iframe_assets(): void
+        {
+        }
+    }
+    /**
+     * Site Style Sync Controller
+     *
+     * Manages the live synchronization of site styles to email templates.
+     * Converts site theme styles to email-compatible formats while maintaining
+     * visual consistency between the site and emails.
+     */
+    class Site_Style_Sync_Controller
+    {
+        /**
+         * Current site theme data
+         *
+         * @var WP_Theme_JSON|null
+         */
+        private ?\WP_Theme_JSON $site_theme = null;
+        /**
+         * Email-safe fonts
+         *
+         * @var array
+         */
+        private $email_safe_fonts = array();
+        /**
+         * Constructor
+         */
+        public function __construct()
+        {
+        }
+        /**
+         * Initialize the sync controller
+         *
+         * Hook into theme changes to trigger automatic sync
+         *
+         * @return void
+         */
+        public function initialize(): void
+        {
+        }
+        /**
+         * Sync site styles to email theme format
+         *
+         * @return array Email-compatible theme data.
+         */
+        public function sync_site_styles(): array
+        {
+        }
+        /**
+         * Getter for site theme.
+         *
+         * @return ?WP_Theme_JSON Synced site theme.
+         */
+        public function get_theme(): ?\WP_Theme_JSON
+        {
+        }
+        /**
+         * Check if site style sync is enabled
+         *
+         * @return bool
+         */
+        public function is_sync_enabled(): bool
+        {
+        }
+        /**
+         * Invalidate cached site theme data
+         *
+         * @return void
+         */
+        public function invalidate_site_theme_cache(): void
+        {
+        }
+        /**
+         * Get site theme data
+         *
+         * @return WP_Theme_JSON
+         */
+        private function get_site_theme(): \WP_Theme_JSON
+        {
+        }
+        /**
+         * Sync settings data from site theme to email-compatible format
+         *
+         * @param array $site_settings Site theme settings.
+         * @return array Email-compatible settings.
+         */
+        private function sync_settings_data(array $site_settings): array
+        {
+        }
+        /**
+         * Sync styles data from site theme to email-compatible format
+         *
+         * @param array $site_styles Site theme styles.
+         * @return array Email-compatible styles.
+         */
+        private function sync_styles_data(array $site_styles): array
+        {
+        }
+        /**
+         * Get email-safe fonts
+         *
+         * @return array Email-safe fonts.
+         */
+        public function get_email_safe_fonts(): array
+        {
+        }
+        /**
+         * Convert site color styles to email format
+         *
+         * @param array $color_styles Site color styles.
+         * @return array Email-compatible color styles.
+         */
+        private function convert_color_styles(array $color_styles): array
+        {
+        }
+        /**
+         * Convert site typography styles to email format
+         *
+         * @param array $typography_styles Site typography styles.
+         * @return array Email-compatible typography styles.
+         */
+        private function convert_typography_styles(array $typography_styles): array
+        {
+        }
+        /**
+         * Convert site spacing styles to email format
+         *
+         * @param array $spacing_styles Site spacing styles.
+         * @return array Email-compatible spacing styles.
+         */
+        private function convert_spacing_styles(array $spacing_styles): array
+        {
+        }
+        /**
+         * Convert site element styles to email format
+         *
+         * @param array $element_styles Site element styles.
+         * @return array Email-compatible element styles.
+         */
+        private function convert_element_styles(array $element_styles): array
+        {
+        }
+        /**
+         * Convert individual element style to email format
+         *
+         * @param array $element_style Site element style.
+         * @return array Email-compatible element style.
+         */
+        private function convert_element_style(array $element_style): array
+        {
+        }
+        /**
+         * Convert font family to email-safe alternative
+         *
+         * @param string $font_family Original font family.
+         * @return string Email-safe font family.
+         */
+        private function convert_to_email_safe_font(string $font_family): string
+        {
+        }
+        /**
+         * Convert size value to px format.
+         *
+         * @param string $size Original size value.
+         * @return string Size in px format.
+         */
+        private function convert_to_px_size(string $size): string
+        {
+        }
+        /**
+         * Convert spacing values to px format.
+         *
+         * @param string|array $spacing_values Original spacing values.
+         * @return string|array Spacing values in px format.
+         */
+        private function convert_spacing_values($spacing_values)
         {
         }
     }
@@ -13158,6 +13640,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          * @var User_Theme
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\User_Theme $user_theme;
+        /**
+         * Site style sync controller
+         *
+         * @var Site_Style_Sync_Controller
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Site_Style_Sync_Controller $site_style_sync_controller;
         /**
          * Theme_Controller constructor.
          */
@@ -13890,7 +14378,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
     }
     /**
-     * This renderer covers both core/paragraph and core/heading blocks
+     * This renderer covers both core/paragraph, core/heading and core/site-title blocks.
      */
     class Text extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
@@ -13927,7 +14415,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
         /**
          * List of supported blocks in the email editor.
          */
-        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links');
+        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links', 'core/site-logo', 'core/site-title');
         /**
          * Cache renderers by block name.
          *
@@ -14199,6 +14687,38 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * }
          */
         public static function get_block_styles(array $block_attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, array $properties)
+        {
+        }
+        /**
+         * Convert a CSS value to a static px value for email clients.
+         *
+         * This is mostly for use in font size, spacing, etc.
+         *
+         * @param string $input The CSS value to convert.
+         * @param bool   $use_fallback Whether to use the fallback value if the input is not a valid CSS value.
+         * @param ?int   $base_font_size The base font size to use for conversion.
+         * @return ?string The static pixel value (e.g., 30px).
+         */
+        public static function convert_to_px(string $input, bool $use_fallback = true, ?int $base_font_size = 16): ?string
+        {
+        }
+        /**
+         * Remove the CSS unit from a string.
+         *
+         * @param string $input The string to remove the unit from.
+         * @return string The string without the unit.
+         */
+        public static function remove_css_unit(string $input): string
+        {
+        }
+        /**
+         * Convert a CSS clamp() value to a static px value for email clients.
+         *
+         * @param string $clamp_str The clamp() CSS string (e.g., "clamp(30px, 5vw, 50px)").
+         * @param string $strategy "min"|"max"|"avg" — which strategy to use.
+         * @return ?string The static pixel value (e.g., 30px).
+         */
+        public static function clamp_to_static_px($clamp_str, $strategy = 'min'): ?string
         {
         }
     }
