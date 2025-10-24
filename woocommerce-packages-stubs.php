@@ -13589,6 +13589,30 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
+         * Resolve and assign a single style property
+         *
+         * @param array         $styles     The source styles array.
+         * @param string        $property   The property key to resolve.
+         * @param array         $target     The target array to assign the value to.
+         * @param callable|null $processor  Optional processor function for the resolved value.
+         * @return bool True if the property was resolved and assigned, false otherwise.
+         */
+        private function resolve_and_assign(array $styles, string $property, array &$target, ?callable $processor = null): bool
+        {
+        }
+        /**
+         * Styles may contain references to other styles.
+         * This function resolves the reference to the actual value.
+         * https://make.wordpress.org/core/2022/10/11/reference-styles-values-in-theme-json/
+         * It is not allowed to reference another reference so we don't need to check recursively.
+         *
+         * @param mixed $style_value Style value that might contain a reference.
+         * @return mixed Resolved style value or null when the reference is not found.
+         */
+        private function resolve_style_value($style_value)
+        {
+        }
+        /**
          * Convert font family to email-safe alternative
          *
          * @param string $font_family Original font family.
@@ -13868,6 +13892,43 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         abstract protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string;
     }
     /**
+     * Audio block renderer.
+     * This renderer handles core/audio blocks for email.
+     */
+    class Audio extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Render the block.
+         *
+         * @param string            $block_content The block content.
+         * @param array             $parsed_block The parsed block.
+         * @param Rendering_Context $rendering_context The rendering context.
+         * @return string
+         */
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Renders the audio block content as an audio player for email.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context (required by parent contract but unused in this implementation).
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Gets the audio icon URL.
+         *
+         * @return string The audio icon URL.
+         */
+        private function get_audio_icon_url(): string
+        {
+        }
+    }
+    /**
      * Renders a button block.
      *
      * @see https://www.activecampaign.com/blog/email-buttons
@@ -14015,6 +14076,282 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
     }
     /**
+     * Cover block renderer.
+     * This renderer handles core/cover blocks with proper email-friendly HTML layout.
+     */
+    class Cover extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the cover block content using a table-based layout for email compatibility.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Build the email-friendly layout for cover blocks.
+         *
+         * @param string            $inner_content Inner content.
+         * @param array             $block_attrs Block attributes.
+         * @param string            $block_content Original block content.
+         * @param string            $background_image Background image URL.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string Rendered HTML.
+         */
+        private function build_email_layout(string $inner_content, array $block_attrs, string $block_content, string $background_image, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Extract background image from block attributes or HTML content.
+         *
+         * @param array  $block_attrs Block attributes.
+         * @param string $block_content Original block content.
+         * @return string Background image URL or empty string.
+         */
+        private function extract_background_image(array $block_attrs, string $block_content): string
+        {
+        }
+        /**
+         * Get minimum height from block attributes.
+         *
+         * @param array $block_attrs Block attributes.
+         * @return string Minimum height value or empty string.
+         */
+        private function get_minimum_height(array $block_attrs): string
+        {
+        }
+        /**
+         * Get background color from block attributes.
+         *
+         * @param array             $block_attrs Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string Background color or empty string.
+         */
+        private function get_background_color(array $block_attrs, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Validate and sanitize a color value, returning empty string for invalid colors.
+         *
+         * @param string $color The color value to validate and sanitize.
+         * @return string Sanitized color or empty string if invalid.
+         */
+        private function validate_and_sanitize_color(string $color): string
+        {
+        }
+        /**
+         * Build the cover content with background image or color.
+         *
+         * @param string $inner_content Inner content.
+         * @return string Cover content HTML.
+         */
+        private function build_cover_content(string $inner_content): string
+        {
+        }
+    }
+    /**
+     * Embed block renderer.
+     * This renderer handles core/embed blocks, detecting audio and video provider embeds and rendering them appropriately.
+     *
+     * Audio providers: Spotify, SoundCloud, Pocket Casts, Mixcloud, ReverbNation - rendered as audio players.
+     * Video providers: YouTube - rendered as video thumbnails with play buttons.
+     */
+    class Embed extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Supported audio providers with their configuration.
+         *
+         * @var array
+         */
+        private const AUDIO_PROVIDERS = array('pocket-casts' => array('domains' => array('pca.st'), 'base_url' => 'https://pca.st/'), 'spotify' => array('domains' => array('open.spotify.com'), 'base_url' => 'https://open.spotify.com/'), 'soundcloud' => array('domains' => array('soundcloud.com'), 'base_url' => 'https://soundcloud.com/'), 'mixcloud' => array('domains' => array('mixcloud.com'), 'base_url' => 'https://www.mixcloud.com/'), 'reverbnation' => array('domains' => array('reverbnation.com'), 'base_url' => 'https://www.reverbnation.com/'));
+        /**
+         * Supported video providers with their configuration.
+         *
+         * @var array
+         */
+        private const VIDEO_PROVIDERS = array('youtube' => array('domains' => array('youtube.com', 'youtu.be'), 'base_url' => 'https://www.youtube.com/'));
+        /**
+         * Get all supported providers (audio and video).
+         *
+         * @return array All supported providers.
+         */
+        private function get_all_supported_providers(): array
+        {
+        }
+        /**
+         * Get all provider configurations (audio and video).
+         *
+         * @return array All provider configurations.
+         */
+        private function get_all_provider_configs(): array
+        {
+        }
+        /**
+         * Detect provider from content by checking against known domains.
+         *
+         * @param string $content Content to check for provider domains.
+         * @return string Provider name or empty string if not found.
+         */
+        private function detect_provider_from_domains(string $content): string
+        {
+        }
+        /**
+         * Validate URL using both filter_var and wp_http_validate_url.
+         *
+         * @param string $url URL to validate.
+         * @return bool True if URL is valid.
+         */
+        private function is_valid_url(string $url): bool
+        {
+        }
+        /**
+         * Create fallback attributes for link rendering.
+         *
+         * @param string $url URL for the fallback.
+         * @param string $label Label for the fallback.
+         * @return array Fallback attributes.
+         */
+        private function create_fallback_attributes(string $url, string $label): array
+        {
+        }
+        /**
+         * Renders the embed block.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Renders the embed block content.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context (required by parent contract but unused in this implementation).
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Get supported audio or video provider from block attributes or content.
+         *
+         * @param array  $attr Block attributes.
+         * @param string $block_content Block content.
+         * @return string Provider name or empty string if not supported.
+         */
+        private function get_supported_provider(array $attr, string $block_content): string
+        {
+        }
+        /**
+         * Extract URL from block content using DOM parsing.
+         *
+         * @param string $block_content Block content HTML.
+         * @return string Extracted URL or empty string.
+         */
+        private function extract_url_from_content(string $block_content): string
+        {
+        }
+        /**
+         * Extract provider URL from block attributes or content.
+         *
+         * @param array  $attr Block attributes.
+         * @param string $block_content Block content.
+         * @return string Provider URL or empty string.
+         */
+        private function extract_provider_url(array $attr, string $block_content): string
+        {
+        }
+        /**
+         * Get appropriate label for the provider.
+         *
+         * @param string $provider Provider name.
+         * @param array  $attr Block attributes.
+         * @return string Label for the provider.
+         */
+        private function get_provider_label(string $provider, array $attr): string
+        {
+        }
+        /**
+         * Get translated label for a provider.
+         *
+         * @param string $provider Provider name.
+         * @return string Translated label for the provider.
+         */
+        private function get_translated_provider_label(string $provider): string
+        {
+        }
+        /**
+         * Render a simple link fallback for non-supported embeds.
+         *
+         * @param array             $attr Block attributes.
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string Rendered link or empty string if no valid URL.
+         */
+        private function render_link_fallback(array $attr, string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Get base URL for a provider when specific URL extraction fails.
+         *
+         * @param string $provider Provider name.
+         * @return string Base URL for the provider or empty string.
+         */
+        private function get_provider_base_url(string $provider): string
+        {
+        }
+        /**
+         * Check if a provider is a video provider.
+         *
+         * @param string $provider Provider name.
+         * @return bool True if video provider.
+         */
+        private function is_video_provider(string $provider): bool
+        {
+        }
+        /**
+         * Render a video embed using the Video renderer.
+         *
+         * @param string            $url URL of the video.
+         * @param string            $provider Provider name.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @param string            $block_content Original block content.
+         * @return string Rendered video embed or fallback.
+         */
+        private function render_video_embed(string $url, string $provider, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, string $block_content): string
+        {
+        }
+        /**
+         * Get video thumbnail URL for supported providers.
+         *
+         * @param string $url Video URL.
+         * @param string $provider Provider name.
+         * @return string Thumbnail URL or empty string.
+         */
+        private function get_video_thumbnail_url(string $url, string $provider): string
+        {
+        }
+        /**
+         * Extract YouTube video thumbnail URL.
+         *
+         * @param string $url YouTube video URL.
+         * @return string Thumbnail URL or empty string.
+         */
+        private function get_youtube_thumbnail(string $url): string
+        {
+        }
+    }
+    /**
      * Fallback block renderer.
      * This renderer is used when no specific renderer is found for a block.
      *
@@ -14034,6 +14371,96 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @return string
          */
         protected function render_content($block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+    }
+    /**
+     * Gallery block renderer.
+     * This renderer handles core/gallery blocks with proper email-friendly HTML layout.
+     */
+    class Gallery extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the gallery block content using a table-based layout.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Extract all images from gallery content with their links and captions.
+         *
+         * @param string $block_content The rendered gallery block HTML.
+         * @param array  $parsed_block The parsed block data.
+         * @return array Array of sanitized image HTML strings.
+         */
+        private function extract_images_from_gallery_content(string $block_content, array $parsed_block): array
+        {
+        }
+        /**
+         * Extract and sanitize image with optional link and caption from HTML content.
+         * This is the unified method that handles all image extraction scenarios.
+         *
+         * @param string $html_content HTML content containing the image.
+         * @return string Sanitized image HTML with proper link and caption handling.
+         */
+        private function extract_image_from_html(string $html_content): string
+        {
+        }
+        /**
+         * Extract gallery-level caption from the original block content.
+         *
+         * @param string $block_content Original block content.
+         * @return string Gallery caption or empty string if not found.
+         */
+        private function extract_gallery_caption(string $block_content): string
+        {
+        }
+        /**
+         * Build the email-friendly layout for gallery blocks.
+         *
+         * @param array             $gallery_images Array of image HTML strings.
+         * @param array             $parsed_block Full parsed block data.
+         * @param string            $block_content Original block content.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string Rendered HTML.
+         */
+        private function build_email_layout(array $gallery_images, array $parsed_block, string $block_content, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Build the gallery table structure with proper rows and cells.
+         * Uses the tiled gallery pattern: separate tables for each row, then wrap in main table.
+         *
+         * @param array $gallery_images Array of image HTML strings.
+         * @param int   $columns Number of columns.
+         * @return string Gallery table HTML.
+         */
+        private function build_gallery_table(array $gallery_images, int $columns): string
+        {
+        }
+        /**
+         * Build a single gallery row as a separate table (following tiled gallery pattern).
+         *
+         * @param array $row_images Images for this row.
+         * @param int   $total_columns Total number of columns.
+         * @param int   $cell_padding Cell padding.
+         * @return string Row table HTML.
+         */
+        private function build_gallery_row_table(array $row_images, int $total_columns, int $cell_padding): string
+        {
+        }
+        /**
+         * Get the columns value from block attributes.
+         *
+         * @param array $block_attrs Block attributes.
+         * @return int Number of columns (1-5).
+         */
+        private function get_columns_from_attributes(array $block_attrs): int
         {
         }
     }
@@ -14220,6 +14647,74 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
     }
     /**
+     * Media-text block renderer.
+     * This renderer handles core/media-text blocks with proper email-friendly HTML layout.
+     */
+    class Media_Text extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Renders the media-text block content using a direct table-based layout.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Extract media content from the HTML block content.
+         *
+         * @param string $block_content Raw block content.
+         * @return string Media HTML content or empty string if not found.
+         */
+        private function extract_media_from_html(string $block_content): string
+        {
+        }
+        /**
+         * Build the email-friendly layout for media-text blocks.
+         *
+         * @param string            $media_content Media HTML content.
+         * @param string            $text_content Text content.
+         * @param array             $block_attrs Block attributes.
+         * @param string            $block_content Original block content.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string Rendered HTML.
+         */
+        private function build_email_layout(string $media_content, string $text_content, array $block_attrs, string $block_content, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Get the vertical alignment value from block attributes.
+         *
+         * @param array $block_attrs Block attributes.
+         * @return string CSS vertical-align value.
+         */
+        private function get_vertical_alignment_from_attributes(array $block_attrs): string
+        {
+        }
+        /**
+         * Get the media width value from block attributes.
+         *
+         * @param array $block_attrs Block attributes.
+         * @return int Media width percentage (1-99).
+         */
+        private function get_media_width_from_attributes(array $block_attrs): int
+        {
+        }
+        /**
+         * Wrap media content with a link if it's not already wrapped.
+         *
+         * @param string $media_content The media content (inner content from figure element).
+         * @param string $href The URL to link to.
+         * @return string Media content wrapped with link.
+         */
+        private function wrap_media_with_link(string $media_content, string $href): string
+        {
+        }
+    }
+    /**
      * Renders a quote block.
      */
     class Quote extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
@@ -14378,6 +14873,164 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
     }
     /**
+     * Renders a table block.
+     */
+    class Table extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Valid text alignment values.
+         */
+        private const VALID_TEXT_ALIGNMENTS = array('left', 'center', 'right');
+        /**
+         * Renders the block content.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Process table content to ensure email client compatibility.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @param bool              $is_striped_table Whether this is a striped table.
+         * @return string
+         */
+        private function process_table_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, bool $is_striped_table = false): string
+        {
+        }
+        /**
+         * Get custom border color from block attributes.
+         *
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string|null Custom border color or null if not set.
+         */
+        private function get_custom_border_color(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): ?string
+        {
+        }
+        /**
+         * Get custom border width from block attributes.
+         *
+         * @param array $parsed_block Parsed block.
+         * @return string|null Custom border width or null if not set.
+         */
+        private function get_custom_border_width(array $parsed_block): ?string
+        {
+        }
+        /**
+         * Get custom border style from block attributes.
+         *
+         * @param array $parsed_block Parsed block.
+         * @return string Custom border style or 'solid' as default.
+         */
+        private function get_custom_border_style(array $parsed_block): string
+        {
+        }
+        /**
+         * Add thicker borders for table headers and footers when no custom border is set.
+         *
+         * @param \WP_HTML_Tag_Processor $html HTML tag processor.
+         * @param string                 $base_styles Base cell styles.
+         * @param string                 $border_color Border color.
+         * @param string                 $current_section Current table section (thead, tbody, tfoot).
+         * @param string|null            $custom_border_width Custom border width if set.
+         * @return string Updated cell styles.
+         */
+        private function add_header_footer_borders(\WP_HTML_Tag_Processor $html, string $base_styles, string $border_color, string $current_section = '', ?string $custom_border_width = null): string
+        {
+        }
+        /**
+         * Get text alignment for a table cell.
+         *
+         * @param \WP_HTML_Tag_Processor $html HTML tag processor.
+         * @return string Text alignment value (left, center, right).
+         */
+        private function get_cell_text_alignment(\WP_HTML_Tag_Processor $html): string
+        {
+        }
+        /**
+         * Check if table has fixed layout class.
+         *
+         * @param string $class_attr Class attribute string.
+         * @return bool True if has-fixed-layout class is present.
+         */
+        private function has_fixed_layout(string $class_attr): bool
+        {
+        }
+        /**
+         * Extract table content and caption from figure wrapper if present.
+         *
+         * @param string $block_content Block content.
+         * @return array Array with 'table' and 'caption' keys.
+         */
+        private function extract_table_and_caption_from_figure(string $block_content): array
+        {
+        }
+        /**
+         * Apply CSS styles directly to the table element.
+         *
+         * @param string $table_content Table HTML content.
+         * @param string $styles CSS styles to apply.
+         * @return string Table content with styles applied.
+         */
+        private function apply_styles_to_table_element(string $table_content, string $styles): string
+        {
+        }
+        /**
+         * Get default border widths for table element when individual border colors are present.
+         *
+         * @param string $existing_style Existing style attribute of the table element.
+         * @return string CSS border width styles or empty string if not needed.
+         */
+        private function get_default_border_widths(string $existing_style): string
+        {
+        }
+        /**
+         * Add a CSS class to the table element.
+         *
+         * @param string $table_content Table HTML content.
+         * @param string $class_name CSS class to add.
+         * @return string Table content with class added.
+         */
+        private function add_class_to_table_element(string $table_content, string $class_name): string
+        {
+        }
+        /**
+         * Extract typography styles from CSS string for caption.
+         *
+         * @param string $css CSS string to extract typography from.
+         * @return string Typography CSS for caption.
+         */
+        private function extract_typography_styles_for_caption(string $css): string
+        {
+        }
+        /**
+         * Check if the table has striped styling.
+         *
+         * @param string $block_content Block content.
+         * @param array  $parsed_block Parsed block.
+         * @return bool True if it's a striped table, false otherwise.
+         */
+        private function is_striped_table(string $block_content, array $parsed_block): bool
+        {
+        }
+        /**
+         * Validate if the content is a valid table HTML.
+         *
+         * @param string $content The content to validate.
+         * @return bool True if it's a valid table, false otherwise.
+         */
+        private function is_valid_table_content(string $content): bool
+        {
+        }
+    }
+    /**
      * This renderer covers both core/paragraph, core/heading and core/site-title blocks.
      */
     class Text extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
@@ -14405,6 +15058,80 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         {
         }
     }
+    /**
+     * Video block renderer.
+     * This renderer handles core/video blocks by reusing the cover block renderer
+     * to show a thumbnail with a play button overlay.
+     */
+    class Video extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Cover
+    {
+        /**
+         * Renders the video block content by transforming it into a cover block structure.
+         * Shows the video poster/thumbnail with a play button overlay using the parent cover renderer.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Extract poster URL from block attributes.
+         *
+         * @param array  $block_attrs Block attributes.
+         * @param string $block_content Original block content (unused, kept for consistency).
+         * @return string Poster URL or empty string.
+         */
+        private function extract_poster_url(array $block_attrs, string $block_content): string
+        {
+        }
+        /**
+         * Extract video URL from block content.
+         *
+         * @param string $block_content Block content HTML.
+         * @return string Video URL or empty string.
+         */
+        private function extract_video_url(string $block_content): string
+        {
+        }
+        /**
+         * Transform a video block into a cover block structure.
+         *
+         * @param array  $video_block Original video block.
+         * @param string $poster_url Poster URL to use as background.
+         * @return array Cover block structure.
+         */
+        private function transform_to_cover_block(array $video_block, string $poster_url): array
+        {
+        }
+        /**
+         * Create the play button HTML with optional link.
+         *
+         * @param string $link_url Optional URL to link to.
+         * @return string Play button HTML.
+         */
+        private function create_play_button_html(string $link_url = ''): string
+        {
+        }
+        /**
+         * Get the URL for the play button icon.
+         *
+         * @return string Play button icon URL.
+         */
+        private function get_play_icon_url(): string
+        {
+        }
+        /**
+         * Get the current post permalink with security validation.
+         *
+         * @return string Post permalink or empty string if invalid.
+         */
+        private function get_current_post_url(): string
+        {
+        }
+    }
 }
 namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
     /**
@@ -14413,9 +15140,18 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
     class Initializer
     {
         /**
-         * List of supported blocks in the email editor.
+         * List of supported WordPress core blocks in the email editor.
          */
-        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links', 'core/site-logo', 'core/site-title');
+        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links', 'core/site-logo', 'core/site-title', 'core/table');
+        /**
+         * List of blocks that only need rendering capabilities (not available in email editor).
+         *
+         * To add a new render-only block:
+         * 1. Add the block name to this array
+         * 2. Optionally create a specific renderer in the Renderer/Blocks directory
+         * 3. Add the renderer case in the get_block_renderer method
+         */
+        const RENDER_ONLY_BLOCK_TYPES = array('core/gallery', 'core/media-text', 'core/audio', 'core/embed', 'core/cover', 'core/video', 'core/post-title');
         /**
          * Cache renderers by block name.
          *
@@ -14445,10 +15181,14 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
         {
         }
         /**
-         * Set `supports.email = true` and configure render_email_callback for supported blocks.
+         * Configure block settings for email editor support and rendering.
+         *
+         * This method handles two types of blocks:
+         * 1. Editor-available blocks: Set supports.email = true and render_email_callback
+         * 2. Render-only blocks: Only set render_email_callback (not available in editor)
          *
          * @param array $settings Block settings.
-         * @return array
+         * @return array Modified block settings.
          */
         public function update_block_settings(array $settings): array
         {
@@ -14543,6 +15283,124 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * @param \DOMElement $element The element to get the inner HTML from.
          */
         public function get_element_inner_html(\DOMElement $element): string
+        {
+        }
+    }
+    /**
+     * Helper class for HTML processing and manipulation.
+     */
+    class Html_Processing_Helper
+    {
+        /**
+         * Clean CSS classes by removing background and border related classes.
+         *
+         * @param string $classes CSS classes to clean.
+         * @return string Cleaned CSS classes.
+         */
+        public static function clean_css_classes(string $classes): string
+        {
+        }
+        /**
+         * Sanitize CSS value to prevent injection attacks.
+         *
+         * @param string $value CSS value to sanitize.
+         * @return string Sanitized CSS value or empty string if invalid.
+         */
+        public static function sanitize_css_value(string $value): string
+        {
+        }
+        /**
+         * Sanitize dimension value to ensure it's a valid CSS dimension.
+         *
+         * Supports numeric values (converted to px) and standard CSS units.
+         *
+         * @param mixed $value The dimension value to sanitize.
+         * @return string Sanitized dimension value or empty string if invalid.
+         */
+        public static function sanitize_dimension_value($value): string
+        {
+        }
+        /**
+         * Sanitize color value to ensure it's a valid color format.
+         *
+         * Supports hex colors, rgb/rgba, hsl/hsla, named colors, and CSS variables.
+         *
+         * @param string $color The color value to sanitize.
+         * @return string Sanitized color value or safe default if invalid.
+         */
+        public static function sanitize_color(string $color): string
+        {
+        }
+        /**
+         * Normalize rel attribute by lowercasing, deduplicating tokens, and ensuring required tokens.
+         *
+         * @param string|null $rel_value Current rel attribute value.
+         * @param bool        $require_security_tokens Whether to require noopener and noreferrer tokens.
+         * @return string Normalized rel attribute value.
+         */
+        private static function normalize_rel_attribute(?string $rel_value, bool $require_security_tokens = false): string
+        {
+        }
+        /**
+         * Validate and sanitize specific caption attributes for security.
+         *
+         * @param \WP_HTML_Tag_Processor $html HTML tag processor.
+         * @param string                 $attr_name Attribute name to validate.
+         */
+        public static function validate_caption_attribute(\WP_HTML_Tag_Processor $html, string $attr_name): void
+        {
+        }
+        /**
+         * Get list of safe CSS properties for typography and basic styling.
+         *
+         * @return array Array of safe CSS property names.
+         */
+        public static function get_safe_css_properties(): array
+        {
+        }
+        /**
+         * Get list of safe CSS properties for caption typography (excludes background properties).
+         *
+         * @return array Array of safe CSS property names for captions.
+         */
+        public static function get_caption_css_properties(): array
+        {
+        }
+        /**
+         * Validate HTML container attributes for security before content extraction.
+         * This method checks if a container element (like figcaption, span) has safe attributes.
+         *
+         * @param string $container_html Full container HTML (e.g., <figcaption class="...">content</figcaption>).
+         * @return bool True if container attributes are safe, false otherwise.
+         */
+        public static function validate_container_attributes(string $container_html): bool
+        {
+        }
+        /**
+         * Sanitize caption HTML to allow only specific tags and attributes.
+         *
+         * @param string $caption_html Raw caption HTML.
+         * @return string Sanitized caption HTML.
+         */
+        public static function sanitize_caption_html(string $caption_html): string
+        {
+        }
+        /**
+         * Sanitize image HTML while preserving necessary attributes for email rendering.
+         *
+         * @param string $image_html Raw image HTML.
+         * @return string Sanitized image HTML.
+         */
+        public static function sanitize_image_html(string $image_html): string
+        {
+        }
+        /**
+         * Sanitize inline styles for image elements - only allow safe properties for email rendering.
+         *
+         * @param string $style_value Raw style value.
+         * @return string Sanitized style value.
+         */
+        private static function sanitize_image_styles(string $style_value): string
         {
         }
     }
@@ -14786,6 +15644,501 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * @return string The attributes string.
          */
         private static function build_attributes_string(array $attributes): string
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks {
+    /**
+     * Shared functionality for block renderers.
+     */
+    abstract class Abstract_Product_Block_Renderer extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
+    {
+        /**
+         * Get product from block context.
+         *
+         * @param array $parsed_block Parsed block.
+         * @return \WC_Product|null
+         */
+        protected function get_product_from_context(array $parsed_block): ?\WC_Product
+        {
+        }
+    }
+    /**
+     * Renders a WooCommerce product button block for email.
+     */
+    class Product_Button extends \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\Abstract_Product_Block_Renderer
+    {
+        /**
+         * Get styles for the wrapper element.
+         *
+         * @param array             $block_attributes Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return array
+         */
+        private function get_wrapper_styles(array $block_attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): array
+        {
+        }
+        /**
+         * Get styles for the button link element.
+         *
+         * @param array             $block_attributes Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return array
+         */
+        private function get_button_styles(array $block_attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): array
+        {
+        }
+        /**
+         * Render the product button block content for email.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+    }
+    /**
+     * Renders a product collection block for email.
+     */
+    class Product_Collection extends \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\Abstract_Product_Block_Renderer
+    {
+        /**
+         * Render the product collection block content for email.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Render the product template block.
+         *
+         * @param array     $inner_block Inner block data.
+         * @param \WP_Query $query WP_Query object.
+         * @return string
+         */
+        private function render_product_template(array $inner_block, \WP_Query $query): string
+        {
+        }
+        /**
+         * Render product grid using HTML table structure for email compatibility.
+         *
+         * @param array $products Array of WC_Product objects.
+         * @param array $inner_block Inner block data.
+         * @return string
+         */
+        private function render_product_grid(array $products, array $inner_block): string
+        {
+        }
+        /**
+         * Render default product content when no inner blocks are present.
+         *
+         * @param \WC_Product|null $product Product object.
+         * @param array            $template_block Inner block data.
+         * @return string
+         */
+        private function render_product_content(?\WC_Product $product, array $template_block): string
+        {
+        }
+        /**
+         * Prepare and execute a query for the Product Collection block using the original QueryBuilder.
+         *
+         * @param array $parsed_block Parsed block data.
+         * @return WP_Query
+         */
+        private function prepare_and_execute_query(array $parsed_block): \WP_Query
+        {
+        }
+        /**
+         * Check if all stock statuses are selected (meaning no filtering needed).
+         *
+         * @param array $stock_status Stock status values from block attributes.
+         * @return bool
+         */
+        private function is_all_stock_statuses(array $stock_status): bool
+        {
+        }
+        /**
+         * Build tax query from taxQuery block attributes.
+         *
+         * @param array $tax_query_input Tax query input from block attributes.
+         * @return array
+         */
+        private function build_tax_query(array $tax_query_input): array
+        {
+        }
+        /**
+         * Build attribute query from woocommerceAttributes block attributes.
+         *
+         * @param array $attributes Attribute filters from block attributes.
+         * @return array
+         */
+        private function build_attribute_query(array $attributes): array
+        {
+        }
+        /**
+         * Get specific product IDs for collection types that need them (upsell, cross-sell, related).
+         *
+         * @param string $collection Collection type.
+         * @param array  $parsed_block Parsed block data.
+         * @return array Array of product IDs or empty array.
+         */
+        private function get_collection_specific_product_ids(string $collection, array $parsed_block): array
+        {
+        }
+        /**
+         * Get upsell product IDs.
+         *
+         * @param array $parsed_block Parsed block data.
+         * @return array Array of upsell product IDs.
+         */
+        private function get_upsell_product_ids(array $parsed_block): array
+        {
+        }
+        /**
+         * Get cross-sell product IDs.
+         *
+         * @param array $parsed_block Parsed block data.
+         * @return array Array of cross-sell product IDs.
+         */
+        private function get_cross_sell_product_ids(array $parsed_block): array
+        {
+        }
+        /**
+         * Get related product IDs.
+         *
+         * @param array $parsed_block Parsed block data.
+         * @return array Array of related product IDs.
+         */
+        private function get_related_product_ids(array $parsed_block): array
+        {
+        }
+        /**
+         * Get product references for collections (handles different contexts).
+         *
+         * @param array $parsed_block Parsed block data.
+         * @return array Array of product IDs or empty array.
+         */
+        private function get_product_references_for_collection(array $parsed_block): array
+        {
+        }
+        /**
+         * Render a no results message.
+         *
+         * @return string
+         */
+        private function render_no_results_message(): string
+        {
+        }
+    }
+    /**
+     * Renders a WooCommerce product image block for email.
+     */
+    class Product_Image extends \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\Abstract_Product_Block_Renderer
+    {
+        /**
+         * Render the product image block content for email.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Process inner blocks (like sale badges) from block content.
+         * Handles special positioning for email compatibility.
+         *
+         * @param array             $parsed_block Parsed block.
+         * @param \WC_Product       $product Product object.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return array Array with 'badges' and 'other_content' keys
+         */
+        private function process_inner_blocks(array $parsed_block, \WC_Product $product, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): array
+        {
+        }
+        /**
+         * Render a sale badge with email-compatible overlay positioning.
+         *
+         * @param array             $badge_block Badge block data.
+         * @param \WC_Product       $product Product object.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function render_overlay_badge(array $badge_block, \WC_Product $product, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Create overlay structure for email compatibility.
+         * Uses Faux Absolute Position with badge-below fallback for better cross-client support.
+         *
+         * @param string           $image_html Image HTML.
+         * @param string           $badges_html Badges HTML.
+         * @param string           $other_content Other inner content.
+         * @param string           $badge_alignment Badge alignment.
+         * @param \WC_Product|null $product Product object for link.
+         * @param bool             $show_product_link Whether to show product link.
+         * @return string
+         */
+        private function create_overlay_structure(string $image_html, string $badges_html, string $other_content, string $badge_alignment, ?\WC_Product $product = null, bool $show_product_link = false): string
+        {
+        }
+        /**
+         * Extract image width from HTML for positioning calculations.
+         *
+         * @param string $image_html Image HTML.
+         * @return float Image width in pixels.
+         */
+        private function extract_image_width(string $image_html): float
+        {
+        }
+        /**
+         * Extract image height from HTML for positioning calculations.
+         *
+         * @param string $image_html Image HTML.
+         * @return float Image height in pixels.
+         */
+        private function extract_image_height(string $image_html): float
+        {
+        }
+        /**
+         * When the width is not set, it's important to get it for the image to be displayed correctly.
+         * Based on the email Image renderer logic.
+         *
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return array
+         */
+        private function add_image_size_when_missing(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): array
+        {
+        }
+        /**
+         * Parse block attributes with defaults.
+         *
+         * @param array $attributes Block attributes.
+         * @return array
+         */
+        private function parse_attributes(array $attributes): array
+        {
+        }
+        /**
+         * Get product image data.
+         *
+         * @param \WC_Product $product Product object.
+         * @param array       $attributes Parsed attributes.
+         * @return array|null
+         */
+        private function get_product_image_data(\WC_Product $product, array $attributes): ?array
+        {
+        }
+        /**
+         * Build email-compatible image HTML.
+         *
+         * @param array             $image_data Image data.
+         * @param array             $attributes Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function build_image_html(array $image_data, array $attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Wrap image with product link.
+         *
+         * @param string      $image_html Image HTML.
+         * @param \WC_Product $product Product object.
+         * @return string
+         */
+        private function wrap_with_link(string $image_html, \WC_Product $product): string
+        {
+        }
+        /**
+         * Apply email-compatible table wrapper (similar to Image renderer).
+         *
+         * @param string            $image_html Image HTML.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function apply_email_wrapper(string $image_html, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+    }
+    /**
+     * Renders a WooCommerce product price block for email.
+     */
+    class Product_Price extends \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\Abstract_Product_Block_Renderer
+    {
+        /**
+         * Render the product price block content for email.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Generate clean price HTML from product data.
+         *
+         * @param \WC_Product       $product Product object.
+         * @param array             $attributes Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function generate_price_html(\WC_Product $product, array $attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Build price HTML completely from scratch based on product type.
+         *
+         * @param \WC_Product $product Product object.
+         * @return string
+         */
+        private function build_price_from_scratch(\WC_Product $product): string
+        {
+        }
+        /**
+         * Build price HTML for simple products.
+         *
+         * @param \WC_Product $product Product object.
+         * @return string
+         */
+        private function build_simple_product_price(\WC_Product $product): string
+        {
+        }
+        /**
+         * Build price HTML for variable products.
+         * Uses the same logic as the editor: get_variation_price() methods.
+         *
+         * @param \WC_Product_Variable $product Variable product object.
+         * @return string
+         */
+        private function build_variable_product_price(\WC_Product_Variable $product): string
+        {
+        }
+        /**
+         * Build price HTML for grouped products.
+         *
+         * @param \WC_Product_Grouped $product Grouped product object.
+         * @return string
+         */
+        private function build_grouped_product_price(\WC_Product_Grouped $product): string
+        {
+        }
+        /**
+         * Apply email-compatible table wrapper.
+         *
+         * @param string $price_html Price HTML.
+         * @param array  $parsed_block Parsed block.
+         * @return string
+         */
+        private function apply_email_wrapper(string $price_html, array $parsed_block): string
+        {
+        }
+    }
+    /**
+     * Renders a WooCommerce product sale badge block for email.
+     */
+    class Product_Sale_Badge extends \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\Abstract_Product_Block_Renderer
+    {
+        /**
+         * Render the product sale badge block content for email.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Build email-compatible badge HTML.
+         *
+         * @param string            $sale_text Sale badge text.
+         * @param array             $attributes Block attributes.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function build_badge_html(string $sale_text, array $attributes, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Get positioning styles based on alignment.
+         *
+         * @param string $align Alignment value.
+         * @return array
+         */
+        private function get_position_style(string $align): array
+        {
+        }
+        /**
+         * Apply email-compatible table wrapper.
+         *
+         * @param string $badge_html Badge HTML.
+         * @param array  $parsed_block Parsed block.
+         * @return string
+         */
+        private function apply_email_wrapper(string $badge_html, array $parsed_block): string
+        {
+        }
+    }
+}
+namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce {
+    /**
+     * Initializes the WooCommerce blocks renderers.
+     */
+    class Initializer
+    {
+        /**
+         * List of supported WooCommerce blocks in the email editor.
+         */
+        const ALLOWED_BLOCK_TYPES = array('woocommerce/product-collection', 'woocommerce/product-image', 'woocommerce/product-price', 'woocommerce/product-button', 'woocommerce/product-sale-badge');
+        /**
+         * Cache renderers by block name.
+         *
+         * @var array<string, Abstract_Block_Renderer>
+         */
+        private array $renderers = array();
+        /**
+         * Set `supports.email = true` and configure render_email_callback for supported blocks.
+         *
+         * @param array $settings Block settings.
+         * @return array
+         */
+        public function update_block_settings(array $settings): array
+        {
+        }
+        /**
+         * Returns the block content rendered by the block renderer.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block settings.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        public function render_block(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Return an instance of Abstract_Block_Renderer by the block name.
+         *
+         * @param string $block_name Block name.
+         * @return Abstract_Block_Renderer
+         */
+        private function get_block_renderer(string $block_name): \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
         {
         }
     }
@@ -15558,12 +16911,19 @@ namespace Automattic\WooCommerce\EmailEditor {
          */
         private $core_email_editor_integration;
         /**
+         * WooCommerce email editor integration instance.
+         *
+         * @var WooCommerceEmailEditorIntegration
+         */
+        private $woocommerce_email_editor_integration;
+        /**
          * Constructor.
          *
-         * @param Email_Editor               $email_editor Email editor instance.
-         * @param CoreEmailEditorIntegration $core_email_editor_integration  Core email editor integration instance.
+         * @param Email_Editor                      $email_editor Email editor instance.
+         * @param CoreEmailEditorIntegration        $core_email_editor_integration  Core email editor integration instance.
+         * @param WooCommerceEmailEditorIntegration $woocommerce_email_editor_integration  WooCommerce email editor integration instance.
          */
-        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Editor $email_editor, \Automattic\WooCommerce\EmailEditor\Integrations\Core\Initializer $core_email_editor_integration)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Email_Editor $email_editor, \Automattic\WooCommerce\EmailEditor\Integrations\Core\Initializer $core_email_editor_integration, \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Initializer $woocommerce_email_editor_integration)
         {
         }
         /**
