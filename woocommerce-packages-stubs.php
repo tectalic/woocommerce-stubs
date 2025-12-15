@@ -11931,6 +11931,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Logger\Email_Editor_Logger $logger;
         /**
+         * Backup of the original core/post-content render callback.
+         *
+         * @var callable|null
+         */
+        private $backup_post_content_callback;
+        /**
          * Content_Renderer constructor.
          *
          * @param Process_Manager     $preprocess_manager Preprocess manager.
@@ -14854,6 +14860,10 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * - No static $seen_ids array (allows multiple renders in same request)
          * - Uses direct post content access instead of get_the_content()
          * - Properly backs up and restores global state
+         *
+         * IMPORTANT: This method is only set as the render_callback during email rendering.
+         * Outside of email rendering, the original callback is restored, so this method
+         * will never be called in non-email contexts.
          *
          * @param array     $attributes Block attributes.
          * @param string    $content    Block content.
