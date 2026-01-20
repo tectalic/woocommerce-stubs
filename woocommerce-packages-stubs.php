@@ -16299,7 +16299,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce {
         /**
          * List of supported WooCommerce blocks in the email editor.
          */
-        const ALLOWED_BLOCK_TYPES = array('woocommerce/product-collection', 'woocommerce/product-image', 'woocommerce/product-price', 'woocommerce/product-button', 'woocommerce/product-sale-badge');
+        const ALLOWED_BLOCK_TYPES = array('woocommerce/product-collection', 'woocommerce/product-image', 'woocommerce/product-price', 'woocommerce/product-button', 'woocommerce/product-sale-badge', 'woocommerce/coupon-code');
         /**
          * Cache renderers by block name.
          *
