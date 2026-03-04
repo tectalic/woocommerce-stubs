@@ -11751,6 +11751,16 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null): array
         {
         }
+        /**
+         * Extracts the horizontal blockGap from a columns block.
+         *
+         * @param array  $columns_block The columns block.
+         * @param string $default_gap Default gap value to use if blockGap is not set on the columns block.
+         * @return string|null The horizontal gap value (e.g., "30px" or "var:preset|spacing|30") or null if not set.
+         */
+        private function get_columns_block_gap(array $columns_block, string $default_gap = ''): ?string
+        {
+        }
     }
     /**
      * This preprocessor is responsible for setting default typography values for blocks.
@@ -12980,9 +12990,11 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          * This endpoint follows WordPress REST API conventions by returning
          * the array directly instead of wrapping it in a response object.
          *
+         * @param WP_REST_Request $request The REST request object.
          * @return WP_REST_Response
+         * @phpstan-param WP_REST_Request<array<string, mixed>> $request
          */
-        public function get_personalization_tags_collection(): \WP_REST_Response
+        public function get_personalization_tags_collection(\WP_REST_Request $request): \WP_REST_Response
         {
         }
         /**
@@ -13208,6 +13220,11 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
      */
     class Personalizer
     {
+        /**
+         * Regex pattern for matching personalization tag names (e.g., "woocommerce/store-url", "user-firstname").
+         * Used in both tag detection and parsing.
+         */
+        private const TAG_NAME_PATTERN = '[a-zA-Z0-9\-\/]+';
         /**
          * Personalization tags registry.
          *
@@ -13564,6 +13581,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          */
         private ?\WP_Theme_JSON $site_theme = null;
         /**
+         * Base theme data for fallback lookups
+         *
+         * @var array|null
+         */
+        private ?array $base_theme_data = null;
+        /**
          * Email-safe fonts
          *
          * @var array
@@ -13588,17 +13611,19 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         /**
          * Sync site styles to email theme format
          *
+         * @param WP_Theme_JSON|null $base_theme Base theme for fallback values. If null, no fallbacks are used.
          * @return array Email-compatible theme data.
          */
-        public function sync_site_styles(): array
+        public function sync_site_styles(?\WP_Theme_JSON $base_theme = null): array
         {
         }
         /**
          * Getter for site theme.
          *
+         * @param WP_Theme_JSON|null $base_theme Base theme for fallback values. If null, no fallbacks are used.
          * @return ?WP_Theme_JSON Synced site theme.
          */
-        public function get_theme(): ?\WP_Theme_JSON
+        public function get_theme(?\WP_Theme_JSON $base_theme = null): ?\WP_Theme_JSON
         {
         }
         /**
@@ -13663,10 +13688,11 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         /**
          * Convert site typography styles to email format
          *
-         * @param array $typography_styles Site typography styles.
+         * @param array  $typography_styles Site typography styles.
+         * @param string $element Optional element name for context-aware fallbacks.
          * @return array Email-compatible typography styles.
          */
-        private function convert_typography_styles(array $typography_styles): array
+        private function convert_typography_styles(array $typography_styles, string $element = ''): array
         {
         }
         /**
@@ -13690,10 +13716,11 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         /**
          * Convert individual element style to email format
          *
-         * @param array $element_style Site element style.
+         * @param array  $element_style Site element style.
+         * @param string $element_name Element name (e.g., 'h1', 'h2', 'button').
          * @return array Email-compatible element style.
          */
-        private function convert_element_style(array $element_style): array
+        private function convert_element_style(array $element_style, string $element_name = ''): array
         {
         }
         /**
@@ -13730,21 +13757,32 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
-         * Convert size value to px format.
+         * Convert size value to px format with optional fallback
          *
-         * @param string $size Original size value.
+         * @param string      $size Original size value.
+         * @param string|null $fallback Fallback value to use if conversion fails.
          * @return string Size in px format.
          */
-        private function convert_to_px_size(string $size): string
+        private function convert_to_px_size(string $size, ?string $fallback = null): string
         {
         }
         /**
          * Convert spacing values to px format.
          *
          * @param string|array $spacing_values Original spacing values.
+         * @param array        $base_path Base path for fallback lookup (e.g., ['styles', 'spacing', 'padding']).
          * @return string|array Spacing values in px format.
          */
-        private function convert_spacing_values($spacing_values)
+        private function convert_spacing_values($spacing_values, array $base_path)
+        {
+        }
+        /**
+         * Get value from base theme by path
+         *
+         * @param array $path Path array for _wp_array_get (e.g., ['styles', 'typography', 'fontSize']).
+         * @return string|null Value from base theme or null if not found.
+         */
+        private function get_base_theme_value(array $path): ?string
         {
         }
     }
@@ -14174,8 +14212,8 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     class Columns extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
-         * Override this method to disable spacing (block gap) for columns.
-         * Spacing is applied on wrapping columns block. Columns are rendered side by side so no spacer is needed.
+         * Renders the block content.
+         * BlockGap spacing is handled by Spacing_Preprocessor which sets padding-left on column children.
          *
          * @param string            $block_content Block content.
          * @param array             $parsed_block Parsed block.
@@ -14228,6 +14266,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
         /**
          * Extract background image from block attributes or HTML content.
+         * Returns raw URL - escaping happens at final CSS output context.
          *
          * @param array  $block_attrs Block attributes.
          * @param string $block_content Original block content.
@@ -14294,7 +14333,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          *
          * @var array
          */
-        private const VIDEO_PROVIDERS = array('youtube' => array('domains' => array('youtube.com', 'youtu.be'), 'base_url' => 'https://www.youtube.com/'));
+        private const VIDEO_PROVIDERS = array('youtube' => array('domains' => array('youtube.com', 'youtu.be'), 'base_url' => 'https://www.youtube.com/'), 'videopress' => array('domains' => array('videopress.com', 'video.wordpress.com'), 'base_url' => 'https://videopress.com/'));
         /**
          * Get all supported providers (audio and video).
          *
@@ -14440,6 +14479,17 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         {
         }
         /**
+         * Validate that a URL's host matches the expected provider's domains.
+         * This prevents SSRF when provider is set via user-controlled attributes.
+         *
+         * @param string $url      URL to validate.
+         * @param string $provider Provider name.
+         * @return bool True if URL host matches provider domains.
+         */
+        private function url_matches_provider(string $url, string $provider): bool
+        {
+        }
+        /**
          * Render a video embed using the Video renderer.
          *
          * @param string            $url URL of the video.
@@ -14469,6 +14519,20 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @return string Thumbnail URL or empty string.
          */
         private function get_youtube_thumbnail(string $url): string
+        {
+        }
+        /**
+         * Extract VideoPress video thumbnail URL.
+         * Uses WordPress oEmbed API to get thumbnail_url from the provider response.
+         * Results are cached using transients to avoid repeated HTTP requests.
+         *
+         * Note: URL validation against VideoPress domains is done in render_video_embed()
+         * via url_matches_provider() before this method is called.
+         *
+         * @param string $url VideoPress video URL (pre-validated by caller).
+         * @return string Thumbnail URL or empty string.
+         */
+        private function get_videopress_thumbnail(string $url): string
         {
         }
     }
@@ -14682,8 +14746,9 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Rendering_Context $rendering_context Rendering context.
          * @param string|null       $caption Caption.
          * @param string|null       $anchor_tag_href Anchor tag href.
+         * @param string|null       $anchor_data_link_href Anchor data-link-href attribute for personalization tags.
          */
-        private function get_block_wrapper(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, ?string $caption, ?string $anchor_tag_href): string
+        private function get_block_wrapper(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, ?string $caption, ?string $anchor_tag_href, ?string $anchor_data_link_href = null): string
         {
         }
         /**
@@ -14710,7 +14775,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * Parse block content to get image URL, image HTML and caption HTML.
          *
          * @param string $block_content Block content.
-         * @return array{imageUrl: string, image: string, caption: string, class: string, anchor_tag_href: string}|null
+         * @return array{imageUrl: string, image: string, caption: string, class: string, anchor_tag_href: string, anchor_data_link_href: string}|null
          */
         private function parse_block_content(string $block_content): ?array
         {
@@ -15239,6 +15304,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         }
         /**
          * Extract poster URL from block attributes.
+         * Returns raw URL - escaping should happen at the final output context.
          *
          * @param array  $block_attrs Block attributes.
          * @param string $block_content Original block content (unused, kept for consistency).
@@ -15556,6 +15622,15 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
         {
         }
         /**
+         * Extract the first HTTP/HTTPS URL from a text string.
+         *
+         * @param string $text Text to search for URLs.
+         * @return string Extracted URL or empty string if not found.
+         */
+        public static function extract_url_from_text(string $text): string
+        {
+        }
+        /**
          * Sanitize inline styles for image elements - only allow safe properties for email rendering.
          *
          * @param string $style_value Raw style value.
@@ -15868,6 +15943,13 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\B
     class Product_Collection extends \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\Abstract_Product_Block_Renderer
     {
         /**
+         * Default spacing between inner product elements (image, title, price).
+         * This is a fixed value from the email editor's base theme.json, independent
+         * of the site theme's blockGap, because the editor does not apply blockGap
+         * between inner product elements.
+         */
+        private const INNER_BLOCK_SPACING = '8px';
+        /**
          * Render the product collection block content for email.
          *
          * @param string            $block_content Block content.
@@ -15881,23 +15963,40 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\B
         /**
          * Render the product template block.
          *
-         * @param array     $inner_block Inner block data.
-         * @param \WP_Query $query WP_Query object.
-         * @param string    $collection_type Collection type identifier.
+         * @param array             $inner_block Inner block data.
+         * @param \WP_Query         $query WP_Query object.
+         * @param string            $collection_type Collection type identifier.
+         * @param int               $columns Number of columns for the grid layout.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        private function render_product_template(array $inner_block, \WP_Query $query, string $collection_type): string
+        private function render_product_template(array $inner_block, \WP_Query $query, string $collection_type, int $columns, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
          * Render product grid using HTML table structure for email compatibility.
          *
-         * @param array  $products Array of WC_Product objects.
-         * @param array  $inner_block Inner block data.
-         * @param string $collection_type Collection type identifier.
+         * @param array             $products Array of WC_Product objects.
+         * @param array             $inner_block Inner block data.
+         * @param string            $collection_type Collection type identifier.
+         * @param int               $columns Number of columns for the grid layout.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        private function render_product_grid(array $products, array $inner_block, string $collection_type): string
+        private function render_product_grid(array $products, array $inner_block, string $collection_type, int $columns, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Render products in a two-column grid layout using HTML tables.
+         *
+         * @param array             $products Array of WC_Product objects.
+         * @param array             $inner_block Inner block data.
+         * @param string            $collection_type Collection type identifier.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @param string            $block_gap Block gap value from theme styles.
+         * @return string
+         */
+        private function render_two_column_grid(array $products, array $inner_block, string $collection_type, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context, string $block_gap = '16px'): string
         {
         }
         /**
@@ -15906,9 +16005,10 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\B
          * @param \WC_Product|null $product Product object.
          * @param array            $template_block Inner block data.
          * @param string           $collection_type Collection type identifier.
+         * @param int|null         $cell_width Optional cell width for multi-column layouts.
          * @return string
          */
-        private function render_product_content(?\WC_Product $product, array $template_block, string $collection_type): string
+        private function render_product_content(?\WC_Product $product, array $template_block, string $collection_type, ?int $cell_width = null): string
         {
         }
         /**
