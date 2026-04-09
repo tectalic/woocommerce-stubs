@@ -11603,9 +11603,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         /**
          * Method to preprocess the content before rendering
          *
-         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
-         * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}          $layout Layout of the email.
-         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @param array                                                                                                               $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}            $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
         public function preprocess(array $parsed_blocks, array $layout, array $styles): array;
@@ -11619,12 +11619,29 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         /**
          * Method to preprocess the content before rendering
          *
-         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
-         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
-         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @param array                                                                                                               $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                          $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
         public function preprocess(array $parsed_blocks, array $layout, array $styles): array
+        {
+        }
+        /**
+         * Recursively calculate block widths based on layout and parent padding.
+         *
+         * At the top level, root padding is zeroed out by preprocess() since it's
+         * distributed to individual blocks. Each block that received root padding
+         * from the Spacing_Preprocessor has its width reduced accordingly. For
+         * nested blocks, the parent block's own padding is subtracted as expected.
+         *
+         * @param array $parsed_blocks Parsed blocks.
+         * @param array $layout Layout settings.
+         * @param array $styles Styles with padding from parent context.
+         * @param array $variables_map CSS variable names to resolved pixel values.
+         * @return array
+         */
+        private function calculate_widths(array $parsed_blocks, array $layout, array $styles, array $variables_map = array()): array
         {
         }
         // TODO: We could add support for other units like em, rem, etc.
@@ -11648,13 +11665,29 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         {
         }
         /**
+         * Resolve a CSS value that may contain a preset variable reference.
+         *
+         * Block attributes store padding as preset references like
+         * "var:preset|spacing|20" which resolve to actual pixel values
+         * (e.g. "8px"). This method converts the reference to its resolved
+         * value using the variables map passed through styles.
+         *
+         * @param string $value The CSS value, possibly a preset reference.
+         * @param array  $variables_map Map of CSS variable names to resolved values.
+         * @return string The resolved value (e.g. "8px") or the original value.
+         */
+        private function resolve_preset_value(string $value, array $variables_map): string
+        {
+        }
+        /**
          * Add missing column widths
          *
          * @param array $columns Columns.
          * @param float $columns_width Columns width.
+         * @param array $variables_map CSS variable names to resolved pixel values.
          * @return array
          */
-        private function add_missing_column_widths(array $columns, float $columns_width): array
+        private function add_missing_column_widths(array $columns, float $columns_width, array $variables_map = array()): array
         {
         }
     }
@@ -11666,9 +11699,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         /**
          * Method to preprocess the content before rendering
          *
-         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
-         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
-         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @param array                                                                                                               $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                          $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
         public function preprocess(array $parsed_blocks, array $layout, array $styles): array
@@ -11683,9 +11716,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         /**
          * Method to preprocess the content before rendering
          *
-         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
-         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
-         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @param array                                                                                                               $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                          $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
         public function preprocess(array $parsed_blocks, array $layout, array $styles): array
@@ -11730,6 +11763,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
     class Spacing_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
     {
         /**
+         * Cached post-content block names to avoid repeated apply_filters calls.
+         *
+         * @var string[]|null
+         */
+        private ?array $post_content_block_names = null;
+        /**
          * Preprocesses the parsed blocks.
          *
          * @param array $parsed_blocks Parsed blocks.
@@ -11741,14 +11780,122 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         {
         }
         /**
-         * Adds margin-top to blocks that are not first or last in the columns block.
+         * Extract and validate horizontal padding from a block's style attributes.
+         *
+         * @param array $block The block to extract padding from.
+         * @return array Padding with 'left' and 'right' keys, or empty array if invalid/absent.
+         */
+        private function get_block_horizontal_padding(array $block): array
+        {
+        }
+        /**
+         * Container block names that delegate root padding to their children
+         * instead of receiving it themselves.
+         */
+        private const CONTAINER_BLOCKS = array('core/group', 'core/post-content');
+        /**
+         * Adds spacing to blocks: margin-top for vertical gaps, horizontal padding for
+         * column gaps, and root padding for children of root-level containers.
+         *
+         * Root padding is distributed from the outer email wrapper to individual block
+         * wrappers. Container blocks (groups, post-content) at the root level delegate
+         * padding to their children instead of taking it themselves. This enables
+         * alignfull blocks to skip root padding and span the full email width.
+         *
+         * Container padding works similarly: when a template group wrapping post-content
+         * has its own horizontal padding, that padding is distributed per-block alongside
+         * root padding. Alignfull blocks skip both padding types and span the full
+         * contentSize. The template group gets a suppress-horizontal-padding flag so its
+         * renderer omits horizontal padding from its own CSS output.
+         *
+         * Blocks fall into three categories for root padding:
+         * - Zero padding (has_zero_padding): skip root padding entirely — edge-to-edge intent.
+         * - Non-zero explicit padding (has_own_padding, !has_zero_padding): receive root padding
+         *   on top of their own padding. Their own padding is internal content spacing; root
+         *   padding ensures inset from the email edge. These blocks also stop delegation.
+         * - No explicit padding: receive root padding if delegated, or delegate if a container.
          *
          * @param array      $parsed_blocks Parsed blocks.
          * @param string     $gap Gap.
          * @param array|null $parent_block Parent block.
+         * @param array      $root_padding Root horizontal padding with 'left' and 'right' keys.
+         * @param bool       $apply_root_padding Whether this block should receive root padding (delegated by parent container).
+         * @param array      $container_padding Container horizontal padding with 'left' and 'right' keys.
          * @return array
          */
-        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null): array
+        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null, array $root_padding = array(), bool $apply_root_padding = false, array $container_padding = array()): array
+        {
+        }
+        /**
+         * Returns the list of block names treated as "post content" for padding delegation.
+         *
+         * Filterable so that integrations can register custom post-content-like blocks
+         * without modifying this file.
+         *
+         * @return string[]
+         */
+        private function get_post_content_block_names(): array
+        {
+        }
+        /**
+         * Checks whether a block contains a core/post-content descendant.
+         *
+         * Searches recursively through container blocks (groups) so that
+         * deeply nested template structures like group → group → post-content
+         * are handled correctly.
+         *
+         * @param array $block The block to check.
+         * @return bool True if the block has a post-content descendant.
+         */
+        private function contains_post_content(array $block): bool
+        {
+        }
+        /**
+         * Checks whether a block explicitly sets zero horizontal padding.
+         *
+         * Explicit zero padding (0, 0px, 0em, etc.) signals that the block
+         * intentionally wants edge-to-edge layout. Root padding should not
+         * be added on top.
+         *
+         * Non-zero padding (e.g. 20px) is internal content spacing and does
+         * not affect root padding — both can coexist independently.
+         *
+         * @param array $block The block to check.
+         * @return bool True if the block explicitly sets zero horizontal padding.
+         */
+        private function has_zero_horizontal_padding(array $block): bool
+        {
+        }
+        /**
+         * Checks whether a block explicitly defines any horizontal padding.
+         *
+         * Containers with explicit padding (any value) manage their own
+         * layout and should stop delegating root padding to their children.
+         *
+         * @param array $block The block to check.
+         * @return bool True if the block defines horizontal padding.
+         */
+        private function has_explicit_horizontal_padding(array $block): bool
+        {
+        }
+        /**
+         * Checks whether a CSS value is explicitly zero.
+         *
+         * Matches '0', '0px', '0em', '0rem', '0%', etc.
+         *
+         * @param mixed $value The CSS value to check.
+         * @return bool True if the value is explicitly zero.
+         */
+        private function is_zero_value($value): bool
+        {
+        }
+        /**
+         * Extracts and sanitizes root horizontal padding from theme styles.
+         *
+         * @param array $styles Theme styles.
+         * @return array Root padding with 'left' and 'right' keys, or empty array if invalid.
+         */
+        private function get_root_padding(array $styles): array
         {
         }
         /**
@@ -11790,9 +11937,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         /**
          * Method to preprocess the content before rendering
          *
-         * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
-         * @param array{contentSize: string}                                                                                        $layout Layout of the email.
-         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @param array                                                                                                               $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string}                                                                                          $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles of the email.
          * @return array
          */
         public function preprocess(array $parsed_blocks, array $layout, array $styles): array
@@ -11899,12 +12046,6 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          */
         private \WP_Block_Type_Registry $block_type_registry;
         /**
-         * CSS inliner
-         *
-         * @var Css_Inliner
-         */
-        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
-        /**
          * Property to store the backup of the current template content.
          *
          * @var string|null
@@ -11947,10 +12088,37 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          */
         private $backup_post_content_callback;
         /**
+         * Post-content block's calculated width from the first preprocessing pass.
+         *
+         * When this is narrower than contentSize, it means root padding was applied
+         * to a container above post-content. In that case, the second preprocessing
+         * pass (user blocks) must skip root padding to prevent double application.
+         * When equal to contentSize, the template delegates root padding and user
+         * blocks should receive it directly.
+         *
+         * @var string|null
+         */
+        private ?string $post_content_width = null;
+        /**
+         * Container padding from the template group wrapping post-content.
+         *
+         * Stored during the first preprocessing pass and passed to user blocks
+         * in the second pass so they receive the container padding per-block.
+         *
+         * @var array{left?: string, right?: string}
+         */
+        private array $container_padding = array();
+        /**
+         * CSS inliner
+         *
+         * @var Css_Inliner
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
+        /**
          * Content_Renderer constructor.
          *
          * @param Process_Manager     $preprocess_manager Preprocess manager.
-         * @param Css_Inliner         $css_inliner Css inliner.
+         * @param Css_Inliner         $css_inliner CSS inliner.
          * @param Theme_Controller    $theme_controller Theme controller.
          * @param Email_Editor_Logger $logger Logger instance.
          */
@@ -11966,13 +12134,25 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
         /**
-         * Render the content
+         * Render the content with inlined CSS styles.
          *
          * @param WP_Post           $post Post object.
          * @param WP_Block_Template $template Block template.
-         * @return string
+         * @return string Rendered HTML content with inlined styles.
          */
         public function render(\WP_Post $post, \WP_Block_Template $template): string
+        {
+        }
+        /**
+         * Render the content and collect CSS styles without inlining them.
+         *
+         * @since 10.7.0
+         *
+         * @param WP_Post           $post Post object.
+         * @param WP_Block_Template $template Block template.
+         * @return array{html: string, styles: string} Rendered HTML and collected CSS.
+         */
+        public function render_without_css_inline(\WP_Post $post, \WP_Block_Template $template): array
         {
         }
         /**
@@ -11984,12 +12164,39 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
         /**
-         * Preprocess parsed blocks
+         * Preprocess parsed blocks.
+         *
+         * Called for both template blocks and post-content user blocks. The
+         * Spacing_Preprocessor handles root padding distribution: container
+         * blocks (groups wrapping post-content) are transparent, delegating
+         * padding to their children so user blocks get individual padding.
          *
          * @param array $parsed_blocks Parsed blocks.
          * @return array
          */
         public function preprocess_parsed_blocks(array $parsed_blocks): array
+        {
+        }
+        /**
+         * Recursively find the post-content block's width in preprocessed blocks.
+         *
+         * @param array      $blocks Preprocessed blocks.
+         * @param array|null $post_content_block_names Cached block names for recursion.
+         * @return string|null The post-content block's width or null if not found.
+         */
+        private function find_post_content_width(array $blocks, ?array $post_content_block_names = null): ?string
+        {
+        }
+        /**
+         * Find the container padding from blocks with suppress-horizontal-padding flag.
+         *
+         * Searches the preprocessed template blocks for a container that wraps
+         * post-content and had its horizontal padding distributed per-block.
+         *
+         * @param array $blocks Preprocessed blocks.
+         * @return array{left?: string, right?: string} Container padding values, or empty array.
+         */
+        private function find_container_padding(array $blocks): array
         {
         }
         /**
@@ -12001,6 +12208,46 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          * @return string
          */
         public function render_block(string $block_content, array $parsed_block): string
+        {
+        }
+        /**
+         * Wrap block output with horizontal padding (root + container).
+         *
+         * Root padding is distributed by the Spacing_Preprocessor from the outer
+         * email container to individual blocks. Container padding comes from
+         * template groups wrapping post-content. Both are combined into a single
+         * CSS padding wrapper. This method applies padding uniformly to all blocks
+         * regardless of whether they use Abstract_Block_Renderer or a custom
+         * render_email_callback.
+         *
+         * @param string $content The rendered block content.
+         * @param array  $email_attrs The email attributes from the parsed block.
+         * @return string The content wrapped with horizontal padding, or unchanged if no padding.
+         */
+        private function add_root_horizontal_padding(string $content, array $email_attrs): string
+        {
+        }
+        /**
+         * Sum two CSS pixel padding values.
+         *
+         * @param string|null $value1 First padding value (e.g., '20px').
+         * @param string|null $value2 Second padding value (e.g., '10px').
+         * @return float The sum in pixels.
+         */
+        private function sum_padding_values(?string $value1, ?string $value2): float
+        {
+        }
+        /**
+         * Resolve a CSS value that may contain a preset variable reference.
+         *
+         * Block attributes store padding as preset references like
+         * "var:preset|spacing|20" which resolve to actual pixel values.
+         *
+         * @param string $value The CSS value, possibly a preset reference.
+         * @param array  $variables_map Map of CSS variable names to resolved values.
+         * @return string The resolved value (e.g. "8px") or the original value.
+         */
+        private function resolve_preset_padding(string $value, array $variables_map): string
         {
         }
         /**
@@ -12021,14 +12268,13 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
         /**
-         * Method to inline styles into the HTML
+         * Collects CSS for the rendered content without inlining it.
          *
-         * @param string                 $html HTML content.
          * @param WP_Post                $post Post object.
          * @param WP_Block_Template|null $template Block template.
-         * @return string
+         * @return string The collected CSS string (without <style> wrapper).
          */
-        private function inline_styles($html, \WP_Post $post, $template = null)
+        private function collect_styles(\WP_Post $post, $template = null): string
         {
         }
     }
@@ -12067,9 +12313,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         /**
          * Method to preprocess blocks
          *
-         * @param array                                                                                                             $parsed_blocks Parsed blocks.
-         * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}          $layout Layout.
-         * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles.
+         * @param array                                                                                                               $parsed_blocks Parsed blocks.
+         * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}            $layout Layout.
+         * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles.
          * @return array
          */
         public function preprocess(array $parsed_blocks, array $layout, array $styles): array
@@ -12419,6 +12665,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
         /**
+         * Process manager
+         *
+         * @var Process_Manager
+         */
+        private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $process_manager;
+        /**
          * Personalization tags registry
          *
          * @var Personalization_Tags_Registry
@@ -12440,8 +12692,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
          * @param Css_Inliner                   $css_inliner CSS Inliner.
          * @param Theme_Controller              $theme_controller Theme controller.
          * @param Personalization_Tags_Registry $personalization_tags_registry Personalization tags registry.
+         * @param Process_Manager               $process_manager Process manager.
          */
-        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry)
+        public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer $content_renderer, \Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates $templates, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner, \Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller $theme_controller, \Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry $personalization_tags_registry, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager $process_manager)
         {
         }
         /**
@@ -13366,6 +13619,15 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
+         * Get the subject of the preview email.
+         *
+         * @param \WP_Post $post The WordPress post object.
+         * @return string
+         */
+        public function get_preview_email_subject($post): string
+        {
+        }
+        /**
          * Add preview context to email rendering.
          *
          * This filter callback adds the is_user_preview flag and current user information
@@ -14020,7 +14282,11 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         {
         }
         /**
-         * Add a spacer around the block.
+         * Add a spacer around the block for vertical spacing (margin-top).
+         *
+         * Horizontal root padding is applied uniformly by Content_Renderer::render_block()
+         * so that all blocks — including those using render_email_callback without
+         * Abstract_Block_Renderer — receive consistent padding.
          *
          * @param string $content The block content.
          * @param array  $email_attrs The email attributes.
@@ -14323,6 +14589,18 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     class Embed extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
+         * Maximum number of embed page fetch attempts per email render.
+         * Beyond this limit, embeds render as compact link cards (no HTTP fetch).
+         * Counts attempts, not successes, to cap outbound HTTP requests.
+         */
+        private const MAX_EMBED_FETCHES = 5;
+        /**
+         * Number of embed page fetch attempts so far by this instance.
+         *
+         * @var int
+         */
+        private int $embed_fetch_count = 0;
+        /**
          * Supported audio providers with their configuration.
          *
          * @var array
@@ -14535,6 +14813,42 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         private function get_videopress_thumbnail(string $url): string
         {
         }
+        /**
+         * Fetch metadata from a WordPress embed page.
+         *
+         * WordPress sites expose a {url}/embed/ endpoint that renders a post preview
+         * containing the title, excerpt, featured image, provider name, and site icon.
+         * This single fetch provides all the data needed for the rich embed card.
+         *
+         * @param string $url URL of the post to fetch metadata for.
+         * @return array{ title: string, thumbnail_url: string, provider_name: string, provider_url: string, excerpt: string, site_icon_url: string } Embed page metadata.
+         */
+        private function fetch_embed_page_data(string $url): array
+        {
+        }
+        /**
+         * Render a link embed as a rich card using data from the WordPress embed page.
+         *
+         * @param string            $url URL to render as a card.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string Rendered card HTML or empty string if embed page data is insufficient.
+         */
+        private function render_link_embed_card(string $url, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Render a compact link card for embeds that exceed the rich card cap.
+         * Displays the URL in a bordered card without making any HTTP requests.
+         *
+         * @param string            $url URL to render.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string Rendered compact link card HTML.
+         */
+        private function render_compact_link_card(string $url, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
     }
     /**
      * Fallback block renderer.
@@ -14673,6 +14987,19 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Rendering_Context $rendering_context Rendering context.
          */
         private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Remove horizontal padding properties from compiled cell styles.
+         *
+         * Used when suppress-horizontal-padding is set to prevent the group
+         * from applying its own horizontal padding (which has been distributed
+         * per-block by the Spacing_Preprocessor).
+         *
+         * @param array $cell_styles The compiled cell styles from Styles_Helper::get_block_styles().
+         * @return array Styles with horizontal padding removed.
+         */
+        private function remove_horizontal_padding(array $cell_styles): array
         {
         }
     }
@@ -15385,9 +15712,21 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
          */
         private array $renderers = array();
         /**
+         * Whether hooks have already been registered.
+         *
+         * @var bool
+         */
+        private bool $initialized = false;
+        /**
          * Initializes the core blocks renderers.
          */
         public function initialize(): void
+        {
+        }
+        /**
+         * Clear cached renderer instances so stateful renderers reset between emails.
+         */
+        public function reset_renderers(): void
         {
         }
         /**
@@ -19111,6 +19450,15 @@ namespace Automattic\WooCommerce\EmailEditorVendor\Pelago\Emogrifier\Utilities {
          */
         private static $cache = [];
         /**
+         * Clears the static declaration block cache.
+         *
+         * This should be called between processing separate HTML documents to prevent
+         * unbounded memory growth in long-running processes.
+         */
+        public static function clearCache(): void
+        {
+        }
+        /**
          * CSS custom properties (variables) have case-sensitive names, so their case must be preserved.
          * Standard CSS properties have case-insensitive names, which are converted to lowercase.
          *
@@ -22757,6 +23105,12 @@ namespace Automattic\WooCommerce\EmailEditorVendor\Symfony\Component\CssSelector
     {
         private $translator;
         private $cache;
+        /**
+         * Maximum number of cached items per prefix before LRU eviction kicks in.
+         *
+         * @var int
+         */
+        public static $maxCachedItems = 200;
         private static $xmlCache = [];
         private static $htmlCache = [];
         /**
