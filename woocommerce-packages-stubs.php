@@ -11665,21 +11665,6 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         {
         }
         /**
-         * Resolve a CSS value that may contain a preset variable reference.
-         *
-         * Block attributes store padding as preset references like
-         * "var:preset|spacing|20" which resolve to actual pixel values
-         * (e.g. "8px"). This method converts the reference to its resolved
-         * value using the variables map passed through styles.
-         *
-         * @param string $value The CSS value, possibly a preset reference.
-         * @param array  $variables_map Map of CSS variable names to resolved values.
-         * @return string The resolved value (e.g. "8px") or the original value.
-         */
-        private function resolve_preset_value(string $value, array $variables_map): string
-        {
-        }
-        /**
          * Add missing column widths
          *
          * @param array $columns Columns.
@@ -11782,10 +11767,14 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         /**
          * Extract and validate horizontal padding from a block's style attributes.
          *
+         * Preset variable references (e.g. "var:preset|spacing|20") are resolved
+         * to their pixel values using the variables map when provided.
+         *
          * @param array $block The block to extract padding from.
+         * @param array $variables_map Map of CSS variable names to resolved values.
          * @return array Padding with 'left' and 'right' keys, or empty array if invalid/absent.
          */
-        private function get_block_horizontal_padding(array $block): array
+        private function get_block_horizontal_padding(array $block, array $variables_map = array()): array
         {
         }
         /**
@@ -11821,9 +11810,10 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
          * @param array      $root_padding Root horizontal padding with 'left' and 'right' keys.
          * @param bool       $apply_root_padding Whether this block should receive root padding (delegated by parent container).
          * @param array      $container_padding Container horizontal padding with 'left' and 'right' keys.
+         * @param array      $variables_map Map of CSS variable names to resolved values for preset resolution.
          * @return array
          */
-        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null, array $root_padding = array(), bool $apply_root_padding = false, array $container_padding = array()): array
+        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null, array $root_padding = array(), bool $apply_root_padding = false, array $container_padding = array(), array $variables_map = array()): array
         {
         }
         /**
@@ -12238,19 +12228,6 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
         /**
-         * Resolve a CSS value that may contain a preset variable reference.
-         *
-         * Block attributes store padding as preset references like
-         * "var:preset|spacing|20" which resolve to actual pixel values.
-         *
-         * @param string $value The CSS value, possibly a preset reference.
-         * @param array  $variables_map Map of CSS variable names to resolved values.
-         * @return string The resolved value (e.g. "8px") or the original value.
-         */
-        private function resolve_preset_padding(string $value, array $variables_map): string
-        {
-        }
-        /**
          * Set template globals
          *
          * @param WP_Post           $email_post Post object.
@@ -12275,6 +12252,67 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          * @return string The collected CSS string (without <style> wrapper).
          */
         private function collect_styles(\WP_Post $post, $template = null): string
+        {
+        }
+    }
+    /**
+     * Resolves WordPress preset variable references to their actual values.
+     *
+     * Block attributes store spacing values as preset references like
+     * "var:preset|spacing|20". This class provides shared methods to:
+     * - Convert these references to CSS variable names (--wp--preset--spacing--20)
+     * - Resolve them to pixel values (e.g. "20px") using a variables map
+     * - Convert them to CSS var() syntax for stylesheet use
+     *
+     * Used by Content_Renderer, Spacing_Preprocessor, and Blocks_Width_Preprocessor
+     * to avoid duplicating the same resolution logic.
+     */
+    class Preset_Variable_Resolver
+    {
+        /**
+         * Convert a preset variable reference to its CSS variable name.
+         *
+         * Transforms "var:preset|spacing|20" to "--wp--preset--spacing--20".
+         *
+         * @param string $value The preset reference string.
+         * @return string The CSS variable name.
+         */
+        private static function to_css_variable_name(string $value): string
+        {
+        }
+        /**
+         * Check if a value is a preset variable reference.
+         *
+         * @param string $value The CSS value to check.
+         * @return bool True if the value starts with "var:preset|".
+         */
+        public static function is_preset_reference(string $value): bool
+        {
+        }
+        /**
+         * Resolve a preset variable reference to its actual value.
+         *
+         * Converts "var:preset|spacing|20" to the resolved pixel value (e.g. "20px")
+         * using the provided variables map. Returns the original value if not a preset
+         * reference or if the variable is not found in the map.
+         *
+         * @param string $value The CSS value, possibly a preset reference.
+         * @param array  $variables_map Map of CSS variable names to resolved values.
+         * @return string The resolved value or the original value.
+         */
+        public static function resolve(string $value, array $variables_map): string
+        {
+        }
+        /**
+         * Convert a preset variable reference to CSS var() syntax.
+         *
+         * Transforms "var:preset|spacing|20" to "var(--wp--preset--spacing--20)".
+         * Returns the original value if not a preset reference.
+         *
+         * @param string $value The CSS value, possibly a preset reference.
+         * @return string The CSS var() expression or the original value.
+         */
+        public static function to_css_var(string $value): string
         {
         }
     }
@@ -13733,7 +13771,7 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         /**
          * Returns the layout settings for the email editor.
          *
-         * @return array{contentSize: string, wideSize: string}
+         * @return array{contentSize: string, wideSize?: string}
          */
         public function get_layout(): array
         {
@@ -14149,7 +14187,7 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         /**
          * Get layout settings from the theme.
          *
-         * @return array{contentSize: string, wideSize: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}
+         * @return array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}
          */
         public function get_layout_settings(): array
         {
@@ -14421,6 +14459,21 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param Flex_Layout_Renderer $flex_layout_renderer Flex layout renderer.
          */
         public function __construct(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Layout\Flex_Layout_Renderer $flex_layout_renderer)
+        {
+        }
+        /**
+         * Render the block.
+         *
+         * Flex_Layout_Renderer applies margin-top on its inner div/td where Gmail
+         * preserves it. Strip margin-top from email_attrs so add_spacer() doesn't
+         * apply it again on the outer wrapper (which Gmail ignores).
+         *
+         * @param string            $block_content The block content.
+         * @param array             $parsed_block The parsed block.
+         * @param Rendering_Context $rendering_context The rendering context.
+         * @return string
+         */
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
@@ -15122,6 +15175,21 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
      */
     class List_Block extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
+        /**
+         * Render the block.
+         *
+         * The render_content() method applies margin-top on its inner wrapper div
+         * where Gmail preserves it. Strip margin-top from email_attrs so
+         * add_spacer() doesn't apply it again on the outer wrapper.
+         *
+         * @param string            $block_content The block content.
+         * @param array             $parsed_block The parsed block.
+         * @param Rendering_Context $rendering_context The rendering context.
+         * @return string
+         */
+        public function render(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
         /**
          * Renders the block content
          *
@@ -16240,6 +16308,28 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\B
         }
     }
     /**
+     * Renders the woocommerce/coupon-code block for email.
+     *
+     * For "existing" source, the block content passes through unchanged.
+     * For "createNew" source, the placeholder (XXXX-XXXXXX-XXXX) is replaced
+     * with a generated coupon code via the woocommerce_coupon_code_block_auto_generate filter.
+     */
+    class Coupon_Code extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        const COUPON_CODE_PLACEHOLDER = 'XXXX-XXXXXX-XXXX';
+        /**
+         * Render the coupon code block content for email.
+         *
+         * @param string            $block_content Block content from the standard WP render.
+         * @param array             $parsed_block Parsed block data.
+         * @param Rendering_Context $rendering_context Rendering context with email-specific data.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+    }
+    /**
      * Renders a WooCommerce product button block for email.
      */
     class Product_Button extends \Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\Blocks\Abstract_Product_Block_Renderer
@@ -16730,6 +16820,84 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\B
     }
 }
 namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce {
+    /**
+     * Generates WooCommerce coupons at email send time for the coupon-code block.
+     *
+     * Hooks into the woocommerce_coupon_code_block_auto_generate filter to create
+     * a WC_Coupon from block attributes. This provides baseline auto-generation
+     * that works without any additional plugins (e.g. MailPoet).
+     *
+     * Integrators like MailPoet can hook the same filter at a higher priority
+     * to add features like per-subscriber restriction or coupon persistence.
+     */
+    class Coupon_Code_Generator
+    {
+        /**
+         * Maximum number of retries for generating a unique coupon code.
+         */
+        const MAX_CODE_RETRIES = 5;
+        /**
+         * Initialize the generator by registering the filter hook.
+         */
+        public function init(): void
+        {
+        }
+        /**
+         * Generate a WooCommerce coupon from block attributes.
+         *
+         * @param string            $coupon_code       The coupon code (empty if not yet generated).
+         * @param array             $attrs             Block attributes.
+         * @param Rendering_Context $rendering_context The rendering context.
+         * @return string The generated coupon code, or empty string on failure.
+         */
+        public function generate_coupon(string $coupon_code, array $attrs, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Parse and validate email restrictions string.
+         *
+         * @param mixed $raw Raw email restrictions value (comma-separated string).
+         * @return array Array of valid email addresses.
+         */
+        private function parse_email_restrictions($raw): array
+        {
+        }
+        /**
+         * Validate discount type against WooCommerce's registered types.
+         *
+         * @param string $type The discount type to validate.
+         * @return string A valid discount type.
+         */
+        private function validate_discount_type(string $type): string
+        {
+        }
+        /**
+         * Generate a unique random coupon code, retrying on collision.
+         *
+         * @return string A unique coupon code.
+         * @throws \RuntimeException When a unique code cannot be generated after max retries.
+         */
+        private function generate_unique_code(): string
+        {
+        }
+        /**
+         * Generate a random coupon code in XXXX-XXXXXX-XXXX format.
+         *
+         * @return string
+         */
+        private function generate_random_code(): string
+        {
+        }
+        /**
+         * Extract integer IDs from an array of {id, title} objects.
+         *
+         * @param array $items Array of items with 'id' key.
+         * @return array Array of integer IDs.
+         */
+        private function extract_ids(array $items): array
+        {
+        }
+    }
     /**
      * Initializes the WooCommerce blocks renderers.
      */
