@@ -11742,10 +11742,26 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         }
     }
     /**
+     * Optional interface for preprocessors that need rendering context.
+     */
+    interface Context_Aware_Preprocessor extends \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    {
+        /**
+         * Method to preprocess the content before rendering with context.
+         *
+         * @param array                                                                                                               $parsed_blocks Parsed blocks of the email.
+         * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}            $layout Layout of the email.
+         * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles of the email.
+         * @param Rendering_Context|null                                                                                              $rendering_context Rendering context.
+         * @return array
+         */
+        public function preprocess_with_context(array $parsed_blocks, array $layout, array $styles, ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context = null): array;
+    }
+    /**
      * This preprocessor is responsible for setting default spacing values for blocks.
      * In the early development phase, we are setting only margin-top for blocks that are not first or last in the columns block.
      */
-    class Spacing_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Preprocessor
+    class Spacing_Preprocessor implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Context_Aware_Preprocessor
     {
         /**
          * Cached post-content block names to avoid repeated apply_filters calls.
@@ -11762,6 +11778,18 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
          * @return array
          */
         public function preprocess(array $parsed_blocks, array $layout, array $styles): array
+        {
+        }
+        /**
+         * Preprocesses the parsed blocks with rendering context.
+         *
+         * @param array                  $parsed_blocks Parsed blocks.
+         * @param array                  $layout Layout.
+         * @param array                  $styles Styles.
+         * @param Rendering_Context|null $rendering_context Rendering context.
+         * @return array
+         */
+        public function preprocess_with_context(array $parsed_blocks, array $layout, array $styles, ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context = null): array
         {
         }
         /**
@@ -11811,9 +11839,10 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
          * @param bool       $apply_root_padding Whether this block should receive root padding (delegated by parent container).
          * @param array      $container_padding Container horizontal padding with 'left' and 'right' keys.
          * @param array      $variables_map Map of CSS variable names to resolved values for preset resolution.
+         * @param string     $gap_padding_side Physical padding side for generated column gaps.
          * @return array
          */
-        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null, array $root_padding = array(), bool $apply_root_padding = false, array $container_padding = array(), array $variables_map = array()): array
+        private function add_block_gaps(array $parsed_blocks, string $gap = '', $parent_block = null, array $root_padding = array(), bool $apply_root_padding = false, array $container_padding = array(), array $variables_map = array(), string $gap_padding_side = 'padding-left'): array
         {
         }
         /**
@@ -12105,6 +12134,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          */
         private \Automattic\WooCommerce\EmailEditor\Engine\Renderer\Css_Inliner $css_inliner;
         /**
+         * Render-scoped context shared across all blocks in the current content render.
+         *
+         * @var Rendering_Context|null
+         */
+        private ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context = null;
+        /**
          * Content_Renderer constructor.
          *
          * @param Process_Manager     $preprocess_manager Preprocess manager.
@@ -12121,6 +12156,32 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          * @return void
          */
         private function initialize()
+        {
+        }
+        /**
+         * Set a rendering context resolved by the full email renderer.
+         *
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return void
+         */
+        public function set_rendering_context(\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): void
+        {
+        }
+        /**
+         * Get the current rendering context without creating a fallback context.
+         *
+         * @return Rendering_Context|null
+         */
+        public function get_current_rendering_context(): ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context
+        {
+        }
+        /**
+         * Restore a previously active rendering context.
+         *
+         * @param Rendering_Context|null $rendering_context Rendering context.
+         * @return void
+         */
+        public function restore_rendering_context(?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): void
         {
         }
         /**
@@ -12245,6 +12306,25 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
         /**
+         * Get the current rendering context, lazily creating one for direct render_block() usage.
+         *
+         * @return Rendering_Context
+         */
+        private function get_rendering_context(): \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context
+        {
+        }
+        /**
+         * Create a rendering context from filtered email context.
+         *
+         * @param string|null            $language Optional email language.
+         * @param WP_Post|null           $post Optional email post.
+         * @param WP_Block_Template|null $template Optional block template.
+         * @return Rendering_Context
+         */
+        public function create_rendering_context(?string $language = null, ?\WP_Post $post = null, ?\WP_Block_Template $template = null): \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context
+        {
+        }
+        /**
          * Collects CSS for the rendered content without inlining it.
          *
          * @param WP_Post                $post Post object.
@@ -12354,9 +12434,10 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          * @param array                                                                                                               $parsed_blocks Parsed blocks.
          * @param array{contentSize: string, wideSize?: string, allowEditing?: bool, allowCustomContentAndWideSize?: bool}            $layout Layout.
          * @param array{spacing: array{padding: array{bottom: string, left?: string, right?: string, top: string}, blockGap: string}} $styles Styles.
+         * @param Rendering_Context|null                                                                                              $rendering_context Rendering context.
          * @return array
          */
-        public function preprocess(array $parsed_blocks, array $layout, array $styles): array
+        public function preprocess(array $parsed_blocks, array $layout, array $styles, ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context = null): array
         {
         }
         /**
@@ -12409,12 +12490,19 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          */
         private array $email_context;
         /**
+         * Email language used for deterministic direction fallback.
+         *
+         * @var string|null
+         */
+        private ?string $language;
+        /**
          * Rendering_Context constructor.
          *
          * @param WP_Theme_JSON        $theme_json Theme Json used in the email.
          * @param array<string, mixed> $email_context Email-specific context data.
+         * @param string|null          $language Email language.
          */
-        public function __construct(\WP_Theme_JSON $theme_json, array $email_context = array())
+        public function __construct(\WP_Theme_JSON $theme_json, array $email_context = array(), ?string $language = null)
         {
         }
         /**
@@ -12479,6 +12567,14 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
         /**
+         * Get the email language.
+         *
+         * @return string|null
+         */
+        public function get_language(): ?string
+        {
+        }
+        /**
          * Get the user ID from the email context.
          *
          * @return int|null The user ID if available, null otherwise.
@@ -12505,6 +12601,73 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
          * @return mixed The context value or default.
          */
         public function get(string $key, $default_value = null)
+        {
+        }
+        /**
+         * Whether this render should use right-to-left direction.
+         *
+         * @return bool
+         */
+        public function is_rtl(): bool
+        {
+        }
+        /**
+         * Get the HTML/CSS text direction.
+         *
+         * @return string
+         */
+        public function get_text_direction(): string
+        {
+        }
+        /**
+         * Get the default physical text alignment for this render.
+         *
+         * @return string
+         */
+        public function get_default_text_align(): string
+        {
+        }
+        /**
+         * Get the physical start side.
+         *
+         * @return string
+         */
+        public function get_start_side(): string
+        {
+        }
+        /**
+         * Get the physical end side.
+         *
+         * @return string
+         */
+        public function get_end_side(): string
+        {
+        }
+        /**
+         * Sanitize a text alignment value.
+         *
+         * @param mixed $alignment Alignment candidate.
+         * @return string|null
+         */
+        public function sanitize_text_align($alignment): ?string
+        {
+        }
+        /**
+         * Resolve a text alignment value with direction-aware default.
+         *
+         * @param mixed $alignment Alignment candidate.
+         * @return string
+         */
+        public function resolve_text_align($alignment): string
+        {
+        }
+        /**
+         * Get the primary language subtag from a locale/language value.
+         *
+         * @param string|null $language Language or locale.
+         * @return string|null
+         */
+        private function get_primary_language_subtag(?string $language): ?string
         {
         }
     }
@@ -12756,6 +12919,16 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
          * @return string
          */
         private function inline_css_styles($template)
+        {
+        }
+        /**
+         * Apply document-level language and direction attributes after CSS inlining.
+         *
+         * @param string            $template HTML template.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function apply_html_attributes(string $template, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
@@ -14288,6 +14461,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     abstract class Abstract_Block_Renderer implements \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer
     {
         /**
+         * Rendering context for calls using the legacy add_spacer() signature.
+         *
+         * @var Rendering_Context|null
+         */
+        protected ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $current_rendering_context = null;
+        /**
          * Wrapper for wp_style_engine_get_styles which ensures all values are returned.
          *
          * @param array $block_styles Array of block styles.
@@ -14331,6 +14510,17 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @return string
          */
         protected function add_spacer($content, $email_attrs): string
+        {
+        }
+        /**
+         * Add a spacer around the block with rendering context.
+         *
+         * @param string                 $content The block content.
+         * @param array                  $email_attrs The email attributes.
+         * @param Rendering_Context|null $rendering_context Rendering context.
+         * @return string
+         */
+        protected function add_spacer_with_context($content, $email_attrs, ?\Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context = null): string
         {
         }
         /**
@@ -14532,7 +14722,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
     {
         /**
          * Renders the block content.
-         * BlockGap spacing is handled by Spacing_Preprocessor which sets padding-left on column children.
+         * BlockGap spacing is handled by Spacing_Preprocessor which sets physical padding on column children.
          *
          * @param string            $block_content Block content.
          * @param array             $parsed_block Parsed block.
@@ -15371,6 +15561,25 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
+        /**
+         * Get explicit quote alignment when authored.
+         *
+         * @param array  $block_attributes Block attributes.
+         * @param string $original_classname Original quote classes.
+         * @return string|null
+         */
+        private function get_authored_alignment(array $block_attributes, string $original_classname): ?string
+        {
+        }
+        /**
+         * Check whether quote border was explicitly authored.
+         *
+         * @param array $block_attributes Block attributes.
+         * @return bool
+         */
+        private function has_authored_border(array $block_attributes): bool
+        {
+        }
     }
     /**
      * Renders a social link block.
@@ -15430,22 +15639,24 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         /**
          * Gets the block wrapper.
          *
-         * @param string $block_content The block content.
-         * @param array  $parsed_block The parsed block.
+         * @param string            $block_content The block content.
+         * @param array             $parsed_block The parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string The block wrapper HTML.
          */
-        private function get_block_wrapper($block_content, $parsed_block)
+        private function get_block_wrapper($block_content, $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context)
         {
         }
         /**
          * Adjusts the block content.
          * Returns css classes and styles compatible with email clients.
          *
-         * @param string $block_content The block content.
-         * @param array  $parsed_block The parsed block.
+         * @param string            $block_content The block content.
+         * @param array             $parsed_block The parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return array The adjusted block content.
          */
-        private function adjust_block_content($block_content, $parsed_block)
+        private function adjust_block_content($block_content, $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context)
         {
         }
         /**
@@ -15569,9 +15780,10 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * Get text alignment for a table cell.
          *
          * @param \WP_HTML_Tag_Processor $html HTML tag processor.
+         * @param Rendering_Context      $rendering_context Rendering context.
          * @return string Text alignment value (left, center, right).
          */
-        private function get_cell_text_alignment(\WP_HTML_Tag_Processor $html): string
+        private function get_cell_text_alignment(\WP_HTML_Tag_Processor $html, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
         /**
@@ -16763,11 +16975,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\B
         /**
          * Apply email-compatible table wrapper.
          *
-         * @param string $price_html Price HTML.
-         * @param array  $parsed_block Parsed block.
+         * @param string            $price_html Price HTML.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        private function apply_email_wrapper(string $price_html, array $parsed_block): string
+        private function apply_email_wrapper(string $price_html, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
@@ -16810,11 +17023,12 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\WooCommerce\Renderer\B
         /**
          * Apply email-compatible table wrapper.
          *
-         * @param string $badge_html Badge HTML.
-         * @param array  $parsed_block Parsed block.
+         * @param string            $badge_html Badge HTML.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
          * @return string
          */
-        private function apply_email_wrapper(string $badge_html, array $parsed_block): string
+        private function apply_email_wrapper(string $badge_html, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
     }
