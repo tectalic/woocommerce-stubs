@@ -1895,6 +1895,18 @@ namespace {
     class ActionScheduler_QueueCleaner
     {
         /**
+         * The cleaner action hook is scheduled to run daily to initiate cleanup.
+         *
+         * @var string
+         */
+        private const RUN_SCHEDULED_CLEANER_HOOK = 'action_scheduler_run_actions_cleanup_hook';
+        /**
+         * Hook used to keep deleting old actions in batches, with at most one continuation pending at a time.
+         *
+         * @var string
+         */
+        private const CONTINUE_SCHEDULED_CLEANER_HOOK = 'action_scheduler_continue_actions_cleanup_hook';
+        /**
          * The batch size.
          *
          * @var int
@@ -1928,34 +1940,69 @@ namespace {
         {
         }
         /**
-         * Default queue cleaner process used by queue runner.
+         * Registers action hooks to perform action deletions as a separate task.
          *
+         * @since 4.0.0
+         * @internal
+         *
+         * @return void
+         */
+        public function register_cleaner_hooks()
+        {
+        }
+        /**
+         * Register the recurring action deletion task.
+         *
+         * @since 4.0.0
+         * @internal
+         *
+         * @return void
+         */
+        public function register_recurring_actions()
+        {
+        }
+        /**
+         * Performs action deletions by aggregating configurations and coordinating clean_actions as needed.
+         *
+         * @since 4.0.0 by default, failed actions are removed after three months.
          * @return array
          */
         public function delete_old_actions()
         {
         }
         /**
-         * Delete selected actions limited by status and date.
+         * Delete selected actions based on status and date. The function's behavior depends on the context:
+         * - For scheduled cleanup actions, the function operates within execution budget constraints optimized for high-traffic stores.
+         * - Otherwise, it strictly follows the provided parameters without the scheduled cleanup optimizations.
          *
          * @param string[] $statuses_to_purge List of action statuses to purge. Defaults to canceled, complete.
-         * @param DateTime $cutoff_date Date limit for selecting actions. Defaults to 31 days ago.
-         * @param int|null $batch_size Maximum number of actions per status to delete. Defaults to 20.
-         * @param string   $context Calling process context. Defaults to `old`.
+         * @param DateTime $cutoff_date       Date limit for selecting actions. Defaults to 31 days ago.
+         * @param int|null $batch_size        Maximum number of actions per status to delete. Defaults to 20.
+         * @param string   $context           Calling process context. Defaults to `old`.
+         *
          * @return array Actions deleted.
          */
         public function clean_actions(array $statuses_to_purge, \DateTime $cutoff_date, $batch_size = \null, $context = 'old')
         {
         }
         /**
+         * Whether a continuation of the cleanup is already queued.
+         *
+         * @return bool
+         */
+        private function has_pending_continuation()
+        {
+        }
+        /**
          * Delete actions.
          *
          * @param int[]  $actions_to_delete List of action IDs to delete.
-         * @param int    $lifespan Minimum scheduled age in seconds of the actions being deleted.
-         * @param string $context Context of the delete request.
-         * @return array Deleted action IDs.
+         * @param int    $lifespan          Minimum scheduled age in seconds of the actions being deleted.
+         * @param string $context           Context of the delete request.
+         *
+         * @return int[] Deleted action IDs.
          */
-        private function delete_actions(array $actions_to_delete, $lifespan = \null, $context = 'old')
+        private function delete_actions(array $actions_to_delete, $lifespan, $context = 'old')
         {
         }
         /**
@@ -2067,6 +2114,24 @@ namespace {
         {
         }
         /**
+         * Fetches the action instance. On failure returns null instead of ActionScheduler_NullAction.
+         *
+         * @param int $action_id Action ID.
+         * @return ActionScheduler_Action|null
+         */
+        private function fetch_complete_action(int $action_id)
+        {
+        }
+        /**
+         * Cancels the corrupted actions and performs the necessary cleanup to address identified side effects.
+         *
+         * @param int $action_id Action ID.
+         * @return void
+         */
+        private function cancel_corrupted_action(int $action_id)
+        {
+        }
+        /**
          * Marks actions as either having failed execution or failed validation, as appropriate.
          *
          * @param int       $action_id    Action ID.
@@ -2101,6 +2166,8 @@ namespace {
         }
         /**
          * Run the queue cleaner.
+         *
+         * @deprecated since 4.0.0, action deletion is now handled automatically via a dedicated scheduled task.
          */
         protected function run_cleanup()
         {
@@ -2208,6 +2275,12 @@ namespace {
          * @var ActionScheduler_QueueRunner
          */
         private static $runner = \null;
+        /**
+         * Whether the cleaner instance is a non-default one.
+         *
+         * @var bool
+         */
+        private $is_custom_cleaner;
         /**
          * Number of processed actions.
          *
@@ -3085,6 +3158,12 @@ namespace {
      */
     class ActionScheduler_WPCLI_QueueRunner extends \ActionScheduler_Abstract_QueueRunner
     {
+        /**
+         * Whether the cleaner instance is a non-default one.
+         *
+         * @var bool
+         */
+        private $is_custom_cleaner;
         /**
          * Claimed actions.
          *
@@ -5275,9 +5354,23 @@ namespace {
         /**
          * Delete the action logs for an action.
          *
+         * @since 3.9.3 the logs will be deleted in batches of 100.
          * @param int $action_id Action ID.
          */
         public function clear_deleted_action_logs($action_id)
+        {
+        }
+        /**
+         * Delete the action logs batch for an action.
+         *
+         * @param int  $action_id      Action id.
+         * @param int  $cutoff_log_id  Cutoff log ID. Retain logs generated after the cleanup begins. A value of -1 indicates the start of the cleanup.
+         * @param int  $batch          The batch index is used solely for troubleshooting. Reviewing action arguments provides a clear understanding of progressive deletion.
+         * @param int  $batch_size     Batch size.
+         *
+         * @return void
+         */
+        public function clear_deleted_action_logs_single_batch($action_id, $cutoff_log_id, $batch, $batch_size)
         {
         }
         /**
@@ -10516,6 +10609,17 @@ namespace Automattic\WooCommerce\Blueprint\Steps {
     class RunSql extends \Automattic\WooCommerce\Blueprint\Steps\Step
     {
         /**
+         * Placeholder for the database table prefix.
+         *
+         * Exported SQL uses this placeholder in place of the source site's table
+         * prefix. When the Blueprint is imported, the placeholder is replaced with
+         * the importing site's prefix, so Blueprints remain portable across sites
+         * that use different database table prefixes.
+         *
+         * @var string
+         */
+        public const TABLE_PREFIX_PLACEHOLDER = '{WC_BLUEPRINT_TABLE_PREFIX}';
+        /**
          * Sql code to run.
          *
          * @var string
@@ -10534,6 +10638,23 @@ namespace Automattic\WooCommerce\Blueprint\Steps {
          * @param string $name Name of the sql file.
          */
         public function __construct(string $sql, $name = 'schema.sql')
+        {
+        }
+        /**
+         * Build a RunSql step for a database row, using the portable table-prefix
+         * placeholder in place of the live database prefix.
+         *
+         * Pass the unprefixed table name (e.g. 'woocommerce_shipping_zones'). The
+         * placeholder is prepended for you, so exported SQL stays portable across
+         * sites with different table prefixes. On import, ImportRunSql resolves the
+         * placeholder back to the importing site's prefix.
+         *
+         * @param array  $row   Row data keyed by column name.
+         * @param string $table Unprefixed table name.
+         * @param string $type  One of insert, insert ignore, replace into.
+         * @return self
+         */
+        public static function from_table_row(array $row, string $table, string $type = 'replace into'): self
         {
         }
         /**
@@ -11665,6 +11786,19 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         {
         }
         /**
+         * Sum a block's left and right border widths.
+         *
+         * Supports both the shorthand `border.width` and the per-side
+         * `border.left.width` / `border.right.width` formats, matching how the
+         * columns block border is read elsewhere in this class.
+         *
+         * @param array $block Parsed block.
+         * @return float Combined horizontal border width in pixels.
+         */
+        private function get_block_horizontal_border(array $block): float
+        {
+        }
+        /**
          * Add missing column widths
          *
          * @param array $columns Columns.
@@ -11815,22 +11949,16 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
          * column gaps, and root padding for children of root-level containers.
          *
          * Root padding is distributed from the outer email wrapper to individual block
-         * wrappers. Container blocks (groups, post-content) at the root level delegate
-         * padding to their children instead of taking it themselves. This enables
-         * alignfull blocks to skip root padding and span the full email width.
+         * wrappers. Plain root-level containers (groups without post-content) delegate
+         * padding to their children instead of taking it themselves, so alignfull
+         * children can skip root padding and span the full email width.
          *
-         * Container padding works similarly: when a template group wrapping post-content
-         * has its own horizontal padding, that padding is distributed per-block alongside
-         * root padding. Alignfull blocks skip both padding types and span the full
-         * contentSize. The template group gets a suppress-horizontal-padding flag so its
-         * renderer omits horizontal padding from its own CSS output.
-         *
-         * Blocks fall into three categories for root padding:
-         * - Zero padding (has_zero_padding): skip root padding entirely — edge-to-edge intent.
-         * - Non-zero explicit padding (has_own_padding, !has_zero_padding): receive root padding
-         *   on top of their own padding. Their own padding is internal content spacing; root
-         *   padding ensures inset from the email edge. These blocks also stop delegation.
-         * - No explicit padding: receive root padding if delegated, or delegate if a container.
+         * A container that wraps post-content and has its own horizontal padding is a
+         * self-contained box: it takes the root padding as an inset itself, and its own
+         * padding is suppressed on the box and distributed to descendants as container
+         * padding (via a suppress-horizontal-padding flag). This lets full-width children
+         * break out of the box, and keeps the two paddings nesting (e.g. 30px outer +
+         * 24px own) instead of stacking on every block.
          *
          * @param array      $parsed_blocks Parsed blocks.
          * @param string     $gap Gap.
@@ -11920,11 +12048,14 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Pre
         /**
          * Extracts the horizontal blockGap from a columns block.
          *
-         * @param array  $columns_block The columns block.
-         * @param string $default_gap Default gap value to use if blockGap is not set on the columns block.
-         * @return string|null The horizontal gap value (e.g., "30px" or "var:preset|spacing|30") or null if not set.
+         * Only an explicitly defined horizontal gap (blockGap.left) is honored; we do
+         * not fall back to the global block spacing, which is vertical-only in the
+         * editor and would otherwise add a gap that widens the rendered email.
+         *
+         * @param array $columns_block The columns block.
+         * @return string|null The horizontal gap value (e.g., "30px" or "var:preset|spacing|30") or null if not explicitly set.
          */
-        private function get_columns_block_gap(array $columns_block, string $default_gap = ''): ?string
+        private function get_columns_block_gap(array $columns_block): ?string
         {
         }
     }
@@ -14714,6 +14845,15 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         private function get_block_wrapper(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
         {
         }
+        /**
+         * Returns a table cell width attribute value.
+         *
+         * @param string $width Column width.
+         * @return string
+         */
+        private function get_width_attribute_value($width): string
+        {
+        }
     }
     /**
      * Renders a columns block.
@@ -14827,22 +14967,33 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
      * This renderer handles core/embed blocks, detecting audio and video provider embeds and rendering them appropriately.
      *
      * Audio providers: Spotify, SoundCloud, Pocket Casts, Mixcloud, ReverbNation - rendered as audio players.
-     * Video providers: YouTube - rendered as video thumbnails with play buttons.
+     * Video providers: YouTube, VideoPress, Vimeo, TikTok, Dailymotion - rendered as video thumbnails with play buttons.
      */
     class Embed extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
     {
         /**
-         * Maximum number of embed page fetch attempts per email render.
-         * Beyond this limit, embeds render as compact link cards (no HTTP fetch).
+         * Maximum number of embed HTTP fetch attempts per email render.
+         * Covers both embed page fetches (rich cards) and oEmbed thumbnail lookups.
+         * Beyond this limit, embeds render without fetching (compact link cards or link fallbacks).
          * Counts attempts, not successes, to cap outbound HTTP requests.
+         * Cached results render normally and do not count toward the limit.
          */
         private const MAX_EMBED_FETCHES = 5;
         /**
-         * Number of embed page fetch attempts so far by this instance.
+         * Number of embed HTTP fetch attempts so far by this instance.
          *
          * @var int
          */
         private int $embed_fetch_count = 0;
+        /**
+         * Check whether an embed HTTP fetch may be performed and count the attempt.
+         * Enforces the MAX_EMBED_FETCHES cap shared by embed page fetches and oEmbed thumbnail lookups.
+         *
+         * @return bool True if the fetch is within the limit and may proceed.
+         */
+        private function may_attempt_embed_fetch(): bool
+        {
+        }
         /**
          * Supported audio providers with their configuration.
          *
@@ -14854,7 +15005,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          *
          * @var array
          */
-        private const VIDEO_PROVIDERS = array('youtube' => array('domains' => array('youtube.com', 'youtu.be'), 'base_url' => 'https://www.youtube.com/'), 'videopress' => array('domains' => array('videopress.com', 'video.wordpress.com'), 'base_url' => 'https://videopress.com/'));
+        private const VIDEO_PROVIDERS = array('youtube' => array('domains' => array('youtube.com', 'youtu.be'), 'base_url' => 'https://www.youtube.com/'), 'videopress' => array('domains' => array('videopress.com', 'video.wordpress.com'), 'base_url' => 'https://videopress.com/'), 'vimeo' => array('domains' => array('vimeo.com', 'player.vimeo.com'), 'base_url' => 'https://vimeo.com/'), 'tiktok' => array('domains' => array('tiktok.com'), 'base_url' => 'https://www.tiktok.com/'), 'dailymotion' => array('domains' => array('dailymotion.com', 'dai.ly'), 'base_url' => 'https://www.dailymotion.com/'));
         /**
          * Get all supported providers (audio and video).
          *
@@ -15043,17 +15194,17 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         {
         }
         /**
-         * Extract VideoPress video thumbnail URL.
-         * Uses WordPress oEmbed API to get thumbnail_url from the provider response.
+         * Extract a video thumbnail URL via the WordPress oEmbed API.
+         * Used by providers that expose thumbnails through oEmbed (e.g. VideoPress, Vimeo).
          * Results are cached using transients to avoid repeated HTTP requests.
          *
-         * Note: URL validation against VideoPress domains is done in render_video_embed()
+         * Note: URL validation against the provider's domains is done in render_video_embed()
          * via url_matches_provider() before this method is called.
          *
-         * @param string $url VideoPress video URL (pre-validated by caller).
+         * @param string $url Video URL (pre-validated by caller).
          * @return string Thumbnail URL or empty string.
          */
-        private function get_videopress_thumbnail(string $url): string
+        private function get_oembed_thumbnail(string $url): string
         {
         }
         /**
@@ -15288,6 +15439,38 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string $class_name Class name.
          */
         private function apply_image_border_style(string $block_content, array $parsed_block, string $class_name): string
+        {
+        }
+        /**
+         * Get the border radius to apply to the image so it sits flush inside the bordered wrapper cell.
+         *
+         * The border is rendered on the wrapper cell, so the image radius is reduced by the border
+         * width (clamped to 0). Returns a CSS value (single radius or a four-value shorthand), or an
+         * empty string when there's no radius to apply.
+         *
+         * @param array $parsed_block Parsed block.
+         */
+        private function get_inner_image_border_radius(array $parsed_block): string
+        {
+        }
+        /**
+         * Get the largest border width (in px) across all sides.
+         *
+         * @param array $border Border style attributes.
+         */
+        private function get_max_border_width(array $border): float
+        {
+        }
+        /**
+         * Reduce a single border radius value by the border width, clamped to 0.
+         *
+         * Only px (or unitless) values can be combined with the px border width; other units are
+         * returned unchanged.
+         *
+         * @param mixed $radius Border radius value (e.g. "20px"). Non-scalar values are treated as 0.
+         * @param float $border_width Border width in px.
+         */
+        private function reduce_radius_by_border_width($radius, float $border_width): string
         {
         }
         /**
@@ -25298,14 +25481,14 @@ namespace {
     /**
      * Registers this version of Action Scheduler.
      */
-    function action_scheduler_register_3_dot_9_dot_3()
+    function action_scheduler_register_4_dot_0_dot_0()
     {
     }
     // phpcs:disable Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace
     /**
      * Initializes this version of Action Scheduler.
      */
-    function action_scheduler_initialize_3_dot_9_dot_3()
+    function action_scheduler_initialize_4_dot_0_dot_0()
     {
     }
     /**
