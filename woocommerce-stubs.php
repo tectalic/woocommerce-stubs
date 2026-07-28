@@ -1836,7 +1836,7 @@ namespace {
          * replacement items. Superseded by $bulk_delete_all_items_pending, which removes
          * every item type.
          *
-         * @since 10.9.0
+         * @since 11.0.0
          * @var array<string>
          */
         protected $item_types_to_bulk_delete = array();
@@ -1846,7 +1846,7 @@ namespace {
          * Set by remove_order_items() when called with no type (so every item type
          * should be removed). Processed and reset in save_items().
          *
-         * @since 10.9.0
+         * @since 11.0.0
          * @var bool
          */
         protected $bulk_delete_all_items_pending = \false;
@@ -2389,7 +2389,7 @@ namespace {
          * woocommerce_order_type_to_group filter so extension-registered types are
          * included.
          *
-         * @since 10.9.0
+         * @since 11.0.0
          * @return array<string, string>
          */
         protected function get_item_types_to_group()
@@ -33475,24 +33475,10 @@ namespace {
          *
          * @since 10.2.0
          * @param WC_Product $product The variable product whose attributes were updated.
-         * @param bool       $force   Whether the update was forced. Forced updates originate from the read-time
-         *                            backwards-compatibility migration in the data store, where the product's
-         *                            in-memory attributes can be an incomplete view of what's stored, so stale
-         *                            attribute meta cleanup must be skipped to avoid deleting valid meta.
          *
          * @return void
          */
-        public static function on_product_attributes_updated($product, $force = \false)
-        {
-        }
-        /**
-         * Deletes child variation attribute meta that no longer maps to a parent variation attribute.
-         *
-         * @param WC_Product $product The variable product whose attributes were updated.
-         *
-         * @return void
-         */
-        private static function delete_stale_variation_attribute_meta($product)
+        public static function on_product_attributes_updated($product)
         {
         }
         /**
@@ -40353,7 +40339,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.0.0-beta.2';
+        public $version = '11.0.0-rc.1';
         /**
          * WooCommerce Schema version.
          *
@@ -43190,7 +43176,7 @@ namespace {
          * @since 3.0.0
          * @var array
          */
-        protected $internal_meta_keys = array('locale', 'billing_postcode', 'billing_city', 'billing_address_1', 'billing_address_2', 'billing_state', 'billing_country', 'shipping_postcode', 'shipping_city', 'shipping_address_1', 'shipping_address_2', 'shipping_state', 'shipping_country', 'paying_customer', 'last_update', 'first_name', 'last_name', 'display_name', 'show_admin_bar_front', 'use_ssl', 'admin_color', 'rich_editing', 'comment_shortcuts', 'dismissed_wp_pointers', 'show_welcome_panel', 'session_tokens', 'nickname', 'description', 'billing_first_name', 'billing_last_name', 'billing_company', 'billing_phone', 'billing_email', 'shipping_first_name', 'shipping_last_name', 'shipping_company', 'shipping_phone', 'wptests_capabilities', 'wptests_user_level', 'syntax_highlighting', '_order_count', '_money_spent', '_last_order', '_woocommerce_tracks_anon_id');
+        protected $internal_meta_keys = array('locale', 'billing_postcode', 'billing_city', 'billing_address_1', 'billing_address_2', 'billing_state', 'billing_country', 'shipping_postcode', 'shipping_city', 'shipping_address_1', 'shipping_address_2', 'shipping_state', 'shipping_country', 'paying_customer', 'last_update', 'first_name', 'last_name', 'display_name', 'show_admin_bar_front', 'use_ssl', 'admin_color', 'rich_editing', 'comment_shortcuts', 'dismissed_wp_pointers', 'show_welcome_panel', 'session_tokens', 'nickname', 'description', 'billing_first_name', 'billing_last_name', 'billing_company', 'billing_phone', 'billing_email', 'shipping_first_name', 'shipping_last_name', 'shipping_company', 'shipping_phone', 'wptests_capabilities', 'wptests_user_level', 'syntax_highlighting', 'infinite_scrolling', '_order_count', '_money_spent', '_last_order', '_woocommerce_tracks_anon_id');
         /**
          * Internal meta type used to store user data.
          *
@@ -47779,6 +47765,11 @@ namespace {
          * - `checkout-draft` — block checkout (Store API) parks the order here while
          *                     the customer is mid-flow. May have no billing email yet,
          *                     in which case `trigger()` no-ops.
+         *
+         * Covers block checkout as well as classic. The automated scheduler is
+         * scoped to `pending`.
+         *
+         * @see \Automattic\WooCommerce\Internal\AbandonedCartRecovery\Scheduler::get_eligible_statuses()
          *
          * @var string[]
          */
@@ -119869,6 +119860,57 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings {
         {
         }
         /**
+         * Canonicalize option values supplied by native Settings UI schema providers.
+         *
+         * Schemas built from legacy settings always carry string option values, but
+         * native providers can supply any scalar. The client matches options against
+         * the stored value with strict string comparison, so scalar option values,
+         * the selected values they match, and visibility values compared against
+         * them are cast here to the string the client's own String() coercion
+         * produces. Malformed entries remain unchanged for the provider to fix.
+         *
+         * @since 11.0.0
+         *
+         * @param array $schema Settings UI schema.
+         * @return array Schema with scalar option values canonicalized to strings.
+         */
+        public static function canonicalize_option_values(array $schema): array
+        {
+        }
+        /**
+         * Canonicalize a list of scalar values to strings.
+         *
+         * @param array $values Candidate value list.
+         * @return array|null String list, or null when unchanged or not a scalar list.
+         */
+        private static function canonicalize_scalar_list(array $values): ?array
+        {
+        }
+        /**
+         * Whether a visibility rule carries a value compared against an options field.
+         *
+         * @param mixed $rule Candidate visibility rule.
+         * @param array $option_field_ids Ids of fields carrying an options array.
+         * @return bool
+         */
+        private static function is_canonicalizable_visibility_rule($rule, array $option_field_ids): bool
+        {
+        }
+        /**
+         * Cast a scalar to the string the client's String() coercion produces, so
+         * canonicalizing a value never changes which option or visibility rule it
+         * matches. PHP casts diverge from String() for booleans: (string) true is
+         * '1' and (string) false is '', while String() gives 'true' and 'false'.
+         * Floats convert through wc_float_to_string() because a plain cast is
+         * locale-sensitive before PHP 8.0 and String() never emits a comma.
+         *
+         * @param bool|int|float|string $value Scalar value.
+         * @return string
+         */
+        private static function to_canonical_string($value): string
+        {
+        }
+        /**
          * Transform a legacy field into the canonical schema.
          *
          * @param array       $setting Legacy field definition.
@@ -147583,12 +147625,15 @@ namespace Automattic\WooCommerce\Internal\AbandonedCartRecovery {
     /**
      * Schedules and cancels the automated abandoned-cart recovery email via Action Scheduler.
      *
-     * Listens for new orders in the `pending` status to enqueue a single
+     * Listens for new orders in an abandoned-checkout status to enqueue a single
      * `woocommerce_send_abandoned_cart_recovery_notification` action that fires
      * after `WC_Email_Customer_Abandoned_Cart_Recovery::AUTO_SEND_DELAY_SECONDS`.
-     * The pending action is cancelled when the order transitions out of `pending`
-     * or is trashed/deleted, so a customer who completes checkout before the delay
-     * elapses never receives the nudge.
+     * The pending action is cancelled when the order transitions out of the
+     * eligible-status set or is trashed/deleted, so a customer who completes
+     * checkout before the delay elapses never receives the nudge. Eligibility runs
+     * through the same `woocommerce_abandoned_cart_recovery_eligible_statuses`
+     * filter the send/manual paths use, with a default scoped to `pending` —
+     * {@see get_eligible_statuses()}.
      *
      * Per-order idempotency is enforced two ways: a scheduled-at meta key blocks
      * re-scheduling for the same order, and the trigger-time send gate refuses to
@@ -147623,6 +147668,16 @@ namespace Automattic\WooCommerce\Internal\AbandonedCartRecovery {
          */
         public const SCHEDULED_META_KEY = '_abandoned_cart_recovery_scheduled_at';
         /**
+         * Order-creation origins (`created_via`) eligible for an automated send:
+         * the classic checkout and the block (Store API) checkout.
+         *
+         * Store API orders are generally created in `checkout-draft`, which is not scheduled
+         * yet. `store-api` is listed here for future block checkout support.
+         *
+         * @var string[]
+         */
+        private const ELIGIBLE_CREATED_VIA = array('checkout', 'store-api');
+        /**
          * Register hooks and filters.
          *
          * Auto-called by the WC dependency container after instantiation.
@@ -147633,11 +147688,12 @@ namespace Automattic\WooCommerce\Internal\AbandonedCartRecovery {
         {
         }
         /**
-         * Schedule the automated send when a `pending` order is created.
+         * Schedule the automated send when an order is created in an eligible status.
          *
-         * No-op when the order is not `pending`, when the email is disabled or
-         * suppressed, when the merchant has opted out of automated sends, or when
-         * this order already has a pending or completed send.
+         * No-op when the order is not eligible, when it was not created by a
+         * customer checkout flow, when the email is disabled or suppressed, when
+         * the merchant has opted out of automated sends, or when this order
+         * already has a pending or completed send.
          *
          * @internal
          *
@@ -147650,17 +147706,18 @@ namespace Automattic\WooCommerce\Internal\AbandonedCartRecovery {
         }
         /**
          * Unschedule the pending recovery send whenever the order leaves the
-         * `pending` status. `woocommerce_order_status_changed` fires for every
-         * transition, so a single listener covers processing / completed /
-         * cancelled / failed / refunded / custom statuses in one place.
+         * eligible-status set. `woocommerce_order_status_changed` fires for every
+         * transition, so a single listener covers all statuses in one place, and
+         * transitions inside a filter-widened eligible set keep the send queued.
          *
          * @internal
          *
-         * @param int    $order_id   Order ID.
-         * @param string $old_status Previous status (sans `wc-` prefix).
-         * @param string $new_status New status (sans `wc-` prefix).
+         * @param int           $order_id   Order ID.
+         * @param string        $old_status Previous status (sans `wc-` prefix).
+         * @param string        $new_status New status (sans `wc-` prefix).
+         * @param WC_Order|null $order      Order passed by the hook; looked up when absent.
          */
-        public function handle_status_changed(int $order_id, string $old_status, string $new_status): void
+        public function handle_status_changed(int $order_id, string $old_status, string $new_status, $order = null): void
         {
         }
         /**
@@ -147673,24 +147730,35 @@ namespace Automattic\WooCommerce\Internal\AbandonedCartRecovery {
          *
          * @internal
          *
-         * @param int $order_id The affected order ID.
+         * @param int           $order_id The affected order ID.
+         * @param WC_Order|null $order    Order passed by the caller or hook; looked up when absent, as
+         *                                some hooks don't supply the order.
          */
-        public function handle_cancellation(int $order_id): void
+        public function handle_cancellation(int $order_id, $order = null): void
         {
         }
         /**
          * Dispatch the recovery email when the scheduled AS action fires.
          *
-         * Resolve the email lazily through the mailer (which loads the class) and delegate the
-         * actual send to `trigger()`, which keeps every send-time gate
-         * (enabled, recipient, eligibility, unsubscribed, dedup-meta) in one
-         * place.
+         * Resolve the email lazily through the mailer, re-check the automation
+         * opt-in, and delegate the actual send to `trigger()`, which keeps every
+         * send-time gate in one place.
          *
          * @internal
          *
          * @param int $order_id Order id the AS action was scheduled with.
          */
         public function handle_scheduled_send(int $order_id): void
+        {
+        }
+        /**
+         * Order statuses that can be scheduled for an automated send. Defaults to `pending`, which is
+         * where classic checkout leaves an abandoned order at creation time.
+         *
+         * @param WC_Order|null $order Order being inspected, or null if it could not be loaded.
+         * @return string[]
+         */
+        private function get_eligible_statuses(?\WC_Order $order): array
         {
         }
         /**
@@ -163132,7 +163200,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings {
          * @param string $section Unused. This adapter wraps a single registered section.
          * @return array
          *
-         * @since 11.1.0
+         * @since 11.0.0
          */
         public function get_schema(string $section): array
         {
@@ -163393,7 +163461,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings {
          * settings tabs. Pages registered at the top level of settings are not
          * drill-downs: they hide the header and keep the tabs.
          *
-         * @since 11.1.0
+         * @since 11.0.0
          *
          * @return bool
          */
@@ -190026,6 +190094,11 @@ namespace Automattic\WooCommerce\Internal\PushNotifications\DataStores {
          * When called without pagination parameters, returns all tokens as a
          * flat array (cached per-request). When $page and $per_page are
          * provided, returns a paginated result with total counts.
+         *
+         * The eligible-user lookup is restricted to users that actually own
+         * push tokens, so the role check runs against a handful of IDs instead
+         * of scanning every user's capabilities meta, which does not scale on
+         * sites with very large user tables.
          *
          * @param string[] $roles    The roles to query tokens for.
          * @param int|null $page     Optional page number (1-based).
@@ -222150,5 +222223,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.0.0-beta.2');
+    define('WC_VERSION', '11.0.0-rc.1');
 }
