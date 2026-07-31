@@ -2785,15 +2785,6 @@ namespace {
         {
         }
         /**
-         * Whether this store uses fixed end-prices across tax jurisdictions.
-         * True when prices include tax and woocommerce_adjust_non_base_location_prices is false.
-         *
-         * @return bool
-         */
-        private function has_fixed_end_prices(): bool
-        {
-        }
-        /**
          * Calculate totals by looking at the contents of the order. Stores the totals and returns the orders final total.
          *
          * @since 2.2
@@ -2812,33 +2803,6 @@ namespace {
          * @return float
          */
         public function get_item_subtotal($item, $inc_tax = \false, $round = \true)
-        {
-        }
-        /**
-         * Get the items subtotal amount to display in the admin order screen.
-         *
-         * For stores with fixed end-prices (prices entered including tax with the
-         * woocommerce_adjust_non_base_location_prices adjustment disabled), the
-         * line-item subtotal tax is removed so the displayed subtotal matches the
-         * ex-tax cart display. Only line-item taxes are subtracted, not the fee tax
-         * that get_cart_tax() would also include.
-         *
-         * @return float
-         */
-        public function get_subtotal_amount_to_display()
-        {
-        }
-        /**
-         * Get the per-unit item subtotal amount to display in the admin order screen.
-         *
-         * For stores with fixed end-prices (prices entered including tax with the
-         * woocommerce_adjust_non_base_location_prices adjustment disabled), the item
-         * tax is removed so the displayed amount matches the ex-tax cart display.
-         *
-         * @param object $item Item to get the subtotal from.
-         * @return float
-         */
-        public function get_item_subtotal_to_display($item)
         {
         }
         /**
@@ -22292,6 +22256,21 @@ namespace {
         {
         }
         /**
+         * Get the country to validate a fieldset's fields against.
+         *
+         * Uses the posted country when the fieldset has one. Only 'billing' and 'shipping' have a customer
+         * country to fall back on, and only once the customer object is set up, so every other fieldset,
+         * including those registered through the 'woocommerce_checkout_fields' filter, is validated without
+         * country specific rules instead of fataling on an undefined method.
+         *
+         * @param  string $fieldset_key Fieldset key.
+         * @param  array  $data         An array of posted data.
+         * @return string Country code, or an empty string when it can't be determined.
+         */
+        private function get_fieldset_country($fieldset_key, $data)
+        {
+        }
+        /**
          * Validates the posted checkout data based on field properties.
          *
          * @since  3.0.0
@@ -40339,7 +40318,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.0.0-rc.1';
+        public $version = '11.0.0-rc.3';
         /**
          * WooCommerce Schema version.
          *
@@ -62954,6 +62933,25 @@ namespace {
         }
     }
     /**
+     * REST API Layout Templates controller class.
+     *
+     * The real controller was removed in 11.0 with the deprecated product block editor. This empty
+     * stub stays so an in-memory 10.9 controller list, still naming this class while the files are
+     * swapped to 11.0 during an update, can instantiate it instead of fataling on the deleted file.
+     * It registers nothing.
+     *
+     * @deprecated 11.0.0
+     */
+    class WC_REST_Layout_Templates_Controller
+    {
+        /**
+         * Register routes. Intentionally a no-op.
+         */
+        public function register_routes(): void
+        {
+        }
+    }
+    /**
      * REST API Network Orders controller class.
      *
      * @package WooCommerce\RestApi
@@ -64077,6 +64075,29 @@ namespace {
          * @return string
          */
         public function exclude_product_variation_statuses($where)
+        {
+        }
+    }
+    /**
+     * REST API Products Catalog controller class.
+     *
+     * The real controller was removed in 11.0. This empty stub stays so an in-memory 10.9 controller
+     * list, still naming this class while the files are swapped to 11.0 during an update, can
+     * instantiate it instead of fataling on the deleted file. It registers nothing.
+     *
+     * 10.9 only added this entry when the `products-catalog-api` feature was enabled, which is off by
+     * default — but the flag is flippable at runtime (WooCommerce Beta Tester, or any plugin filtering
+     * `woocommerce_admin_get_feature_config`), and the feature config is resolved from the pre-swap
+     * code, so trunk dropping the flag does not close the path.
+     *
+     * @deprecated 11.0.0
+     */
+    class WC_REST_Products_Catalog_Controller
+    {
+        /**
+         * Register routes. Intentionally a no-op.
+         */
+        public function register_routes(): void
         {
         }
     }
@@ -202485,7 +202506,7 @@ namespace Automattic\WooCommerce\Internal\Utilities {
         {
         }
         /**
-         * Counts per-status number of products of a given post type.
+         * Counts per-status number of products.
          *
          * @since 11.0.0
          *
@@ -222223,5 +222244,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.0.0-rc.1');
+    define('WC_VERSION', '11.0.0-rc.3');
 }
