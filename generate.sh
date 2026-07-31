@@ -72,8 +72,9 @@ if [ "$NEW" = true ]; then
     git commit -m "Generate stubs for WooCommerce $VERSION"
     git tag "$VERSION"
 
-    git push --tags
-    git push
+    git push --atomic origin \
+        "HEAD:refs/heads/master" \
+        "refs/tags/$VERSION:refs/tags/$VERSION"
 
     echo "Version $VERSION imported"
 fi
