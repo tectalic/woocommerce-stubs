@@ -10,12 +10,12 @@
     ],
     "homepage": "https://github.com/tectalic/woocommerce-stubs",
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:tectalic/woocommerce-dist.git"
+    "repositories": {
+        "private-packagist": {
+            "type": "composer",
+            "url": "https://repo.packagist.com/tectalic/"
         }
-    ],
+    },
     "require-dev": {
         "php": "^8.0",
         "composer/installers": "~2.0",
