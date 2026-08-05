@@ -27251,11 +27251,11 @@ namespace {
          * Register a script for use.
          *
          * @uses   wp_register_script()
-         * @param  string                                          $handle    Name of the script. Should be unique.
-         * @param  string                                          $path      Full URL of the script, or path of the script relative to the WordPress root directory.
-         * @param  string[]                                        $deps      An array of registered script handles this script depends on.
-         * @param  string                                          $version   String specifying script version number, if it has one, which is added to the URL as a query string for cache busting purposes. If version is set to false, a version number is automatically added equal to current installed WordPress version. If set to null, no version is added.
-         * @param  bool|array{strategy?: string, in_footer?: bool} $in_footer Whether to enqueue the script before </body> (boolean), or an array of arguments such as 'strategy' and 'in_footer'. Default array( 'strategy' => 'defer' ).
+         * @param  string        $handle    Name of the script. Should be unique.
+         * @param  string        $path      Full URL of the script, or path of the script relative to the WordPress root directory.
+         * @param  string[]      $deps      An array of registered script handles this script depends on.
+         * @param  string        $version   String specifying script version number, if it has one, which is added to the URL as a query string for cache busting purposes. If version is set to false, a version number is automatically added equal to current installed WordPress version. If set to null, no version is added.
+         * @param  boolean|array $in_footer Whether to enqueue the script before </body>, or an array of loading strategy arguments as accepted by wp_register_script(). Default 'defer' strategy.
          */
         private static function register_script($handle, $path, $deps = array('jquery'), $version = \WC_VERSION, $in_footer = array('strategy' => 'defer'))
         {
@@ -27264,11 +27264,11 @@ namespace {
          * Register and enqueue a script for use.
          *
          * @uses   wp_enqueue_script()
-         * @param  string                                          $handle    Name of the script. Should be unique.
-         * @param  string                                          $path      Full URL of the script, or path of the script relative to the WordPress root directory.
-         * @param  string[]                                        $deps      An array of registered script handles this script depends on.
-         * @param  string                                          $version   String specifying script version number, if it has one, which is added to the URL as a query string for cache busting purposes. If version is set to false, a version number is automatically added equal to current installed WordPress version. If set to null, no version is added.
-         * @param  bool|array{strategy?: string, in_footer?: bool} $in_footer Whether to enqueue the script before </body> (boolean), or an array of arguments such as 'strategy' and 'in_footer'. Default array( 'strategy' => 'defer' ).
+         * @param  string        $handle    Name of the script. Should be unique.
+         * @param  string        $path      Full URL of the script, or path of the script relative to the WordPress root directory.
+         * @param  string[]      $deps      An array of registered script handles this script depends on.
+         * @param  string        $version   String specifying script version number, if it has one, which is added to the URL as a query string for cache busting purposes. If version is set to false, a version number is automatically added equal to current installed WordPress version. If set to null, no version is added.
+         * @param  boolean|array $in_footer Whether to enqueue the script before </body>, or an array of loading strategy arguments as accepted by wp_enqueue_script(). Default 'defer' strategy.
          */
         private static function enqueue_script($handle, $path = '', $deps = array('jquery'), $version = \WC_VERSION, $in_footer = array('strategy' => 'defer'))
         {
@@ -40318,7 +40318,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.0.0-rc.3';
+        public $version = '11.0.0';
         /**
          * WooCommerce Schema version.
          *
@@ -222244,5 +222244,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.0.0-rc.3');
+    define('WC_VERSION', '11.0.0');
 }
