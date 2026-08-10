@@ -37013,9 +37013,7 @@ namespace {
         {
         }
         /**
-         * Hash a value using wp_fast_hash (from WP 6.8 onwards).
-         *
-         * This method can be removed when the minimum version supported is 6.8.
+         * Hash a value for the session cookie integrity tag.
          *
          * @param string $message Value to hash.
          * @return string Hashed value.
@@ -37024,9 +37022,10 @@ namespace {
         {
         }
         /**
-         * Verify a hash using wp_verify_fast_hash (from WP 6.8 onwards).
+         * Verify a hash produced by self::hash().
          *
-         * This method can be removed when the minimum version supported is 6.8.
+         * Hashes produced by the previous `wp_fast_hash()` implementation are still accepted so that guest sessions
+         * created before this change are not invalidated. That fallback can be removed in 11.1.0 forward after those cookies have expired.
          *
          * @param string $message Message to verify.
          * @param string $hash Hash to verify.
@@ -40318,7 +40317,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.0.0';
+        public $version = '11.0.1';
         /**
          * WooCommerce Schema version.
          *
@@ -93058,6 +93057,17 @@ namespace Automattic\WooCommerce\Admin\API {
         {
         }
         /**
+         * Check if a given request has access to install themes.
+         *
+         * @param \WP_REST_Request<array<string, mixed>> $request Full details about the request.
+         * @return \WP_Error|bool
+         *
+         * @since 11.0.1
+         */
+        public function install_item_permissions_check($request)
+        {
+        }
+        /**
          * Check if a given request has access to manage themes.
          *
          * @param  WP_REST_Request $request Full details about the request.
@@ -94606,6 +94616,16 @@ namespace Automattic\WooCommerce\Admin\API\Reports {
          * @var string
          */
         protected $date_column_name = 'date_created';
+        /**
+         * Allow-list a date column name before it is interpolated into SQL.
+         *
+         * @param string $column   Requested date column name.
+         * @param string $fallback Column to use when the requested one is not allowed.
+         * @return string
+         */
+        protected function sanitize_date_column_name($column, $fallback = 'date_created')
+        {
+        }
         /**
          * Mapping columns to data type to return correct response types.
          *
@@ -97731,6 +97751,22 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Export {
          * @return array
          */
         protected function get_export_collection_params()
+        {
+        }
+        /**
+         * Validate report_args against the target report's own collection schema.
+         *
+         * The export route accepts report_args as a free-form object, so its keys
+         * (e.g. orderby) must be validated against the schema of the report being
+         * exported the same way the non-export report route validates them.
+         *
+         * @since 11.0.1
+         * @param  mixed                                  $value   The report_args value.
+         * @param  \WP_REST_Request<array<string, mixed>> $request The request.
+         * @param  string                                 $param   The parameter name.
+         * @return true|\WP_Error
+         */
+        public function validate_report_args($value, $request, $param)
         {
         }
         /**
@@ -119044,6 +119080,25 @@ namespace Automattic\WooCommerce\Admin {
          * @return bool|WC_REST_Reports_Controller Report controller instance or boolean false on error.
          */
         protected function map_report_controller()
+        {
+        }
+        /**
+         * Get the report type to report controller class map.
+         *
+         * @since 11.0.1
+         * @return array Report type to report controller class map.
+         */
+        private static function get_report_controller_map()
+        {
+        }
+        /**
+         * Get a REST controller instance for a given report type, or false if unknown.
+         *
+         * @since 11.0.1
+         * @param string $report_type Report type. E.g. 'orders'.
+         * @return \WC_REST_Reports_Controller|false
+         */
+        public static function get_report_controller($report_type)
         {
         }
         /**
@@ -151975,11 +152030,11 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
         /**
          * Get all the rotations of a file and increment them, so that they overwrite the previous file with that rotation.
          *
-         * @param string $file_id A file ID (file basename without the hash).
+         * @param File $file The un-rotated ("current") iteration of the file to rotate.
          *
          * @return bool True if the file and all its rotations were successfully rotated.
          */
-        private function rotate_file($file_id): bool
+        private function rotate_file(\Automattic\WooCommerce\Internal\Admin\Logging\FileV2\File $file): bool
         {
         }
         /**
@@ -152036,6 +152091,26 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
         {
         }
         /**
+         * Get the creation timestamp encoded in a file's name, or 0 if it doesn't use the standard format.
+         *
+         * @param File $file The file to get the timestamp from.
+         *
+         * @return int
+         */
+        private function get_filename_timestamp(\Automattic\WooCommerce\Internal\Admin\Logging\FileV2\File $file): int
+        {
+        }
+        /**
+         * Get File instances for the existing rotations of a file.
+         *
+         * @param File $file Any iteration of a file, from which the source and creation date are taken.
+         *
+         * @return File[] An associative array where the rotation integer of the file is the key, sorted by rotation.
+         */
+        private function get_rotation_siblings(\Automattic\WooCommerce\Internal\Admin\Logging\FileV2\File $file): array
+        {
+        }
+        /**
          * Helper method to get an array of File instances.
          *
          * @param array $paths An array of absolute file paths.
@@ -152061,6 +152136,21 @@ namespace Automattic\WooCommerce\Internal\Admin\Logging\FileV2 {
          * @return int The number of files that were deleted.
          */
         public function delete_files(array $file_ids): int
+        {
+        }
+        /**
+         * Delete files of a given source that were last modified before a given time.
+         *
+         * Files are enumerated lazily and are neither sorted nor turned into File instances, so this
+         * stays cheap on directories holding a large number of files, unlike get_files().
+         *
+         * @param string $source          Match files whose name begins with this source.
+         * @param int    $modified_before Only delete files modified before this Unix timestamp.
+         * @param int    $limit           The maximum number of files to delete.
+         *
+         * @return int The number of files that were deleted.
+         */
+        public function delete_stale_files(string $source, int $modified_before, int $limit): int
         {
         }
         /**
@@ -182172,23 +182262,19 @@ namespace Automattic\WooCommerce\Internal\Logging {
         /**
          * Maximum number of log files to delete per run.
          */
-        public const MAX_FILES_PER_RUN = 100;
+        public const MAX_FILES_PER_RUN = 1000;
         /**
          * Maximum number of orders to clean up per run.
          */
         public const MAX_ORDERS_PER_RUN = 100;
         /**
-         * True if HPOS is enabled.
-         *
-         * @var bool
+         * Hook of the action scheduled to continue a cleanup that didn't drain the backlog.
          */
-        private bool $hpos_in_use = false;
+        public const EXTENDED_CLEANUP_HOOK = 'woocommerce_cleanup_logs_extended';
         /**
-         * True if HPOS is disabled and the orders data store in use is the old CPT one.
-         *
-         * @var bool
+         * Delay, in seconds, before a follow-up cleanup run.
          */
-        private bool $cpt_in_use = false;
+        private const EXTENDED_CLEANUP_DELAY = 5 * MINUTE_IN_SECONDS;
         /**
          * The instance of DataSynchronizer to use.
          *
@@ -182196,17 +182282,16 @@ namespace Automattic\WooCommerce\Internal\Logging {
          */
         private \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer $data_synchronizer;
         /**
-         * Initialize the instance.
+         * Initialize the instance and register hooks.
          * This is invoked by the dependency injection container.
          *
          * @internal
          *
-         * @param CustomOrdersTableController $hpos_controller The instance of CustomOrdersTableController to use.
-         * @param DataSynchronizer            $data_synchronizer The instance of DataSynchronizer to use.
+         * @param DataSynchronizer $data_synchronizer The instance of DataSynchronizer to use.
          *
          * @return void
          */
-        final public function init(\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController $hpos_controller, \Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer $data_synchronizer): void
+        final public function init(\Automattic\WooCommerce\Internal\DataStores\Orders\DataSynchronizer $data_synchronizer): void
         {
         }
         /**
@@ -182221,17 +182306,40 @@ namespace Automattic\WooCommerce\Internal\Logging {
         /**
          * Run all cleanup tasks: dangling order meta and old log files.
          *
+         * Also the callback for the extended cleanup action.
+         *
          * @since 10.7.0
          */
         public function cleanup(): void
         {
         }
         /**
-         * Delete place-order-debug-* log files from the filesystem.
+         * Clean up a batch of orders with dangling debug log meta.
+         *
+         * Dangling orders have `_debug_log_source` meta but no `_debug_log_source_pending_deletion`.
+         *
+         * @param int  $max_age             Maximum age in seconds before an order's debug log meta is eligible for cleanup.
+         * @param bool $files_swept_in_bulk True if the file sweep is already deleting these orders' log files.
+         *
+         * @return bool True if there may be more orders left to clean up.
+         */
+        private function cleanup_dangling_orders(int $max_age, bool $files_swept_in_bulk): bool
+        {
+        }
+        /**
+         * Delete a batch of place-order-debug-* log files from the filesystem.
          *
          * @param int $max_age Maximum age in seconds before a file is eligible for deletion.
+         *
+         * @return bool True if there may be more files left to delete.
          */
-        private function cleanup_old_log_files(int $max_age): void
+        private function cleanup_old_log_files(int $max_age): bool
+        {
+        }
+        /**
+         * Schedule a follow-up cleanup run to continue draining the backlog.
+         */
+        private function schedule_extended_cleanup(): void
         {
         }
         /**
@@ -182245,6 +182353,19 @@ namespace Automattic\WooCommerce\Internal\Logging {
          * @return void
          */
         public function clear_logs_and_delete_meta(array $items): void
+        {
+        }
+        /**
+         * Clear debug log files and delete associated order meta for the given items, reporting whether anything
+         * was deleted.
+         *
+         * This backs the public clear_logs_and_delete_meta(), whose `void` return type is kept for compatibility.
+         *
+         * @param array $items Associative array of order ID => log source name.
+         *
+         * @return bool True if any meta entries were deleted.
+         */
+        private function clear_logs_and_delete_meta_entries(array $items): bool
         {
         }
         /**
@@ -182265,8 +182386,10 @@ namespace Automattic\WooCommerce\Internal\Logging {
          * from the authoritative table and the backup table (when data sync is enabled).
          *
          * @param array $order_ids Array of order IDs to delete meta for.
+         *
+         * @return bool True if any meta entries were deleted.
          */
-        private function delete_debug_log_meta_entries(array $order_ids): void
+        private function delete_debug_log_meta_entries(array $order_ids): bool
         {
         }
     }
@@ -183264,9 +183387,7 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
          * Render the Review Order page body for the WC-managed page.
          *
          * Called by `the_content` on the page that hosts `[woocommerce_review_order]`.
-         * Returns an empty string when the request did not arrive through the
-         * tokenised rewrite, so a logged-in admin previewing the page directly
-         * sees nothing rather than a partial form.
+         * Confirms the current page and order key before rendering.
          *
          * @return string
          */
@@ -203652,7 +203773,7 @@ namespace Automattic\WooCommerce\StoreApi {
         /**
          * Gets the cart token from the request header.
          *
-         * @param \WP_REST_Request $request The REST request instance.
+         * @param \WP_REST_Request $request Deprecated since 11.1.0. Unused; kept for subclasses.
          * @return string
          */
         protected function get_cart_token(\WP_REST_Request $request)
@@ -204734,7 +204855,9 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         /**
          * Checks if the request has a valid cart token.
          *
-         * @param \WP_REST_Request $request Request object.
+         * Reads the outer HTTP header, not `$request` one, to avoid conflicting cart tokens on a batch request.
+         *
+         * @param \WP_REST_Request $request Request object. Unused here; kept for subclasses.
          * @return bool
          */
         protected function has_cart_token(\WP_REST_Request $request)
@@ -210803,6 +210926,8 @@ namespace Automattic\WooCommerce\StoreApi {
         }
         /**
          * Process the token header to load the correct session.
+         *
+         * Verifies the signature here rather than trusting the caller that selected this handler.
          */
         protected function init_session_from_token()
         {
@@ -211468,6 +211593,15 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         {
         }
         /**
+         * Get the cart token sent with the current HTTP request.
+         *
+         * @since 11.1.0
+         * @return string
+         */
+        public static function get_request_cart_token(): string
+        {
+        }
+        /**
          * Validate the cart token.
          *
          * @param string $cart_token The cart token.
@@ -211479,6 +211613,9 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         /**
          * Get the cart token payload.
          *
+         * Returns an empty payload unless the signature validates.
+         *
+         * @since 11.1.0 Returns an empty payload for tokens that fail signature validation.
          * @param string $cart_token The cart token.
          * @return array
          */
@@ -211496,9 +211633,10 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         /**
          * Gets the expiration of the cart token. Defaults to 48h.
          *
+         * @since 11.1.0 Made public.
          * @return int
          */
-        private static function get_cart_token_expiration(): int
+        public static function get_cart_token_expiration(): int
         {
         }
     }
@@ -211880,6 +212018,18 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * @param \WC_Order  $order Order object.
          */
         protected function validate_coupon_usage_limit(\WC_Coupon $coupon, \WC_Order $order)
+        {
+        }
+        /**
+         * Check the coupon's global usage limit against the order.
+         *
+         * Skipped once the order has recorded its own usage, so it is not counted against itself.
+         *
+         * @throws Exception Exception if the global usage limit has been reached.
+         * @param \WC_Coupon $coupon Coupon object applied to the order.
+         * @param \WC_Order  $order Order object.
+         */
+        protected function validate_coupon_global_usage_limit(\WC_Coupon $coupon, \WC_Order $order): void
         {
         }
         /**
@@ -222244,5 +222394,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.0.0');
+    define('WC_VERSION', '11.0.1');
 }
