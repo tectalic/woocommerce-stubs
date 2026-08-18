@@ -9589,8 +9589,22 @@ namespace Automattic\WooCommerce\Blueprint\Importers {
     /**
      * Processes SQL execution steps in the Blueprint.
      *
-     * Handles the execution of SQL queries with safety checks to prevent
-     * unauthorized modifications to sensitive WordPress data.
+     * This step executes SQL supplied by the imported file against the site's
+     * database. Importing a Blueprint that contains it is equivalent to letting the
+     * author of that file run queries on the store, and the only access control is
+     * check_step_capabilities() below.
+     *
+     * The checks in this class inspect the query as text, so they cannot decide what
+     * a statement will actually do: the same write can be expressed in forms the
+     * patterns here do not match. They exist to catch mistakes and casual misuse and
+     * must not be relied on as a security boundary — do not extend them in the
+     * belief that enough patterns will make them one.
+     *
+     * The boundary is the decision to import the file. That decision is where the
+     * control belongs, so the import screen lists what a Blueprint will do —
+     * including how many queries it runs — before any step executes, and states that
+     * a Blueprint should only be imported from a trusted source. Anything that
+     * weakens that disclosure weakens the actual protection here.
      *
      * @package Automattic\WooCommerce\Blueprint\Importers
      */
@@ -9607,10 +9621,11 @@ namespace Automattic\WooCommerce\Blueprint\Importers {
         /**
          * Process the SQL execution step.
          *
-         * Validates and executes the SQL query while ensuring:
-         * 1. Only allowed query types are executed
-         * 2. No modifications to admin users or roles
-         * 3. No unauthorized changes to user capabilities
+         * Runs the text-level checks — statement type, comment patterns, injection
+         * patterns, protected tables and capability-related option rows — and then
+         * executes the query in a transaction. See the class docblock for what those
+         * checks are and are not: they reject recognisable misuse, they do not
+         * constrain a determined author of the imported file.
          *
          * @param object $schema The schema containing the SQL query to execute.
          * @return StepProcessorResult The result of the SQL execution.
@@ -9698,6 +9713,9 @@ namespace Automattic\WooCommerce\Blueprint\Importers {
         /**
          * List of WordPress options that should not be modified.
          *
+         * Entries must be lowercase so normalised keys can be compared directly before
+         * the database-collation check.
+         *
          * @var array<string>
          */
         private const RESTRICTED_OPTIONS = array('siteurl', 'home', 'active_plugins', 'template', 'stylesheet', 'admin_email', 'unfiltered_html', 'users_can_register', 'default_role', 'db_version', 'cron', 'rewrite_rules', 'wp_user_roles');
@@ -9709,6 +9727,42 @@ namespace Automattic\WooCommerce\Blueprint\Importers {
          * @return StepProcessorResult
          */
         public function process($schema): \Automattic\WooCommerce\Blueprint\StepProcessorResult
+        {
+        }
+        /**
+         * Find restricted option names among imported keys.
+         *
+         * @param array<int|string> $keys Option keys from the blueprint.
+         *
+         * @return array<int|string, bool> Restricted option names as keys.
+         */
+        private function get_restricted_option_names(array $keys): array
+        {
+        }
+        /**
+         * Normalise an option name for comparison against RESTRICTED_OPTIONS.
+         *
+         * Mirrors the trimming WordPress applies to option names, and lowercases so the
+         * comparison matches the case-insensitive collation the database uses.
+         *
+         * @param string $key The option key to normalise.
+         *
+         * @return string
+         */
+        private static function normalize_option_name($key): string
+        {
+        }
+        /**
+         * Match candidates against restricted names using the options table collation.
+         *
+         * The empty option_name branches give both derived tables the real column type and
+         * collation without requiring a restricted option row to exist.
+         *
+         * @param array<string> $candidate_names Trimmed option names from the blueprint.
+         *
+         * @return array<int> Indexes of candidates that match a restricted option.
+         */
+        private function get_collation_restricted_option_indexes(array $candidate_names): array
         {
         }
         /**
@@ -11314,6 +11368,16 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
     class Personalization_Tag
     {
         /**
+         * Value type for tags whose callback returns an HTML fragment appropriate to the rendering
+         * context it receives. The Personalizer inserts the value untouched — the callback owns escaping.
+         */
+        public const VALUE_TYPE_HTML = 'html';
+        /**
+         * Value type for tags whose callback always returns raw plain text. The Personalizer
+         * escapes the value as needed for the rendering context (e.g. esc_html() in HTML content).
+         */
+        public const VALUE_TYPE_TEXT = 'text';
+        /**
          * The name of the tag displayed in the UI.
          *
          * @var string
@@ -11356,6 +11420,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
          */
         private array $post_types;
         /**
+         * The type of value the callback returns — one of the VALUE_TYPE_* constants.
+         *
+         * @var string
+         */
+        private string $value_type;
+        /**
          * Personalization_Tag constructor.
          *
          * Example usage:
@@ -11377,8 +11447,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
          * @param array       $attributes The attributes which are used in the Personalization Tag UI.
          * @param string|null $value_to_insert The value that is inserted via the UI. When the value is null the token is generated based on $token attribute and $attributes.
          * @param string[]    $post_types The list of supported post types.
+         * @param string      $value_type The type of value the callback returns — one of the VALUE_TYPE_* constants. Unknown values fall back to VALUE_TYPE_HTML.
          */
-        public function __construct(string $name, string $token, string $category, callable $callback, array $attributes = array(), ?string $value_to_insert = null, array $post_types = array())
+        public function __construct(string $name, string $token, string $category, callable $callback, array $attributes = array(), ?string $value_to_insert = null, array $post_types = array(), string $value_type = self::VALUE_TYPE_HTML)
         {
         }
         /**
@@ -11437,6 +11508,14 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags {
          * @return array|string[]
          */
         public function get_post_types(): array
+        {
+        }
+        /**
+         * Returns the type of value the callback returns — one of the VALUE_TYPE_* constants.
+         *
+         * @return string
+         */
+        public function get_value_type(): string
         {
         }
         /**
@@ -11547,11 +11626,50 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Lay
         {
         }
         /**
-         * Compute widths for blocks in flex layout.
+         * Render the inner blocks as a single, non-wrapping row.
+         *
+         * This is the default layout: a table row whose cells sit side by side. It's correct whenever
+         * the items are known to fit the available width (and it's what every explicitly-sized buttons
+         * block uses, since those are shrunk to fit by {@see compute_widths_for_flex_layout()}).
+         *
+         * @param array             $inner_blocks Inner blocks with computed widths.
+         * @param string            $styles Wrapper styles (already includes margin-top and text-align).
+         * @param string            $justify Resolved horizontal alignment (left/center/right).
+         * @param string            $flex_gap Gap between items (e.g. "16px").
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function render_single_row_layout(array $inner_blocks, string $styles, string $justify, string $flex_gap, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Render the inner blocks so they wrap when they don't fit on one line.
+         *
+         * Used for auto-width button rows (e.g. a footer navigation menu) whose combined width exceeds
+         * the available width. A table row can't reflow in email, so each item is emitted as an
+         * inline-block <div>: clients that honor it (Gmail desktop, Apple Mail, most webmail) flow the
+         * items and wrap them onto multiple lines instead of stretching the email past its content
+         * width. MS Outlook (Word engine) ignores inline-block and can't wrap a row either, so an
+         * Outlook-only <br> before each item after the first forces it to stack the buttons vertically
+         * — no overflow, at the cost of a vertical list rather than a grid. Fixes NL-737.
+         *
+         * @param array             $inner_blocks Inner blocks (at least one is auto-width in this path).
+         * @param string            $styles Wrapper styles (already includes margin-top and text-align).
+         * @param string            $justify Resolved horizontal alignment (left/center/right).
+         * @param string            $flex_gap Gap between items (e.g. "16px").
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function render_wrapping_layout(array $inner_blocks, string $styles, string $justify, string $flex_gap, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Compute widths for blocks in flex layout and decide whether the row must wrap.
          *
          * @param array $parsed_block Parsed block.
          * @param float $flex_gap Flex gap.
-         * @return array
+         * @return array{0: array, 1: bool} The inner blocks (with computed widths) and whether the row
+         *                                  should wrap instead of rendering as a single row.
          */
         private function compute_widths_for_flex_layout(array $parsed_block, float $flex_gap): array
         {
@@ -12422,6 +12540,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         /**
          * Set template globals
          *
+         * Supports synthetic posts (`ID === 0`, no DB record): the globals are
+         * populated from the post object itself without running a query.
+         *
          * @param WP_Post           $email_post Post object.
          * @param WP_Block_Template $template Block template.
          * @return void
@@ -13032,6 +13153,9 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
         /**
          * Renders the email template
          *
+         * To render block markup that has no backing post (e.g. file-based
+         * templates), use {@see self::render_from_content()} instead.
+         *
          * @param \WP_Post $post Post object.
          * @param string   $subject Email subject.
          * @param string   $pre_header An email preheader or preview text is the short snippet of text that follows the subject line in an inbox. See https://kb.mailpoet.com/article/418-preview-text.
@@ -13041,6 +13165,26 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer {
          * @return array
          */
         public function render(\WP_Post $post, string $subject, string $pre_header, string $language, string $meta_robots = '', string $template_slug = ''): array
+        {
+        }
+        /**
+         * Renders block markup that has no backing post.
+         *
+         * Use this for content that only exists outside the database. A synthetic
+         * post (ID 0) is built internally, and because there is no post to carry
+         * a template association, the block template slug must always be provided.
+         *
+         * @param string $content       Block HTML markup to render.
+         * @param string $template_slug Block template slug to render the content with.
+         * @param string $subject Email subject.
+         * @param string $pre_header An email preheader or preview text is the short snippet of text that follows the subject line in an inbox. See https://kb.mailpoet.com/article/418-preview-text.
+         * @param string $language Email language.
+         * @param string $meta_robots Optional string. Can be left empty for sending, but you can provide a value (e.g. noindex, nofollow) when you want to display email html in a browser.
+         * @return array
+         *
+         * @since 2.16.0
+         */
+        public function render_from_content(string $content, string $template_slug, string $subject, string $pre_header, string $language = 'en', string $meta_robots = ''): array
         {
         }
         /**
@@ -13821,6 +13965,25 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          */
         private const TAG_NAME_PATTERN = '[a-zA-Z0-9\-\/]+';
         /**
+         * Rendering context for HTML content. Tag values are rendered into HTML markup.
+         */
+        public const RENDERING_CONTEXT_HTML = 'html';
+        /**
+         * Rendering context for plain-text content (e.g., email subject, preheader, plain-text body).
+         * Tag values must be raw text without HTML entities or markup.
+         */
+        public const RENDERING_CONTEXT_TEXT = 'text';
+        /**
+         * Rendering context for link destinations. Tag callbacks must return a raw, unescaped URL
+         * (or URL component); URL escaping is applied when the attribute is written.
+         */
+        public const RENDERING_CONTEXT_HREF = 'href';
+        /**
+         * Reserved key under which the current rendering context is exposed in the context array
+         * passed to tag callbacks. Any value set via set_context() under this key is overwritten.
+         */
+        public const RENDERING_CONTEXT_KEY = 'rendering_context';
+        /**
          * Personalization tags registry.
          *
          * @var Personalization_Tags_Registry
@@ -13883,9 +14046,30 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
          * Personalize the content by replacing the personalization tags with their values.
          *
          * @param string $content The content to personalize.
+         * @param string $rendering_context The rendering context of the content — one of the RENDERING_CONTEXT_HTML
+         *                                  or RENDERING_CONTEXT_TEXT constants. Unknown values fall back to RENDERING_CONTEXT_HTML.
          * @return string The personalized content.
          */
-        public function personalize_content(string $content): string
+        public function personalize_content(string $content, string $rendering_context = self::RENDERING_CONTEXT_HTML): string
+        {
+        }
+        /**
+         * Replace personalization tag tokens embedded in a link URL.
+         *
+         * @param string $href The href attribute value.
+         * @return string|null The href with tokens replaced, or null when nothing was replaced.
+         */
+        private function personalize_href_tokens(string $href): ?string
+        {
+        }
+        /**
+         * Build the context array passed to a tag callback, exposing the rendering context
+         * of the current replacement site under the reserved key.
+         *
+         * @param string $rendering_context One of the RENDERING_CONTEXT_* constants.
+         * @return array<string, mixed> The callback context.
+         */
+        private function get_callback_context(string $rendering_context): array
         {
         }
         /**
@@ -15062,6 +15246,26 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         {
         }
         /**
+         * Renders the embed itself (player, thumbnail, card or link fallback) without the caption.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        private function render_embed(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Render the block's figcaption (if any) as a centered block appended below the embed output.
+         *
+         * @param string $block_content Block content.
+         * @return string Caption HTML or empty string.
+         */
+        private function render_caption(string $block_content): string
+        {
+        }
+        /**
          * Renders the embed block content.
          *
          * @param string            $block_content Block content.
@@ -15285,23 +15489,120 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
         {
         }
         /**
+         * Estimate the rendered width (in px) of the gallery cell that holds a given image.
+         *
+         * The gallery packs images into rows of `$columns`. A complete row splits the layout width
+         * evenly, but an incomplete final row is distributed across only its remaining images — a lone
+         * trailing image spans the full width (see {@see build_gallery_row_table()}). Sizing the crop to
+         * the actual cell keeps an image CDN from serving an undersized file for such images.
+         *
+         * @param int $index Zero-based index of the image among the rendered images.
+         * @param int $image_count Total number of rendered images.
+         * @param int $columns Number of gallery columns.
+         * @param int $layout_width Available layout width in px.
+         * @return int Cell width in px (at least 1).
+         */
+        private function get_cell_width(int $index, int $image_count, int $columns, int $layout_width): int
+        {
+        }
+        /**
          * Extract all images from gallery content with their links and captions.
          *
          * @param string $block_content The rendered gallery block HTML.
          * @param array  $parsed_block The parsed block data.
+         * @param int    $columns Number of gallery columns.
+         * @param int    $layout_width Available layout width in px.
          * @return array Array of sanitized image HTML strings.
          */
-        private function extract_images_from_gallery_content(string $block_content, array $parsed_block): array
+        private function extract_images_from_gallery_content(string $block_content, array $parsed_block, int $columns, int $layout_width): array
         {
         }
         /**
          * Extract and sanitize image with optional link and caption from HTML content.
          * This is the unified method that handles all image extraction scenarios.
          *
-         * @param string $html_content HTML content containing the image.
+         * @param string      $html_content HTML content containing the image.
+         * @param string|null $aspect_ratio Optional aspect ratio (e.g. "1" or "4/3") to crop the image to.
+         * @param int         $cell_width Estimated display width of the gallery cell in px.
+         * @param array       $image_attrs Parsed attributes of the core/image block (id, sizeSlug, ...).
          * @return string Sanitized image HTML with proper link and caption handling.
          */
-        private function extract_image_from_html(string $html_content): string
+        private function extract_image_from_html(string $html_content, ?string $aspect_ratio = null, int $cell_width = 0, array $image_attrs = array()): string
+        {
+        }
+        /**
+         * Sanitize a raw gallery <img>, apply the optional aspect-ratio crop, then normalize it for
+         * email rendering.
+         *
+         * This is the single entry point every extraction path uses so image hardening (dropping the
+         * web-only class and reining in an oversized raw width) is applied consistently, whether the
+         * image is linked, unlinked, or cropped.
+         *
+         * @param string      $raw_img_html Raw <img> HTML extracted from the block content.
+         * @param string|null $aspect_ratio Optional aspect ratio (e.g. "1" or "4/3") to crop the image to.
+         * @param int         $cell_width Estimated display width of the gallery cell in px.
+         * @param array       $image_attrs Parsed attributes of the core/image block (id, sizeSlug, ...).
+         * @return string Prepared <img> HTML, or empty string when the image is invalid.
+         */
+        private function prepare_image_html(string $raw_img_html, ?string $aspect_ratio, int $cell_width, array $image_attrs): string
+        {
+        }
+        /**
+         * Normalize a gallery <img> for email: drop the web-only class and rein in an oversized raw width.
+         *
+         * The block editor stores the intrinsic `width`/`height` of the original file (e.g. `width="2560"`).
+         * Outlook honors that raw width literally — blowing a thumbnail-sized cell wide open. The
+         * core/image renderer avoids this with add_image_dimensions(); the gallery path (which sizes to a
+         * per-cell width rather than the block width) needs the equivalent tailored to its cell model. We
+         * clamp the width down to the cell it renders in, but only when the stored width exceeds it,
+         * scaling any height to keep the aspect ratio. An image with no explicit width is left responsive
+         * (no attribute added), and a width already at or below the cell width is untouched — so the
+         * concrete dimensions the aspect-ratio crop sets for a server-cropped file, and the deliberately
+         * dimensionless CSS-crop fallback, are both preserved.
+         *
+         * The other web-only attributes core emits (`srcset`, `sizes`, `loading`, `decoding`) are already
+         * stripped upstream by {@see Html_Processing_Helper::sanitize_image_html()}, whose allowlist keeps
+         * only src/alt/width/height/class/style; the `class` is the one web-only attribute it preserves, so
+         * that is all we remove here (matching the core/image renderer, which also drops it).
+         *
+         * @param string $img_html Sanitized <img> HTML.
+         * @param int    $cell_width Estimated display width of the gallery cell in px.
+         * @return string The normalized <img> HTML.
+         */
+        private function normalize_image_for_email(string $img_html, int $cell_width): string
+        {
+        }
+        /**
+         * Apply an aspect-ratio crop to a sanitized <img> tag.
+         *
+         * Email clients can't crop client-side reliably (`object-fit`/`aspect-ratio` are unsupported in
+         * Gmail), so the only way to truly honor the crop everywhere is to serve an already-cropped image
+         * file. This method exposes the {@see 'woocommerce_email_editor_gallery_cropped_image_url'} filter
+         * so integrations (e.g. Jetpack/Photon on WordPress.com) can rewrite the image URL to a
+         * server-cropped version. When that happens, the image is given concrete `width`/`height`
+         * dimensions so it renders correctly even in clients without CSS crop support.
+         *
+         * When no integration crops the URL (e.g. self-hosted sites with no image CDN), the method falls
+         * back to inline `aspect-ratio` + `object-fit: cover` CSS. Clients that support it (Apple Mail,
+         * iOS Mail, modern webmail) render the crop; the rest fall back to the natural aspect ratio,
+         * matching the previous behavior with no regression.
+         *
+         * @param string      $img_html Sanitized <img> HTML.
+         * @param string|null $aspect_ratio Aspect ratio to apply (e.g. "1" or "4/3").
+         * @param int         $cell_width Estimated display width of the gallery cell in px.
+         * @param array       $image_attrs Parsed attributes of the core/image block (id, sizeSlug, ...).
+         * @return string Image HTML with the crop applied, or the input unchanged when no valid ratio.
+         */
+        private function apply_aspect_ratio_crop(string $img_html, ?string $aspect_ratio, int $cell_width = 0, array $image_attrs = array()): string
+        {
+        }
+        /**
+         * Parse an aspect ratio attribute value (e.g. "1", "1.5", "4/3") into a numeric width/height ratio.
+         *
+         * @param string $aspect_ratio Aspect ratio value.
+         * @return float|null The ratio (width divided by height), or null when the value is invalid.
+         */
+        private function parse_aspect_ratio(string $aspect_ratio): ?float
         {
         }
         /**
@@ -15351,7 +15652,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * Get the columns value from block attributes.
          *
          * @param array $block_attrs Block attributes.
-         * @return int Number of columns (1-5).
+         * @return int Number of columns (1-8).
          */
         private function get_columns_from_attributes(array $block_attrs): int
         {
@@ -15429,6 +15730,18 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @param string $image_url Image URL.
          */
         private function add_image_size_when_missing(array $parsed_block, string $image_url): array
+        {
+        }
+        /**
+         * Get the width of an image stored locally in the uploads directory.
+         *
+         * Only local files are measured. External URLs return null so the caller
+         * can fall back to the max width.
+         *
+         * @param string $image_url Image URL.
+         * @return int|null Image width in pixels, or null if it can't be determined locally.
+         */
+        private function get_local_image_width(string $image_url): ?int
         {
         }
         /**
@@ -15704,6 +16017,242 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks {
          * @return string Rendered post content HTML.
          */
         public function render_stateless($attributes, $content, $block): string
+        {
+        }
+    }
+    /**
+     * Renders a `core/post-template` block (the repeater inside a Query Loop) for email.
+     *
+     * WordPress renders `core/post-template` as a `<ul class="wp-block-post-template">` whose grid is
+     * laid out with CSS grid/flex. Email clients (Outlook especially) don't support those, so the grid
+     * collapses to a single stacked column. This renderer re-flows the already-rendered `<li>` items
+     * into an email-safe, table-based column layout — mirroring how the Gallery renderer arranges
+     * images (see {@see Gallery::build_gallery_table()}).
+     *
+     * The list items arrive already rendered (post-template is a dynamic block, so `$block_content`
+     * holds the final `<ul><li>…</li></ul>`), so this renderer never re-runs the query. Each item's
+     * image is extracted and rebuilt as a clean, responsive `<img>` sitting directly in its grid cell —
+     * the same shape the Gallery renderer emits. This is deliberate: the images WordPress renders inside
+     * a post-template `<li>` are wrapped in fixed-width, auto-layout tables (`<td width="520">`) that
+     * were never sized for email, and a nested `width: 100%` image inside them collapses to a few pixels
+     * in Gmail (the width has no resolvable basis). Hoisting the image into the grid cell gives it a
+     * definite basis so it fills its column and scales down on mobile. An item with no image falls back
+     * to its original markup untouched (text content stacks correctly on its own).
+     */
+    class Post_Template extends \Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer
+    {
+        /**
+         * Upper bound on grid columns, matching the maximum the core grid layout control allows (its
+         * Columns range control tops out at 16). Honors any column count an author can pick in the editor,
+         * while still bounding an out-of-range hand-edited value so it can't emit a runaway number of cells.
+         */
+        private const MAX_COLUMNS = 16;
+        /**
+         * Per-cell padding (px) that stands in for the grid's `gap` between items.
+         */
+        private const CELL_PADDING = 8;
+        /**
+         * Responsive image style applied to every rebuilt grid image. `width: 100%` fills the column,
+         * `max-width: 100%` lets it scale down on narrow viewports, and `height: auto` keeps the ratio.
+         * The explicit `width` attribute (set alongside this) is the Outlook fallback, since Outlook
+         * ignores `max-width`.
+         */
+        private const IMAGE_STYLE = 'border: 0; line-height: 100%; width: 100%; max-width: 100%; height: auto; display: block;';
+        /**
+         * Renders the post-template block content using a table-based grid layout.
+         *
+         * @param string            $block_content Block content.
+         * @param array             $parsed_block Parsed block.
+         * @param Rendering_Context $rendering_context Rendering context.
+         * @return string
+         */
+        protected function render_content(string $block_content, array $parsed_block, \Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer\Rendering_Context $rendering_context): string
+        {
+        }
+        /**
+         * Locate the post-template list within the rendered content.
+         *
+         * The list is matched by its `wp-block-post-template` class rather than by being the first
+         * `<ul>`, so a sibling list that happens to appear earlier in the markup can't be mistaken for
+         * the repeater. Returns null when no such list is present.
+         *
+         * @param Dom_Document_Helper $dom Parsed block content.
+         * @return \DOMElement|null
+         */
+        private function find_post_template_list(\Automattic\WooCommerce\EmailEditor\Integrations\Utils\Dom_Document_Helper $dom): ?\DOMElement
+        {
+        }
+        /**
+         * Extract the inner HTML of each direct-child `<li>` of the post-template list.
+         *
+         * Only direct children are collected, so a nested list inside a post's content (e.g. a
+         * `core/list` in an excerpt) contributes its markup to the item it lives in rather than being
+         * mistaken for additional repeater items.
+         *
+         * @param Dom_Document_Helper $dom Parsed block content.
+         * @param \DOMElement         $list_element The post-template list element.
+         * @return array<int, string> Inner HTML of each list item, in document order.
+         */
+        private function extract_list_items(\Automattic\WooCommerce\EmailEditor\Integrations\Utils\Dom_Document_Helper $dom, \DOMElement $list_element): array
+        {
+        }
+        /**
+         * Determine how many columns the grid should render.
+         *
+         * Prefers the block's own `layout.columnCount` attribute and falls back to the `columns-N` class
+         * WordPress core stamps on the rendered list, so it still works when the parsed attributes are
+         * sparse. Non-grid/flex layouts always resolve to a single (stacked) column.
+         *
+         * @param array               $parsed_block Parsed block data.
+         * @param Dom_Document_Helper $dom Parsed block content.
+         * @param \DOMElement         $list_element The post-template list element.
+         * @return int Column count (at least 1).
+         */
+        private function get_column_count(array $parsed_block, \Automattic\WooCommerce\EmailEditor\Integrations\Utils\Dom_Document_Helper $dom, \DOMElement $list_element): int
+        {
+        }
+        /**
+         * Build the grid as one `<table>` per row wrapped in a container table.
+         *
+         * Follows the tiled-gallery pattern ({@see Gallery::build_gallery_table()}): items are chunked
+         * into rows of `$columns` and each row is its own fixed-layout table, so every cell keeps a
+         * consistent width regardless of how many items the final (possibly partial) row holds.
+         *
+         * @param array<int, string>  $items Inner HTML of each list item.
+         * @param int                 $columns Number of columns.
+         * @param Dom_Document_Helper $dom Parsed block content.
+         * @param \DOMElement         $list_element The post-template list element (for wrapper classes).
+         * @param int                 $layout_width Available layout width in px.
+         * @return string Grid table HTML.
+         */
+        private function build_grid_table(array $items, int $columns, \Automattic\WooCommerce\EmailEditor\Integrations\Utils\Dom_Document_Helper $dom, \DOMElement $list_element, int $layout_width): string
+        {
+        }
+        /**
+         * Estimate the rendered pixel width of a single grid cell's content area.
+         *
+         * The layout width is split evenly across the columns and the per-cell padding is removed from
+         * both sides. Used to give each rebuilt image a concrete `width` attribute (the Outlook fallback)
+         * instead of the intrinsic file width, which Outlook would otherwise honor literally and blow the
+         * cell open.
+         *
+         * @param int $layout_width Available layout width in px.
+         * @param int $columns Number of columns (>= 2; a grid is only built for multi-column layouts).
+         * @return int Cell content width in px (at least 1).
+         */
+        private function get_cell_width(int $layout_width, int $columns): int
+        {
+        }
+        /**
+         * Build a single grid row as its own fixed-layout table.
+         *
+         * Every cell is a fixed `100 / $columns` percent wide and a partial final row is padded with
+         * empty cells, so items stay aligned to their column and keep a uniform width across rows (unlike
+         * the gallery, which stretches a partial row to fill the width). This matches how a CSS grid keeps
+         * column tracks consistent — important when the items are logos that shouldn't change size row to
+         * row.
+         *
+         * @param array<int, string> $row_items Inner HTML of the items in this row.
+         * @param int                $columns Total number of columns.
+         * @param int                $cell_width Cell content width in px.
+         * @return string Row table HTML.
+         */
+        private function build_grid_row(array $row_items, int $columns, int $cell_width): string
+        {
+        }
+        /**
+         * Turn a rendered `<li>`'s inner HTML into email-safe cell content.
+         *
+         * Each image in the item is rebuilt as a clean, responsive `<img>` (preserving its link) sitting
+         * directly in the cell, so its width resolves against the grid column instead of collapsing inside
+         * the fixed-width wrapper tables WordPress renders around it. Any non-image content the card holds
+         * (post title, date, excerpt) is kept below the image, so a post grid isn't reduced to bare images.
+         *
+         * When the card is image-only (e.g. a featured-image sponsor grid) the leftover is nothing but the
+         * now-empty wrapper shells, which are dropped so the output stays a clean logo grid. An item with no
+         * image at all is returned unchanged — its text stacks correctly without intervention.
+         *
+         * @param string $item_html Inner HTML of a single list item.
+         * @param int    $cell_width Cell content width in px.
+         * @return string Cell content HTML.
+         */
+        private function prepare_item_content(string $item_html, int $cell_width): string
+        {
+        }
+        /**
+         * Choose which element to strip when hoisting an image, so the preserved remainder is clean.
+         *
+         * Climbs from the image through every ancestor that wraps nothing but that single image — no text,
+         * no other media — and returns the outermost such wrapper. This removes the whole empty
+         * `<figure>`/`<a>`/layout-table shell WordPress renders around a featured image in one go, rather
+         * than leaving hollow, padded cells behind. Climbing stops as soon as an ancestor holds real
+         * content, so a sibling title/date (outside the image's wrapper) and a `<figcaption>` (whose text
+         * lives on the figure) are both preserved.
+         *
+         * @param \DOMElement $img_element The image element being hoisted.
+         * @return \DOMElement The element to remove from the item.
+         */
+        private function find_image_removal_target(\DOMElement $img_element): \DOMElement
+        {
+        }
+        /**
+         * Count the media elements (images and embeds) contained within an element.
+         *
+         * @param \DOMElement $element The element to inspect.
+         * @return int
+         */
+        private function count_media_descendants(\DOMElement $element): int
+        {
+        }
+        /**
+         * Read back the card content left after the images were removed, or an empty string when nothing
+         * but structural wrapper shells remain (so image-only cards stay a clean grid).
+         *
+         * @param Dom_Document_Helper $item_dom The item DOM after image removal.
+         * @return string
+         */
+        private function extract_remaining_content(\Automattic\WooCommerce\EmailEditor\Integrations\Utils\Dom_Document_Helper $item_dom): string
+        {
+        }
+        /**
+         * Strip markup that has no place in an email from the preserved remainder: `<script>`/`<style>`
+         * elements and inline event-handler (`on*`) attributes.
+         *
+         * The images beside this content are already sanitized when they're rebuilt, so this keeps the
+         * reconstructed cell internally consistent. It intentionally leaves `style` attributes and all
+         * structural markup in place, so legitimate card content (title/date/excerpt) renders unchanged —
+         * core never emits scripts or handlers there, making this a no-op for real content. Scoped to this
+         * renderer's grid path only; it operates on the local item DOM and touches no shared helper.
+         *
+         * @param Dom_Document_Helper $item_dom The item DOM to clean in place.
+         */
+        private function strip_unsafe_markup(\Automattic\WooCommerce\EmailEditor\Integrations\Utils\Dom_Document_Helper $item_dom): void
+        {
+        }
+        /**
+         * Return the href of the nearest ancestor `<a>` of the given image, or an empty string.
+         *
+         * @param \DOMElement $img_element The image element.
+         * @return string
+         */
+        private function find_link_href(\DOMElement $img_element): string
+        {
+        }
+        /**
+         * Sanitize a raw `<img>` and normalize it for a grid cell.
+         *
+         * Reuses {@see Html_Processing_Helper::sanitize_image_html()} for the security pass (attribute
+         * allowlist, URL/style sanitizing), then pins the display width to the cell and replaces the
+         * web-only styling with the responsive email style. WordPress stores the intrinsic file width
+         * (e.g. `width="1024"`) which Outlook honors literally, and the core web style carries a
+         * `width: 100%` that collapses once the image is out of a CSS grid — so both are overwritten with
+         * a concrete cell width plus {@see self::IMAGE_STYLE}.
+         *
+         * @param string $img_html Raw `<img>` HTML.
+         * @param int    $cell_width Cell content width in px.
+         * @return string Normalized `<img>` HTML, or an empty string when the image has no usable src.
+         */
+        private function normalize_image_for_email(string $img_html, int $cell_width): string
         {
         }
     }
@@ -16158,7 +16707,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
         /**
          * List of supported WordPress core blocks in the email editor.
          */
-        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links', 'core/site-logo', 'core/site-title', 'core/table');
+        const ALLOWED_BLOCK_TYPES = array('core/button', 'core/buttons', 'core/column', 'core/columns', 'core/embed', 'core/group', 'core/heading', 'core/image', 'core/list', 'core/list-item', 'core/paragraph', 'core/quote', 'core/spacer', 'core/social-link', 'core/social-links', 'core/site-logo', 'core/site-title', 'core/table');
         /**
          * List of blocks that only need rendering capabilities (not available in email editor).
          *
@@ -16167,7 +16716,7 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Core {
          * 2. Optionally create a specific renderer in the Renderer/Blocks directory
          * 3. Add the renderer case in the get_block_renderer method
          */
-        const RENDER_ONLY_BLOCK_TYPES = array('core/gallery', 'core/media-text', 'core/audio', 'core/embed', 'core/cover', 'core/video', 'core/post-title');
+        const RENDER_ONLY_BLOCK_TYPES = array('core/gallery', 'core/media-text', 'core/audio', 'core/cover', 'core/video', 'core/post-title', 'core/post-template');
         /**
          * Cache renderers by block name.
          *
@@ -16281,6 +16830,15 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
         {
         }
         /**
+         * Returns every element matching the given tag name, in document order.
+         *
+         * @param string $tag_name The tag name to search for.
+         * @return array<int, \DOMElement>
+         */
+        public function find_elements(string $tag_name): array
+        {
+        }
+        /**
          * Returns the value of the given attribute from the given element.
          *
          * @param \DOMElement $element The element to get the attribute value from.
@@ -16304,6 +16862,29 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * @param \DOMElement $element The element to get the outer HTML from.
          */
         public function get_outer_html(\DOMElement $element): string
+        {
+        }
+        /**
+         * Removes the given element from the document.
+         *
+         * A no-op when the element has already been detached (its parent is null), so removing the same
+         * node twice — e.g. two images sharing one wrapper — is safe.
+         *
+         * @param \DOMElement $element The element to remove.
+         */
+        public function remove_element(\DOMElement $element): void
+        {
+        }
+        /**
+         * Serializes every top-level node of the loaded fragment back to HTML.
+         *
+         * The document is loaded with LIBXML_HTML_NOIMPLIED (no implicit html/body wrapper), so the
+         * top-level nodes are the fragment's own roots. Useful for reading back what remains after
+         * elements have been removed.
+         *
+         * @return string
+         */
+        public function get_root_html(): string
         {
         }
         /**
@@ -16412,6 +16993,16 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * @return string Sanitized caption HTML.
          */
         public static function sanitize_caption_html(string $caption_html): string
+        {
+        }
+        /**
+         * Elements and attributes allowed in captions, in wp_kses() format.
+         *
+         * Attribute values are narrowed further by validate_caption_attribute().
+         *
+         * @return array<string, array<string, bool>> Allowed HTML for wp_kses().
+         */
+        private static function get_allowed_caption_html(): array
         {
         }
         /**
