@@ -1843,6 +1843,12 @@ namespace {
          */
         protected $temp_item_id_counter = 0;
         /**
+         * Whether the data store supports deferred item deletion.
+         *
+         * @var bool|null Null until first checked.
+         */
+        private $data_store_supports_deferred_item_deletion = \null;
+        /**
          * Bulk order item types scheduled for deletion on save().
          *
          * Populated by remove_order_items() with a specific item type and processed by
@@ -1855,6 +1861,13 @@ namespace {
          */
         protected $item_types_to_bulk_delete = array();
         /**
+         * Item IDs captured for bulk delete by type.
+         *
+         * @since 11.1.0
+         * @var array<string, array<int>>
+         */
+        protected $item_ids_to_bulk_delete_by_type = array();
+        /**
          * Whether every order item type should be deleted on the next save().
          *
          * Set by remove_order_items() when called with no type (so every item type
@@ -1864,6 +1877,13 @@ namespace {
          * @var bool
          */
         protected $bulk_delete_all_items_pending = \false;
+        /**
+         * IDs of items captured when a full deferred removal is requested.
+         *
+         * @since 11.1.0
+         * @var array<int>
+         */
+        protected $item_ids_to_bulk_delete = array();
         /**
          * Stores meta in cache for future reads.
          *
@@ -1955,6 +1975,32 @@ namespace {
          * @return void
          */
         protected function handle_exception($e, $message = 'Error')
+        {
+        }
+        /**
+         * Deletes items in bulk if the data store supports it, otherwise deletes them one by one.
+         *
+         * @param array<int> $item_ids IDs of the items to delete.
+         * @return void
+         */
+        private function delete_items_by_ids(array $item_ids): void
+        {
+        }
+        /**
+         * Determine whether the data store supports deferred item deletion.
+         *
+         * @return bool
+         */
+        private function data_store_supports_deferred_item_deletion(): bool
+        {
+        }
+        /**
+         * Get IDs of items currently persisted for this order.
+         *
+         * @param string|null $type Item type, or null for every registered item type.
+         * @return array<int>
+         */
+        private function get_persisted_item_ids($type = \null): array
         {
         }
         /**
@@ -2373,17 +2419,12 @@ namespace {
         /**
          * Remove all line items (products, coupons, shipping, taxes) from the order.
          *
-         * The items are cleared from the in-memory order immediately, but the database
-         * deletion is deferred until the next call to save(). This keeps the checkout
-         * "resume order" flow atomic: if anything between here and save() throws, the
-         * previously persisted items remain intact in the database. As a consequence,
-         * the `woocommerce_removed_order_items` action now fires from save_items()
-         * (after the actual DB delete completes) rather than synchronously from this
-         * method — listeners that observe the persisted state continue to see it as
-         * before, but listeners pairing pre/post on the same call stack will see
-         * the post-hook fire at save() time.
+         * The items are cleared from the in-memory order immediately, but core data stores defer
+         * database deletion until the next call to save(). Custom stores overriding `delete_items()`
+         * without also overriding `delete_items_by_ids()` retain the historical synchronous behavior.
          *
          * @param string|null $type Order item type. Default null (remove every type).
+         * @throws Exception If persisted item IDs cannot be read or synchronous item deletion fails.
          * @return void
          */
         public function remove_order_items($type = \null)
@@ -28270,7 +28311,7 @@ namespace {
          *
          * @var array
          */
-        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '7.9.0' => array('wc_update_790_blockified_product_grid_block'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.3.0' => array('wc_update_830_rename_checkout_template', 'wc_update_830_rename_cart_template'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'), '8.9.0' => array('wc_update_890_update_connect_to_woocommerce_note', 'wc_update_890_update_paypal_standard_load_eligibility'), '8.9.1' => array('wc_update_891_create_plugin_autoinstall_history_option'), '9.1.0' => array('wc_update_910_add_launch_your_store_tour_option', 'wc_update_910_remove_obsolete_user_meta'), '9.2.0' => array('wc_update_920_add_wc_hooked_blocks_version_option'), '9.3.0' => array('wc_update_930_add_woocommerce_coming_soon_option', 'wc_update_930_migrate_user_meta_for_launch_your_store_tour'), '9.4.0' => array('wc_update_940_add_phone_to_order_address_fts_index', 'wc_update_940_remove_help_panel_highlight_shown'), '9.5.0' => array('wc_update_950_tracking_option_autoload'), '9.6.1' => array('wc_update_961_migrate_default_email_base_color'), '9.8.0' => array('wc_update_980_remove_order_attribution_install_banner_dismissed_option'), '9.8.5' => array('wc_update_985_enable_new_payments_settings_page_feature'), '9.9.0' => array('wc_update_990_remove_wc_count_comments_transient', 'wc_update_990_remove_email_notes'), '10.0.0' => array('wc_update_1000_multisite_visibility_setting', 'wc_update_1000_remove_patterns_toolkit_transient'), '10.2.0' => array('wc_update_1020_add_old_refunded_order_items_to_product_lookup_table'), '10.3.0' => array('wc_update_1030_add_comments_date_type_index'), '10.4.0' => array('wc_update_1040_add_idx_date_paid_status_parent', 'wc_update_1040_cleanup_legacy_ptk_patterns_fetching'), '10.5.0' => array('wc_update_1050_migrate_brand_permalink_setting', 'wc_update_1050_enable_autoload_options', 'wc_update_1050_add_idx_user_email', 'wc_update_1050_remove_deprecated_marketplace_option'), '10.6.0' => array('wc_update_1060_add_woo_idx_comment_approved_type_index'), '10.7.0' => array('wc_update_1070_disable_hpos_sync_on_read'), '10.8.0' => array('wc_update_1080_migrate_analytics_import_option', 'wc_update_1080_backfill_email_template_sync_meta'), '10.8.0-2' => array('wc_update_10802_restore_orders_meta_key_value_index'), '10.9.0' => array('wc_update_1090_remove_task_list_reminder_bar_hidden_option'), '10.9.2' => array('wc_update_10902_remove_deprecated_push_notifications_option'), '11.0.0' => array('wc_update_1100_enable_point_of_sale_feature'), '11.1.0' => array('wc_update_1110_delete_dashboard_outofstock_count_transient', 'wc_update_1110_cleanup_block_email_posts', 'wc_update_1110_flush_product_count_cache'));
+        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '7.9.0' => array('wc_update_790_blockified_product_grid_block'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.3.0' => array('wc_update_830_rename_checkout_template', 'wc_update_830_rename_cart_template'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'), '8.9.0' => array('wc_update_890_update_connect_to_woocommerce_note', 'wc_update_890_update_paypal_standard_load_eligibility'), '8.9.1' => array('wc_update_891_create_plugin_autoinstall_history_option'), '9.1.0' => array('wc_update_910_add_launch_your_store_tour_option', 'wc_update_910_remove_obsolete_user_meta'), '9.2.0' => array('wc_update_920_add_wc_hooked_blocks_version_option'), '9.3.0' => array('wc_update_930_add_woocommerce_coming_soon_option', 'wc_update_930_migrate_user_meta_for_launch_your_store_tour'), '9.4.0' => array('wc_update_940_add_phone_to_order_address_fts_index', 'wc_update_940_remove_help_panel_highlight_shown'), '9.5.0' => array('wc_update_950_tracking_option_autoload'), '9.6.1' => array('wc_update_961_migrate_default_email_base_color'), '9.8.0' => array('wc_update_980_remove_order_attribution_install_banner_dismissed_option'), '9.8.5' => array('wc_update_985_enable_new_payments_settings_page_feature'), '9.9.0' => array('wc_update_990_remove_wc_count_comments_transient', 'wc_update_990_remove_email_notes'), '10.0.0' => array('wc_update_1000_multisite_visibility_setting', 'wc_update_1000_remove_patterns_toolkit_transient'), '10.2.0' => array('wc_update_1020_add_old_refunded_order_items_to_product_lookup_table'), '10.3.0' => array('wc_update_1030_add_comments_date_type_index'), '10.4.0' => array('wc_update_1040_add_idx_date_paid_status_parent', 'wc_update_1040_cleanup_legacy_ptk_patterns_fetching'), '10.5.0' => array('wc_update_1050_migrate_brand_permalink_setting', 'wc_update_1050_enable_autoload_options', 'wc_update_1050_add_idx_user_email', 'wc_update_1050_remove_deprecated_marketplace_option'), '10.6.0' => array('wc_update_1060_add_woo_idx_comment_approved_type_index'), '10.7.0' => array('wc_update_1070_disable_hpos_sync_on_read'), '10.8.0' => array('wc_update_1080_migrate_analytics_import_option', 'wc_update_1080_backfill_email_template_sync_meta'), '10.8.0-2' => array('wc_update_10802_restore_orders_meta_key_value_index'), '10.9.0' => array('wc_update_1090_remove_task_list_reminder_bar_hidden_option'), '10.9.2' => array('wc_update_10902_remove_deprecated_push_notifications_option'), '11.0.0' => array('wc_update_1100_enable_point_of_sale_feature'), '11.1.0' => array('wc_update_1110_delete_dashboard_outofstock_count_transient', 'wc_update_1110_cleanup_block_email_posts', 'wc_update_1110_flush_product_count_cache'), '11.1.0-1' => array('wc_update_11101_remove_deprecated_variation_gallery_option'));
         /**
          * Option name used to track new installations of WooCommerce.
          *
@@ -40773,7 +40814,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.1.0-beta.1';
+        public $version = '11.1.0-rc.1';
         /**
          * WooCommerce Schema version.
          *
@@ -42805,6 +42846,34 @@ namespace {
          * @return void
          */
         protected function prime_needs_processing_transients($order_ids, $query_vars)
+        {
+        }
+        /**
+         * Get persisted order item IDs, optionally limited to an item type.
+         *
+         * @since 11.1.0
+         *
+         * @param WC_Order    $order Order object.
+         * @param string|null $type Order item type, or null for every type.
+         * @throws Exception If the database query fails.
+         * @return int[]
+         */
+        public function get_item_ids($order, $type = \null)
+        {
+        }
+        /**
+         * Delete selected order items by ID.
+         *
+         * Custom order data stores that override this method opt in to deferred item deletion. The IDs are captured when items are removed and deleted during order save.
+         *
+         * @since 11.1.0
+         *
+         * @param WC_Order $order Order object.
+         * @param int[]    $ids   Order item IDs to delete.
+         * @throws Exception If the database query fails.
+         * @return void
+         */
+        public function delete_items_by_ids($order, $ids)
         {
         }
         /**
@@ -53555,6 +53624,28 @@ namespace {
         {
         }
         /**
+         * Get the taxonomy name of a global attribute as written in the imported data.
+         *
+         * @since 11.1.0
+         *
+         * @param  string $raw_name Attribute name or label.
+         * @return string
+         */
+        protected function get_attribute_taxonomy_name_from_raw_name($raw_name)
+        {
+        }
+        /**
+         * Get the ID of an existing global attribute taxonomy, without creating it when it is missing.
+         *
+         * @since 11.1.0
+         *
+         * @param  string $raw_name Attribute name or label.
+         * @return int Attribute taxonomy ID, or 0 when no such global attribute exists.
+         */
+        protected function get_existing_attribute_taxonomy_id($raw_name)
+        {
+        }
+        /**
          * Get attribute taxonomy ID from the imported data.
          * If does not exists register a new attribute.
          *
@@ -53987,9 +54078,26 @@ namespace {
          * @since 11.1.0
          *
          * @param array $parsed_data Parsed row data.
-         * @return bool
+         * @return true|WP_Error True when the variation can be created, a WP_Error describing the refusal otherwise.
          */
         protected function can_create_variation($parsed_data)
+        {
+        }
+        /**
+         * Check that a new variation's attributes are offered by its parent product.
+         *
+         * The storefront variation selector only renders values the parent declares, so a variation
+         * carrying a value the parent does not offer would be created but never selectable. Likewise,
+         * an attribute the parent does not have at all is dropped on save, silently turning the row
+         * into an "any" variation that matches every combination.
+         *
+         * @since 11.1.0
+         *
+         * @param array      $parsed_data    Parsed row data.
+         * @param WC_Product $parent_product Parent product the variation would be created under.
+         * @return true|WP_Error True when every attribute is offered by the parent, a WP_Error describing the refusal otherwise.
+         */
+        protected function validate_new_variation_attributes($parsed_data, $parent_product)
         {
         }
         /**
@@ -56612,6 +56720,7 @@ namespace {
         protected function maybe_set_item_props($item, $props, $posted)
         {
         }
+        // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- This method also throws WC_REST_Exception indirectly through get_product_id().
         /**
          * Create or update a line item.
          *
@@ -56619,11 +56728,13 @@ namespace {
          * @param string $action 'create' to add line item or 'update' to update it.
          *
          * @return WC_Order_Item_Product
+         * @throws WC_Data_Exception Invalid product data.
          * @throws WC_REST_Exception Invalid data, server error.
          */
         protected function prepare_line_items($posted, $action = 'create')
         {
         }
+        // phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
         /**
          * Create or update an order shipping method.
          *
@@ -60234,6 +60345,7 @@ namespace {
         protected function maybe_set_item_meta_data($item, $posted)
         {
         }
+        // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber -- This method also throws WC_REST_Exception indirectly through get_product_id().
         /**
          * Create or update a line item.
          *
@@ -60241,11 +60353,13 @@ namespace {
          * @param string $action 'create' to add line item or 'update' to update it.
          * @param object $item Passed when updating an item. Null during creation.
          * @return WC_Order_Item_Product
+         * @throws WC_Data_Exception Invalid product data.
          * @throws WC_REST_Exception Invalid data, server error.
          */
         protected function prepare_line_items($posted, $action = 'create', $item = \null)
         {
         }
+        // phpcs:enable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
         /**
          * Create or update an order shipping method.
          *
@@ -114222,7 +114336,7 @@ namespace Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions {
             'payubiz' => 6,
             'square_credit_card' => 6,
             'klarna_payments' => 6,
-            // Klarna Checkout.
+            // Kustom Checkout.
             'kco' => 6,
             'paystack' => 6,
             'eway' => 7,
@@ -114791,98 +114905,6 @@ namespace Automattic\WooCommerce\Admin\Features\ProductBlockEditor\ProductTempla
      */
     interface SubsectionInterface
     {
-    }
-}
-namespace Automattic\WooCommerce\Admin\Features\ProductDataViews {
-    /**
-     * Loads assets related to product data views.
-     */
-    class Init
-    {
-        /**
-         * Constructor
-         */
-        public function __construct()
-        {
-        }
-        /**
-         * Returns true if we are on a JS powered admin page.
-         */
-        public static function is_product_data_view_page()
-        {
-        }
-        /**
-         * Enqueue styles needed for the rich text editor.
-         */
-        public function enqueue_styles()
-        {
-        }
-        /**
-         * Enqueue scripts needed for the product form block editor.
-         */
-        public function enqueue_scripts()
-        {
-        }
-        /**
-         * Replaces the default posts menu item with the new posts dashboard.
-         */
-        public function woocommerce_add_new_products_dashboard()
-        {
-        }
-        /**
-         * Renders the new posts dashboard page.
-         */
-        public function woocommerce_products_dashboard()
-        {
-        }
-    }
-}
-namespace Automattic\WooCommerce\Admin\Features {
-    /**
-     * Loads assets for the product variations classic redesign feature.
-     */
-    class ProductVariationsClassicRedesign
-    {
-        const FEATURE_ID = 'product-variations-classic-redesign';
-        const SCRIPT_HANDLE = 'wc-experimental-products-app';
-        const SCRIPT_PATH = 'experimental-products-app';
-        const ROOT_ID = 'woocommerce-variations-classic-root';
-        const ATTRIBUTES_ROOT_ID = 'woocommerce-product-attributes-classic-root';
-        /**
-         * Constructor
-         */
-        public function __construct()
-        {
-        }
-        /**
-         * Returns true if we are on a product edit screen.
-         */
-        public static function is_product_edit_page(): bool
-        {
-        }
-        /**
-         * Returns true if the user has requested legacy editing for a specific variation.
-         */
-        public static function is_legacy_variation_edit(): bool
-        {
-        }
-        /**
-         * Handle the woocommerce_product_data_tabs filter.
-         *
-         * @internal
-         *
-         * @param array $tabs Product data tabs.
-         * @return array Product data tabs.
-         */
-        public function handle_woocommerce_product_data_tabs(array $tabs): array
-        {
-        }
-        /**
-         * Enqueue scripts and styles for the variations table.
-         */
-        public function enqueue_scripts(): void
-        {
-        }
     }
 }
 namespace Automattic\WooCommerce\Admin\Features\ShippingPartnerSuggestions {
@@ -143970,7 +143992,7 @@ namespace Automattic\WooCommerce\Blocks\Utils {
          * Decision tree (variation chosen):
          * - no variation images → parent featured + parent gallery
          * - own featured only → variation featured + parent gallery extras
-         * - own featured + gallery (flag on) → variation images only
+         * - own featured + gallery → variation images only
          * - gallery only, no own featured (potential AVI shape) → parent featured + variation gallery
          *
          * @param int   $variation_id          Variation post ID.
@@ -144350,8 +144372,11 @@ namespace Automattic\WooCommerce\Blocks\Utils {
         /**
          * Get the current page URL using the request path relative to home.
          *
-         * @since 11.1.0
+         * @internal This function is used internally by WooCommerce blocks to get the current page URL. It is not intended for external use.
+         *
          * @return string The current page URL.
+         *
+         * @since 11.1.0
          */
         public static function get_current_page_url()
         {
@@ -161137,7 +161162,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings {
             'monei' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Monei::class,
             'monei_*' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Monei::class,
             'gocardless' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\GoCardless::class,
-            'kco' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\KlarnaCheckout::class,
+            'kco' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\KustomCheckout::class,
             'visa_acceptance_solutions_*' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Visa::class,
             'mastercard_merchant_cloud' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Mastercard::class,
             'eway' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Eway::class,
@@ -161150,7 +161175,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings {
          *
          * @var \class-string[]
          */
-        private array $payment_extension_suggestions_providers_class_map = array(\Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::WOOPAYMENTS => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\WooPayments::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYPAL_FULL_STACK => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PayPal::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYPAL_WALLET => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PayPal::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::STRIPE => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Stripe::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MOLLIE => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Mollie::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AMAZON_PAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\AmazonPay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MERCADO_PAGO => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\MercadoPago::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AFFIRM => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Affirm::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::KLARNA => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Klarna::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AFTERPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\AfterpayClearpay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::CLEARPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\AfterpayClearpay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::ANTOM => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Antom::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::RAZORPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Razorpay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYSTACK => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Paystack::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYFAST => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Payfast::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYONEER => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Payoneer::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYU_INDIA => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PayUIndia::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYMOB => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Paymob::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AIRWALLEX => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Airwallex::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::VIVA_WALLET => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Vivacom::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::TILOPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Tilopay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::HELCIM => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Helcim::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::HELIOPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\HelioPay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYTRAIL => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Paytrail::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MONEI => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Monei::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::GOCARDLESS => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\GoCardless::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::KLARNA_CHECKOUT => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\KlarnaCheckout::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::VISA => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Visa::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MASTERCARD => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Mastercard::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::EWAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Eway::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::NEXI_CHECKOUT => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\NexiCheckout::class);
+        private array $payment_extension_suggestions_providers_class_map = array(\Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::WOOPAYMENTS => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\WooPayments::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYPAL_FULL_STACK => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PayPal::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYPAL_WALLET => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PayPal::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::STRIPE => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Stripe::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MOLLIE => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Mollie::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AMAZON_PAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\AmazonPay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MERCADO_PAGO => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\MercadoPago::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AFFIRM => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Affirm::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::KLARNA => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Klarna::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AFTERPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\AfterpayClearpay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::CLEARPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\AfterpayClearpay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::ANTOM => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Antom::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::RAZORPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Razorpay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYSTACK => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Paystack::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYFAST => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Payfast::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYONEER => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Payoneer::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYU_INDIA => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PayUIndia::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYMOB => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Paymob::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::AIRWALLEX => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Airwallex::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::VIVA_WALLET => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Vivacom::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::TILOPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Tilopay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::HELCIM => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Helcim::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::HELIOPAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\HelioPay::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::PAYTRAIL => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Paytrail::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MONEI => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Monei::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::GOCARDLESS => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\GoCardless::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::KUSTOM_CHECKOUT => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\KustomCheckout::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::VISA => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Visa::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::MASTERCARD => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Mastercard::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::EWAY => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\Eway::class, \Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions::NEXI_CHECKOUT => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\NexiCheckout::class);
         /**
          * The instances of the payment providers.
          *
@@ -162571,48 +162596,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders {
         }
     }
     /**
-     * KlarnaCheckout payment gateway provider class.
-     *
-     * This class handles all the custom logic for the KlarnaCheckout payment gateway provider.
-     */
-    class KlarnaCheckout extends \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PaymentGateway
-    {
-        /**
-         * Check if the payment gateway needs setup.
-         *
-         * @param WC_Payment_Gateway $payment_gateway The payment gateway object.
-         *
-         * @return bool True if the payment gateway needs setup, false otherwise.
-         */
-        public function needs_setup(\WC_Payment_Gateway $payment_gateway): bool
-        {
-        }
-        /**
-         * Check if the payment gateway has a payments processor account connected.
-         *
-         * @param WC_Payment_Gateway $payment_gateway The payment gateway object.
-         *
-         * @return bool True if the payment gateway account is connected, false otherwise.
-         *              If the payment gateway does not provide the information, it will return true.
-         */
-        public function is_account_connected(\WC_Payment_Gateway $payment_gateway): bool
-        {
-        }
-        /**
-         * Try to determine if the payment gateway is in test mode onboarding (aka sandbox or test-drive).
-         *
-         * This is a best-effort attempt, as there is no standard way to determine this.
-         * Trust the true value, but don't consider a false value as definitive.
-         *
-         * @param WC_Payment_Gateway $payment_gateway The payment gateway object.
-         *
-         * @return bool True if the payment gateway is in test mode onboarding, false otherwise.
-         */
-        public function is_in_test_mode_onboarding(\WC_Payment_Gateway $payment_gateway): bool
-        {
-        }
-    }
-    /**
      * KOMOJU payment gateway provider class.
      *
      * This class handles all the custom logic for the KOMOJU payment gateway provider.
@@ -162685,6 +162668,48 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders {
          * @return string The secret key, or an empty string if none is saved.
          */
         private function get_secret_key(\WC_Payment_Gateway $payment_gateway): string
+        {
+        }
+    }
+    /**
+     * KustomCheckout payment gateway provider class.
+     *
+     * This class handles all the custom logic for the KustomCheckout payment gateway provider.
+     */
+    class KustomCheckout extends \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\PaymentGateway
+    {
+        /**
+         * Check if the payment gateway needs setup.
+         *
+         * @param WC_Payment_Gateway $payment_gateway The payment gateway object.
+         *
+         * @return bool True if the payment gateway needs setup, false otherwise.
+         */
+        public function needs_setup(\WC_Payment_Gateway $payment_gateway): bool
+        {
+        }
+        /**
+         * Check if the payment gateway has a payments processor account connected.
+         *
+         * @param WC_Payment_Gateway $payment_gateway The payment gateway object.
+         *
+         * @return bool True if the payment gateway account is connected, false otherwise.
+         *              If the payment gateway does not provide the information, it will return true.
+         */
+        public function is_account_connected(\WC_Payment_Gateway $payment_gateway): bool
+        {
+        }
+        /**
+         * Try to determine if the payment gateway is in test mode onboarding (aka sandbox or test-drive).
+         *
+         * This is a best-effort attempt, as there is no standard way to determine this.
+         * Trust the true value, but don't consider a false value as definitive.
+         *
+         * @param WC_Payment_Gateway $payment_gateway The payment gateway object.
+         *
+         * @return bool True if the payment gateway is in test mode onboarding, false otherwise.
+         */
+        public function is_in_test_mode_onboarding(\WC_Payment_Gateway $payment_gateway): bool
         {
         }
     }
@@ -167184,7 +167209,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Suggestions {
         const AFTERPAY = 'afterpay';
         const CLEARPAY = 'clearpay';
         const KLARNA = 'klarna';
-        const KLARNA_CHECKOUT = 'klarna_checkout';
+        const KUSTOM_CHECKOUT = 'kustom_checkout';
         const HELCIM = 'helcim';
         const KOMOJU = 'komoju';
         const HELIOPAY = 'heliopay';
@@ -167292,7 +167317,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Suggestions {
          */
         private array $country_extensions = array(
             // North America.
-            'CA' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::SQUARE => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://squareup.com/ca/en/pricing'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://squareup.com/ca/en/legal/general/ua')))), self::VISA, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ca/pricing/')))), self::HELCIM, self::PAYPAL_WALLET, self::AFFIRM, self::AFTERPAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/ca/business/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/ca/legal/'))))),
+            'CA' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::SQUARE => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://squareup.com/ca/en/pricing'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://squareup.com/ca/en/legal/general/ua')))), self::VISA, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ca/pricing/')))), self::PAYPAL_WALLET, self::AFFIRM, self::AFTERPAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/ca/business/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/ca/legal/'))))),
             'PM' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             'US' => array(
                 self::WOOPAYMENTS => array('_append' => array('tags' => array('woopay_eligible'))),
@@ -167302,7 +167327,6 @@ namespace Automattic\WooCommerce\Internal\Admin\Suggestions {
                 // Use the default details.
                 self::VISA,
                 self::AIRWALLEX,
-                self::HELCIM,
                 self::PAYPAL_WALLET,
                 self::AMAZON_PAY,
                 self::AFFIRM,
@@ -167311,12 +167335,12 @@ namespace Automattic\WooCommerce\Internal\Admin\Suggestions {
             ),
             'UM' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             // UK + Europe.
-            'GB' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::SQUARE => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://squareup.com/gb/en/pricing'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://squareup.com/gb/en/legal/general/ua')))), self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/uk/business/payment-methods/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/uk/terms-and-conditions/')))), self::GOCARDLESS, self::PAYPAL_WALLET, self::AMAZON_PAY, self::AFFIRM => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.affirm.com/en-gb/business'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.affirm.com/en-gb/terms')))), self::CLEARPAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/uk/business/payment-methods/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/uk/terms-and-conditions/'))))),
+            'GB' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::SQUARE => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://squareup.com/gb/en/pricing'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://squareup.com/gb/en/legal/general/ua')))), self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::KUSTOM_CHECKOUT, self::GOCARDLESS, self::PAYPAL_WALLET, self::AMAZON_PAY, self::AFFIRM => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.affirm.com/en-gb/business'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.affirm.com/en-gb/terms')))), self::CLEARPAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/uk/business/payment-methods/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/uk/terms-and-conditions/'))))),
             'AX' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             'AL' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_WALLET => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             'AD' => array(self::MONEI => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_WALLET => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::VISA),
             'AM' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
-            'AT' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/at/verkaeufer/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/at/agb/')))), self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/at/verkaeufer/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/at/agb/'))))),
+            'AT' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::KUSTOM_CHECKOUT, self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/at/verkaeufer/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/at/agb/'))))),
             'BY' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             'BE' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/be/fr/entreprise/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/be/fr/conditions-generales/'))))),
             'BA' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_WALLET => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
@@ -167325,14 +167349,14 @@ namespace Automattic\WooCommerce\Internal\Admin\Suggestions {
             'HR' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::PAYPAL_WALLET),
             'CY' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::PAYPAL_WALLET, self::AMAZON_PAY),
             'CZ' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/cz/firmy/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/cz/obchodni-podminky/'))))),
-            'DK' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/da-dk/priser/')))), self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/dk/erhverv/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/dk/vilkar/')))), self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/dk/erhverv/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/dk/vilkar/'))))),
+            'DK' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/da-dk/priser/')))), self::KUSTOM_CHECKOUT, self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/dk/erhverv/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/dk/vilkar/'))))),
             'EE' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::PAYPAL_WALLET),
-            'FI' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::PAYTRAIL, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/fi/yritys/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/fi/ehdot/')))), self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/fi/yritys/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/fi/ehdot/'))))),
+            'FI' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::PAYTRAIL, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/en-ie/pricing/')))), self::KUSTOM_CHECKOUT, self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/fi/yritys/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/fi/ehdot/'))))),
             'FO' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_FULL_STACK, self::PAYPAL_WALLET),
             'FR' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::SQUARE => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://squareup.com/fr/fr/pricing'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://squareup.com/fr/fr/legal/general/ua')))), self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/fr-fr/tarifs/')))), self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/fr/entreprise/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/fr/legal/'))))),
             'PF' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_WALLET => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             'GI' => array(self::STRIPE => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_FULL_STACK, self::VISA, self::PAYPAL_WALLET),
-            'DE' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/de-de/preise/')))), self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/de/verkaeufer/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/de/agb/')))), self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/de/verkaeufer/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/de/agb/'))))),
+            'DE' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::GOCARDLESS => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://gocardless.com/de-de/preise/')))), self::KUSTOM_CHECKOUT, self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/de/verkaeufer/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/de/agb/'))))),
             'GR' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/gr/business/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/gr/oroi-kai-proypotheseis/'))))),
             'GL' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_FULL_STACK, self::PAYPAL_WALLET),
             'GG' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
@@ -167351,9 +167375,9 @@ namespace Automattic\WooCommerce\Internal\Admin\Suggestions {
             'MD' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_FULL_STACK, self::PAYPAL_WALLET),
             'MC' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED))), self::PAYPAL_WALLET => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             'ME' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
-            'NL' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/nl/zakelijk/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/nl/voorwaarden/')))), self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/nl/zakelijk/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/nl/voorwaarden/'))))),
+            'NL' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::KUSTOM_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/nl/zakelijk/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/nl/voorwaarden/'))))),
             'MK' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
-            'NO' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/no/bedrift/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/no/vilkar/')))), self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/no/bedrift/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/no/vilkar/'))))),
+            'NO' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::KUSTOM_CHECKOUT, self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/no/bedrift/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/no/vilkar/'))))),
             'PL' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/pl/biznes/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/pl/zasady-i-warunki/'))))),
             'PT' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::AIRWALLEX, self::VIVA_WALLET, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/pt/empresa/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/pt/termos-e-condicoes/'))))),
             'RO' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::PAYPAL_WALLET, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/ro/companii/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/ro/aspecte-juridice/'))))),
@@ -167364,7 +167388,7 @@ namespace Automattic\WooCommerce\Internal\Admin\Suggestions {
             'SI' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::PAYPAL_WALLET),
             'ES' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::SQUARE => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://squareup.com/es/es/pricing'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://squareup.com/es/es/legal/general/ua')))), self::MOLLIE, self::VISA, self::MONEI, self::AIRWALLEX, self::VIVA_WALLET, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/es/empresa/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/es/legal/'))))),
             'SJ' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
-            'SE' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::KLARNA_CHECKOUT => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/international/enterprise/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/se/villkor/')))), self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY),
+            'SE' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::VIVA_WALLET, self::KUSTOM_CHECKOUT, self::NEXI_CHECKOUT, self::PAYPAL_WALLET, self::AMAZON_PAY),
             'CH' => array(self::WOOPAYMENTS, self::PAYPAL_FULL_STACK, self::STRIPE, self::MOLLIE, self::VISA, self::PAYPAL_WALLET, self::AMAZON_PAY, self::KLARNA => array('_merge_on_type' => array('links' => array(array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_PRICING, 'url' => 'https://www.klarna.com/ch/fr/entreprise/'), array('_type' => \Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders::LINK_TYPE_TERMS, 'url' => 'https://www.klarna.com/ch/fr/conditions-generales-de-vente/'))))),
             'TR' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
             'UA' => array(self::VISA => array('_append' => array('tags' => array(self::TAG_PREFERRED)))),
@@ -175002,9 +175026,7 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
         /**
          * Return whether the verification prompt should be shown for the current user.
          *
-         * True for a logged-in, unverified customer, except one still using a temporary password (those
-         * confirm via their set-password link, so the temporary-password notice already covers it). This
-         * must not depend on whether matching guest orders exist, because that would disclose order
+         * This cannot depend on whether matching guest orders exist, since that would disclose order
          * existence before the customer proves they control the email address.
          *
          * @since 11.0.0
@@ -207490,29 +207512,22 @@ namespace Automattic\WooCommerce\Internal\VariationGallery {
          */
         public const ENABLE_OPTION_NAME = 'wc_feature_woocommerce_additional_variation_images_enabled';
         /**
-         * `woocommerce_remote_variant_assignment` option name.
-         */
-        private const REMOTE_VARIANT_OPTION_NAME = 'woocommerce_remote_variant_assignment';
-        /**
-         * Highest variant bucket in the canary cohort. Range is 1-120, so
-         * `<= 6` gets exactly 5%. Matches the Brands merge precedent.
+         * Highest variant bucket in the former canary cohort.
+         *
+         * @deprecated 11.1.0 The variation gallery is enabled for all users.
          */
         public const CANARY_MAX_VARIANT = 6;
         /**
-         * Whether the current store is in the canary cohort.
+         * Whether the current store is in the former canary cohort.
          *
-         * @internal Removable once the feature is at 100% rollout.
+         * @deprecated 11.1.0 Use Package::is_enabled() instead.
          * @return bool
          */
         public static function is_in_canary_cohort(): bool
         {
         }
         /**
-         * Whether the merged variation gallery feature is enabled for the current
-         * request.
-         *
-         * Explicit `yes`/`no` on the option wins; unset falls back to the canary
-         * cohort.
+         * As of WooCommerce 11.1, the variation gallery is enabled for all users.
          *
          * @return bool
          */
@@ -226703,5 +226718,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.1.0-beta.1');
+    define('WC_VERSION', '11.1.0-rc.1');
 }
