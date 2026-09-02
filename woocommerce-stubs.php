@@ -37044,6 +37044,42 @@ namespace {
         {
         }
         /**
+         * Whether a route is in a namespace a WooCommerce API key may authenticate.
+         *
+         * 'wc/' is WooCommerce; 'wc-' lets third party plugins use our authentication methods.
+         *
+         * @param string $route Route without the REST prefix or surrounding slashes.
+         * @return bool
+         */
+        private function is_wc_namespace(string $route): bool
+        {
+        }
+        /**
+         * The route WordPress resolved for this request, trimmed of surrounding slashes.
+         *
+         * Null when WordPress has not parsed the request yet, which is not the same as an empty route.
+         *
+         * @return string|null
+         */
+        private function resolved_route(): ?string
+        {
+        }
+        /**
+         * The REST route the request URI points to, normalized the way WordPress matches it.
+         *
+         * Returns the route without the REST prefix or surrounding slashes, e.g. 'wc/v3/products', or
+         * an empty string when the URI is not a REST request. This reads the URI and nothing else, so the
+         * route it returns is always the one the URI names. That is what is_resolved_route_in_scope()
+         * compares the route WordPress ends up resolving against.
+         *
+         * @since 11.1.0
+         *
+         * @return string
+         */
+        private function route_from_request_uri()
+        {
+        }
+        /**
          * Authenticate user.
          *
          * @param int|false $user_id User ID if one has been determined, false otherwise.
@@ -37073,6 +37109,34 @@ namespace {
          * @return WP_Error|null|bool
          */
         public function check_authentication_error($error)
+        {
+        }
+        /**
+         * Reject a request when a WooCommerce API key authenticated a route outside our namespaces.
+         *
+         * Scope is first judged from REQUEST_URI, during 'determine_current_user', before WordPress has
+         * parsed the request, so at that point the route the request will be dispatched to is not settled
+         * yet. This runs later on rest_authentication_errors, after authentication_fallback() and
+         * check_authentication_error(), so $this->user reflects the final authentication decision and
+         * WordPress has resolved the route. It acts only on a key we authenticated ourselves; a failed or
+         * absent key keeps the result the earlier callbacks produced.
+         *
+         * @since 11.1.0
+         *
+         * @param WP_Error|null|bool $result Authentication result from earlier callbacks.
+         * @return WP_Error|null|bool
+         */
+        public function reject_out_of_scope_route($result)
+        {
+        }
+        /**
+         * Check that the route WordPress resolved is one an API key may authenticate.
+         *
+         * @since 11.1.0
+         *
+         * @return bool False only when the resolved route is not ours and the request URI never named it.
+         */
+        private function is_resolved_route_in_scope()
         {
         }
         /**
@@ -40814,7 +40878,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.1.0-rc.1';
+        public $version = '11.1.0-rc.2';
         /**
          * WooCommerce Schema version.
          *
@@ -104330,6 +104394,14 @@ namespace Automattic\WooCommerce\Admin\Features {
         {
         }
         /**
+         * Checks if analytics is enabled, without going through FeaturesController.
+         *
+         * @return bool
+         */
+        private static function is_analytics_enabled()
+        {
+        }
+        /**
          * Checks if a feature slug is supported only by the legacy compatibility shim.
          *
          * @param string $feature Feature slug.
@@ -122860,9 +122932,10 @@ namespace Automattic\WooCommerce\Api\Infrastructure {
      * - Leaf field (no args, no sub-selection) => true
      * - Field with sub-selections => nested associative array
      * - Field arguments => '__args' reserved key
-     * - Inline fragments => '...TypeName' prefix key
-     * - Named fragment spreads => expanded inline (merged into the parent as
-     *   siblings of the other selections), matching how GraphQL evaluates them
+     * - Inline fragments with a type condition => '...TypeName' prefix key
+     * - Inline fragments without a type condition and named fragment spreads =>
+     *   expanded inline (merged into the parent as siblings of the other
+     *   selections), matching how GraphQL evaluates them
      * - Top-level query args included via '__args'
      */
     class QueryInfoExtractor
@@ -122893,14 +122966,44 @@ namespace Automattic\WooCommerce\Api\Infrastructure {
         {
         }
         /**
+         * Recursive worker behind {@see self::extract()}.
+         *
+         * Named fragments are expanded once per extract() call and the result is
+         * reused for every further spread, so the work stays proportional to the
+         * size of the document. This runs after validation, whose limits don't
+         * bound how often a fragment is spread.
+         *
+         * @param ?SelectionSetNode                     $selection_set      The selection set to process.
+         * @param array                                 $variable_values    Variable values for resolving arguments.
+         * @param array<string, FragmentDefinitionNode> $fragments          Named fragment definitions from the document.
+         * @param array<string, array>                  $expanded_fragments Memoized expansions, keyed by fragment name. Passed by reference so the whole walk shares one cache.
+         * @return array The query info tree for the selection set.
+         */
+        private static function extract_selection_set(?\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\SelectionSetNode $selection_set, array $variable_values, array $fragments, array &$expanded_fragments): array
+        {
+        }
+        /**
+         * Expand a named fragment into its query info tree, memoizing the result.
+         *
+         * @param string                                $name               The fragment name.
+         * @param array                                 $variable_values    Variable values for resolving arguments.
+         * @param array<string, FragmentDefinitionNode> $fragments          Named fragment definitions from the document.
+         * @param array<string, array>                  $expanded_fragments Memoized expansions, keyed by fragment name.
+         * @return ?array The expanded tree, or null when the fragment is not defined.
+         */
+        private static function expand_fragment(string $name, array $variable_values, array $fragments, array &$expanded_fragments): ?array
+        {
+        }
+        /**
          * Build the entry for a single field node.
          *
-         * @param FieldNode                             $field           The field node.
-         * @param array                                 $variable_values Variable values for resolving arguments.
-         * @param array<string, FragmentDefinitionNode> $fragments       Named fragment definitions from the document.
+         * @param FieldNode                             $field              The field node.
+         * @param array                                 $variable_values    Variable values for resolving arguments.
+         * @param array<string, FragmentDefinitionNode> $fragments          Named fragment definitions from the document.
+         * @param array<string, array>                  $expanded_fragments Memoized fragment expansions, keyed by fragment name.
          * @return array|bool True for leaf fields, associative array otherwise.
          */
-        private static function build_field_entry(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\FieldNode $field, array $variable_values, array $fragments): array|bool
+        private static function build_field_entry(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\FieldNode $field, array $variable_values, array $fragments, array &$expanded_fragments): array|bool
         {
         }
         /**
@@ -169804,13 +169907,142 @@ namespace Automattic\WooCommerce\Internal\Api {
         }
     }
     /**
-     * QueryComplexity validation rule that returns a generic error message when the complexity is exceeded.
+     * QueryComplexity validation rule that returns a generic error message when
+     * the complexity is exceeded. Admins can still read both values via debug
+     * mode; see {@see GraphQLController} step 8.
      *
-     * Admins can still read both values via debug mode; see
-     * {@see GraphQLController} step 8.
+     * Unlike the stock webonyx rule, the work done stays proportional to the size
+     * of the document: each named fragment is scored once and the result reused
+     * for every spread, variable values are coerced once instead of once per
+     * directive or complexity callback, field definitions come from the visitor's
+     * TypeInfo instead of being re-collected for every selection set, and scores
+     * saturate at {@see self::COMPLEXITY_CEILING} instead of overflowing.
      */
     class QueryComplexityRule extends \Automattic\WooCommerce\Vendor\GraphQL\Validator\Rules\QueryComplexity
     {
+        /**
+         * Upper bound for computed complexity scores.
+         *
+         * Far above any configurable limit, so real scores stay exact, while leaving
+         * headroom below PHP_INT_MAX for complexity callbacks to multiply a saturated
+         * child score by a page size without overflowing.
+         */
+        public const COMPLEXITY_CEILING = PHP_INT_MAX >> 10;
+        /**
+         * Memoized complexity of each named fragment, keyed by fragment name.
+         *
+         * @var array<string, int>
+         */
+        private array $fragment_complexities = array();
+        /**
+         * Names of the fragments whose complexity is currently being computed;
+         * guards against fragment cycles (which the NoFragmentCycles rule reports).
+         *
+         * @var array<string, true>
+         */
+        private array $fragments_in_progress = array();
+        /**
+         * Variable values coerced for the current document, or null when not yet computed.
+         *
+         * @var ?array<string, mixed>
+         */
+        private ?array $coerced_variable_values = null;
+        /**
+         * Schema definition of every field node in the document, keyed by the
+         * node's spl_object_id(). Populated as the visitor enters each field.
+         *
+         * @var array<int, ?FieldDefinition>
+         */
+        private array $field_definitions = array();
+        /**
+         * Reset the per-document state, then replace the stock SELECTION_SET
+         * callback, which re-collects field definitions through every fragment
+         * reachable from each selection set, with recording the definition that
+         * TypeInfo already resolves as the visitor enters each field.
+         *
+         * @param QueryValidationContext $context The validation context.
+         * @return array The visitor definition.
+         */
+        public function getVisitor(\Automattic\WooCommerce\Vendor\GraphQL\Validator\QueryValidationContext $context): array
+        {
+        }
+        /**
+         * Look up the schema definition recorded for a field node.
+         *
+         * @param FieldNode $field The field node.
+         * @return ?FieldDefinition The definition, or null when the field doesn't exist on its parent type.
+         */
+        protected function fieldDefinition(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\FieldNode $field): ?\Automattic\WooCommerce\Vendor\GraphQL\Type\Definition\FieldDefinition
+        {
+        }
+        /**
+         * Sum the complexity of a selection set's selections, saturating at
+         * {@see self::COMPLEXITY_CEILING}.
+         *
+         * @param SelectionSetNode $selection_set The selection set to score.
+         * @return int The (possibly saturated) complexity.
+         * @throws \Exception When variable or argument coercion fails.
+         */
+        protected function fieldComplexity(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\SelectionSetNode $selection_set): int
+        {
+        }
+        /**
+         * Score a single selection. Named fragments are scored once and the result
+         * reused for every spread; everything else is delegated to the stock rule.
+         *
+         * @param SelectionNode $node The selection to score.
+         * @return int The complexity of the selection.
+         * @throws \Exception When variable or argument coercion fails.
+         */
+        protected function nodeComplexity(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\SelectionNode $node): int
+        {
+        }
+        /**
+         * Whether `@include` / `@skip` directives exclude the field from execution.
+         *
+         * Same semantics as the stock rule, but variable values are coerced once
+         * per document (see {@see self::get_coerced_variable_values()}).
+         *
+         * @param FieldNode $node The field node.
+         * @return bool True when the field will not be executed.
+         * @throws \Exception When variable coercion fails.
+         */
+        protected function directiveExcludesField(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\FieldNode $node): bool
+        {
+        }
+        /**
+         * Build the argument values handed to a field's complexity callback.
+         *
+         * Same semantics as the stock rule, but variable values are coerced once
+         * per document (see {@see self::get_coerced_variable_values()}).
+         *
+         * @param FieldNode $node The field node.
+         * @return array<string, mixed> The coerced argument values.
+         * @throws \Exception When variable or argument coercion fails.
+         */
+        protected function buildFieldArguments(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\FieldNode $node): array
+        {
+        }
+        /**
+         * Coerce the document's variable values against their definitions,
+         * once per document.
+         *
+         * @return array<string, mixed> The coerced variable values.
+         * @throws Error When the provided variables don't satisfy their definitions (same error the stock rule throws).
+         */
+        private function get_coerced_variable_values(): array
+        {
+        }
+        /**
+         * Add two complexity scores, saturating at {@see self::COMPLEXITY_CEILING}.
+         *
+         * @param int $a First score.
+         * @param int $b Second score.
+         * @return int The saturated sum.
+         */
+        private function add_saturating(int $a, int $b): int
+        {
+        }
         /**
          * Override webonyx's default ("Max query complexity should be {max} but
          * got {count}.").
@@ -169823,13 +170055,51 @@ namespace Automattic\WooCommerce\Internal\Api {
         }
     }
     /**
-     * QueryDepth validation rule that returns a generic error message when the depth is exceeded.
-     *
-     * Admins can still read both values via debug mode; see
+     * QueryDepth validation rule that returns a generic error message when the
+     * depth is exceeded. Admins can still read both values via debug mode; see
      * {@see GraphQLController} step 8.
+     *
+     * Unlike the stock webonyx rule, which walks a named fragment again on every
+     * spread, each fragment's depth is computed once, relative to the position it
+     * is spread at, and reused.
      */
     class QueryDepthRule extends \Automattic\WooCommerce\Vendor\GraphQL\Validator\Rules\QueryDepth
     {
+        /**
+         * Sentinel for a selection tree with no nested selection sets, which adds
+         * no depth wherever it is spread. The stock walk only ever raises the
+         * running maximum, so seeding it with -1 makes the same walk report either
+         * the relative depth (>= 0) or this sentinel.
+         */
+        private const NO_NESTED_FIELDS = -1;
+        /**
+         * Memoized relative depth of each named fragment, keyed by fragment name.
+         *
+         * @var array<string, int>
+         */
+        private array $fragment_depths = array();
+        /**
+         * Reset the per-document memoization before delegating to the stock visitor.
+         *
+         * @param QueryValidationContext $context The validation context.
+         * @return array The visitor definition.
+         */
+        public function getVisitor(\Automattic\WooCommerce\Vendor\GraphQL\Validator\QueryValidationContext $context): array
+        {
+        }
+        /**
+         * Compute the depth reached below a selection. Named fragment spreads use
+         * the fragment's relative depth, computed once; everything else is
+         * delegated to the stock rule.
+         *
+         * @param Node $node      The selection node.
+         * @param int  $depth     The depth the selection sits at.
+         * @param int  $max_depth The maximum depth seen so far.
+         * @return int The updated maximum depth.
+         */
+        protected function nodeDepth(\Automattic\WooCommerce\Vendor\GraphQL\Language\AST\Node $node, int $depth = 0, int $max_depth = 0): int
+        {
+        }
         /**
          * Override webonyx's default ("Max query depth should be {max} but
          * got {count}.").
@@ -189119,13 +189389,13 @@ namespace Automattic\WooCommerce\Internal\ProductAttributes {
          *
          * @internal
          *
-         * @param string $content  Column output so far.
+         * @param mixed  $content  Column output so far.
          * @param string $column   Current column key.
          * @param int    $term_id  Term ID.
          * @param string $taxonomy Taxonomy slug.
-         * @return string
+         * @return mixed
          */
-        public function render_term_visual_column($content, $column, $term_id, $taxonomy): string
+        public function render_term_visual_column($content, $column, $term_id, $taxonomy)
         {
         }
         /**
@@ -197881,6 +198151,68 @@ namespace Automattic\WooCommerce\Internal\RestApi\Routes\V4\Orders {
          * @return bool|WP_Error
          */
         public function delete_item_permissions_check($request)
+        {
+        }
+    }
+    /**
+     * Validates the line payloads of the order endpoints (`line_items`, `shipping_lines`, `fee_lines`),
+     * for every REST API version.
+     *
+     * Class OrderLineMetaValidator
+     *
+     * @package Automattic\WooCommerce\Internal\RestApi\Routes\V4\Orders
+     */
+    class OrderLineMetaValidator
+    {
+        /**
+         * Meta key that WC_Data::update_meta_data() diverts to the order item's set_taxes(), which runs
+         * the value through maybe_unserialize(). Only serialized values are rejected.
+         *
+         * Line, fee and shipping items all carry a `taxes` data prop, so reading an existing item promotes
+         * `_taxes` to an internal meta key and both `taxes` and `_taxes` divert to the tax setter.
+         */
+        private const GUARDED_META_KEY = 'taxes';
+        /**
+         * Validates an order line request argument (`line_items`, `shipping_lines` or `fee_lines`).
+         *
+         * @since 11.1.0
+         *
+         * @param mixed                                 $value   Value of the argument.
+         * @param WP_REST_Request<array<string, mixed>> $request The request object.
+         * @param string                                $param   Name of the argument.
+         * @return true|WP_Error Error when a line posts a serialized value under the guarded key.
+         */
+        public static function validate_request_arg($value, $request, $param)
+        {
+        }
+        /**
+         * Rejects a serialized value under the guarded meta key while preparing an order line.
+         *
+         * Covers requests that skip request argument validation, such as the ones the batch endpoint builds.
+         *
+         * @since 11.1.0
+         *
+         * @param array $meta_data `meta_data` payload from the request. Cast at the call site, which can receive a non-array.
+         * @throws WC_REST_Exception When the payload carries a serialized value under the guarded key.
+         */
+        public static function assert_no_serialized_meta_value(array $meta_data): void
+        {
+        }
+        /**
+         * Checks whether a `meta_data` payload carries a serialized value under the guarded meta key.
+         *
+         * @param mixed $meta_data Raw `meta_data` value from the request.
+         * @return bool
+         */
+        private static function has_serialized_meta_value($meta_data): bool
+        {
+        }
+        /**
+         * Gets the error message for a rejected payload.
+         *
+         * @return string
+         */
+        private static function get_serialized_meta_value_error_message(): string
         {
         }
     }
@@ -226718,5 +227050,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.1.0-rc.1');
+    define('WC_VERSION', '11.1.0-rc.2');
 }
