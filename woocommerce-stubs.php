@@ -25968,6 +25968,12 @@ namespace {
          */
         protected $is_vat_exempt = \false;
         /**
+         * Whether has_full_shipping_address() is loading the default address fields, so a nested call from a filter callback does not load them again.
+         *
+         * @var bool
+         */
+        private static $loading_default_address_fields = \false;
+        /**
          * Stores if user has calculated shipping in this session.
          *
          * @var bool
@@ -29458,7 +29464,10 @@ namespace {
          *
          * @var array
          */
-        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '7.9.0' => array('wc_update_790_blockified_product_grid_block'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.3.0' => array('wc_update_830_rename_checkout_template', 'wc_update_830_rename_cart_template'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'), '8.9.0' => array('wc_update_890_update_connect_to_woocommerce_note', 'wc_update_890_update_paypal_standard_load_eligibility'), '8.9.1' => array('wc_update_891_create_plugin_autoinstall_history_option'), '9.1.0' => array('wc_update_910_add_launch_your_store_tour_option', 'wc_update_910_remove_obsolete_user_meta'), '9.2.0' => array('wc_update_920_add_wc_hooked_blocks_version_option'), '9.3.0' => array('wc_update_930_add_woocommerce_coming_soon_option', 'wc_update_930_migrate_user_meta_for_launch_your_store_tour'), '9.4.0' => array('wc_update_940_add_phone_to_order_address_fts_index', 'wc_update_940_remove_help_panel_highlight_shown'), '9.5.0' => array('wc_update_950_tracking_option_autoload'), '9.6.1' => array('wc_update_961_migrate_default_email_base_color'), '9.8.0' => array('wc_update_980_remove_order_attribution_install_banner_dismissed_option'), '9.8.5' => array('wc_update_985_enable_new_payments_settings_page_feature'), '9.9.0' => array('wc_update_990_remove_wc_count_comments_transient', 'wc_update_990_remove_email_notes'), '10.0.0' => array('wc_update_1000_multisite_visibility_setting', 'wc_update_1000_remove_patterns_toolkit_transient'), '10.2.0' => array('wc_update_1020_add_old_refunded_order_items_to_product_lookup_table'), '10.3.0' => array('wc_update_1030_add_comments_date_type_index'), '10.4.0' => array('wc_update_1040_add_idx_date_paid_status_parent', 'wc_update_1040_cleanup_legacy_ptk_patterns_fetching'), '10.5.0' => array('wc_update_1050_migrate_brand_permalink_setting', 'wc_update_1050_enable_autoload_options', 'wc_update_1050_add_idx_user_email', 'wc_update_1050_remove_deprecated_marketplace_option'), '10.6.0' => array('wc_update_1060_add_woo_idx_comment_approved_type_index'), '10.7.0' => array('wc_update_1070_disable_hpos_sync_on_read'), '10.8.0' => array('wc_update_1080_migrate_analytics_import_option', 'wc_update_1080_backfill_email_template_sync_meta'), '10.8.0-2' => array('wc_update_10802_restore_orders_meta_key_value_index'), '10.9.0' => array('wc_update_1090_remove_task_list_reminder_bar_hidden_option'), '10.9.2' => array('wc_update_10902_remove_deprecated_push_notifications_option'), '11.0.0' => array('wc_update_1100_enable_point_of_sale_feature'), '11.1.0' => array('wc_update_1110_delete_dashboard_outofstock_count_transient', 'wc_update_1110_cleanup_block_email_posts', 'wc_update_1110_flush_product_count_cache'), '11.1.0-1' => array('wc_update_11101_remove_deprecated_variation_gallery_option'), '11.2.0' => array('wc_update_1120_remove_abandoned_cart_recovery', 'wc_update_1120_migrate_stock_notifications_alpha_constant', 'wc_update_1120_delete_surface_cart_checkout_note', 'wc_update_1120_cleanup_inherited_variation_images', 'wc_update_11201_migrate_tax_lookup_order_items', 'wc_update_11201_invalidate_analytics_reports_cache', 'wc_update_11202_reset_refund_returning_customer_markers', 'wc_update_11203_normalize_stock_notification_emails'));
+        private static $db_updates = array('2.0.0' => array('wc_update_200_file_paths', 'wc_update_200_permalinks', 'wc_update_200_subcat_display', 'wc_update_200_taxrates', 'wc_update_200_line_items', 'wc_update_200_images', 'wc_update_200_db_version'), '2.0.9' => array('wc_update_209_brazillian_state', 'wc_update_209_db_version'), '2.1.0' => array('wc_update_210_remove_pages', 'wc_update_210_file_paths', 'wc_update_210_db_version'), '2.2.0' => array('wc_update_220_shipping', 'wc_update_220_order_status', 'wc_update_220_variations', 'wc_update_220_attributes', 'wc_update_220_db_version'), '2.3.0' => array('wc_update_230_options', 'wc_update_230_db_version'), '2.4.0' => array('wc_update_240_options', 'wc_update_240_shipping_methods', 'wc_update_240_api_keys', 'wc_update_240_refunds', 'wc_update_240_db_version'), '2.4.1' => array('wc_update_241_variations', 'wc_update_241_db_version'), '2.5.0' => array('wc_update_250_currency', 'wc_update_250_db_version'), '2.6.0' => array('wc_update_260_options', 'wc_update_260_termmeta', 'wc_update_260_zones', 'wc_update_260_zone_methods', 'wc_update_260_refunds', 'wc_update_260_db_version'), '3.0.0' => array('wc_update_300_grouped_products', 'wc_update_300_settings', 'wc_update_300_product_visibility', 'wc_update_300_db_version'), '3.1.0' => array('wc_update_310_downloadable_products', 'wc_update_310_old_comments', 'wc_update_310_db_version'), '3.1.2' => array('wc_update_312_shop_manager_capabilities', 'wc_update_312_db_version'), '3.2.0' => array('wc_update_320_mexican_states', 'wc_update_320_db_version'), '3.3.0' => array('wc_update_330_image_options', 'wc_update_330_webhooks', 'wc_update_330_product_stock_status', 'wc_update_330_set_default_product_cat', 'wc_update_330_clear_transients', 'wc_update_330_set_paypal_sandbox_credentials', 'wc_update_330_db_version'), '3.4.0' => array('wc_update_340_states', 'wc_update_340_state', 'wc_update_340_last_active', 'wc_update_340_db_version'), '3.4.3' => array('wc_update_343_cleanup_foreign_keys', 'wc_update_343_db_version'), '3.4.4' => array('wc_update_344_recreate_roles', 'wc_update_344_db_version'), '3.5.0' => array('wc_update_350_reviews_comment_type', 'wc_update_350_db_version'), '3.5.2' => array('wc_update_352_drop_download_log_fk'), '3.5.4' => array('wc_update_354_modify_shop_manager_caps', 'wc_update_354_db_version'), '3.6.0' => array('wc_update_360_product_lookup_tables', 'wc_update_360_term_meta', 'wc_update_360_downloadable_product_permissions_index', 'wc_update_360_db_version'), '3.7.0' => array('wc_update_370_tax_rate_classes', 'wc_update_370_mro_std_currency', 'wc_update_370_db_version'), '3.9.0' => array('wc_update_390_move_maxmind_database', 'wc_update_390_change_geolocation_database_update_cron', 'wc_update_390_db_version'), '4.0.0' => array('wc_update_product_lookup_tables', 'wc_update_400_increase_size_of_column', 'wc_update_400_reset_action_scheduler_migration_status', 'wc_admin_update_0201_order_status_index', 'wc_admin_update_0230_rename_gross_total', 'wc_admin_update_0251_remove_unsnooze_action', 'wc_update_400_db_version'), '4.4.0' => array('wc_update_440_insert_attribute_terms_for_variable_products', 'wc_admin_update_110_remove_facebook_note', 'wc_admin_update_130_remove_dismiss_action_from_tracking_opt_in_note', 'wc_update_440_db_version'), '4.5.0' => array('wc_update_450_sanitize_coupons_code', 'wc_update_450_db_version'), '5.0.0' => array('wc_update_500_fix_product_review_count', 'wc_admin_update_160_remove_facebook_note', 'wc_admin_update_170_homescreen_layout', 'wc_update_500_db_version'), '5.6.0' => array('wc_update_560_create_refund_returns_page', 'wc_update_560_db_version'), '6.0.0' => array('wc_update_600_migrate_rate_limit_options', 'wc_admin_update_270_delete_report_downloads', 'wc_admin_update_271_update_task_list_options', 'wc_admin_update_280_order_status', 'wc_admin_update_290_update_apperance_task_option', 'wc_admin_update_290_delete_default_homepage_layout_option', 'wc_update_600_db_version'), '6.3.0' => array('wc_update_630_create_product_attributes_lookup_table', 'wc_admin_update_300_update_is_read_from_last_read', 'wc_update_630_db_version'), '6.4.0' => array('wc_update_640_add_primary_key_to_product_attributes_lookup_table', 'wc_admin_update_340_remove_is_primary_from_note_action', 'wc_update_640_db_version'), '6.5.0' => array('wc_update_650_approved_download_directories'), '6.5.1' => array('wc_update_651_approved_download_directories'), '6.7.0' => array('wc_update_670_purge_comments_count_cache', 'wc_update_670_delete_deprecated_remote_inbox_notifications_option'), '7.0.0' => array('wc_update_700_remove_download_log_fk', 'wc_update_700_remove_recommended_marketing_plugins_transient'), '7.2.1' => array('wc_update_721_adjust_new_zealand_states', 'wc_update_721_adjust_ukraine_states'), '7.2.2' => array('wc_update_722_adjust_new_zealand_states', 'wc_update_722_adjust_ukraine_states'), '7.5.0' => array('wc_update_750_add_columns_to_order_stats_table', 'wc_update_750_disable_new_product_management_experience'), '7.7.0' => array('wc_update_770_remove_multichannel_marketing_feature_options'), '7.9.0' => array('wc_update_790_blockified_product_grid_block'), '8.1.0' => array('wc_update_810_migrate_transactional_metadata_for_hpos'), '8.3.0' => array('wc_update_830_rename_checkout_template', 'wc_update_830_rename_cart_template'), '8.6.0' => array('wc_update_860_remove_recommended_marketing_plugins_transient'), '8.7.0' => array('wc_update_870_prevent_listing_of_transient_files_directory'), '8.9.0' => array('wc_update_890_update_connect_to_woocommerce_note', 'wc_update_890_update_paypal_standard_load_eligibility'), '8.9.1' => array('wc_update_891_create_plugin_autoinstall_history_option'), '9.1.0' => array('wc_update_910_add_launch_your_store_tour_option', 'wc_update_910_remove_obsolete_user_meta'), '9.2.0' => array('wc_update_920_add_wc_hooked_blocks_version_option'), '9.3.0' => array('wc_update_930_add_woocommerce_coming_soon_option', 'wc_update_930_migrate_user_meta_for_launch_your_store_tour'), '9.4.0' => array('wc_update_940_add_phone_to_order_address_fts_index', 'wc_update_940_remove_help_panel_highlight_shown'), '9.5.0' => array('wc_update_950_tracking_option_autoload'), '9.6.1' => array('wc_update_961_migrate_default_email_base_color'), '9.8.0' => array('wc_update_980_remove_order_attribution_install_banner_dismissed_option'), '9.8.5' => array('wc_update_985_enable_new_payments_settings_page_feature'), '9.9.0' => array('wc_update_990_remove_wc_count_comments_transient', 'wc_update_990_remove_email_notes'), '10.0.0' => array('wc_update_1000_multisite_visibility_setting', 'wc_update_1000_remove_patterns_toolkit_transient'), '10.2.0' => array('wc_update_1020_add_old_refunded_order_items_to_product_lookup_table'), '10.3.0' => array('wc_update_1030_add_comments_date_type_index'), '10.4.0' => array('wc_update_1040_add_idx_date_paid_status_parent', 'wc_update_1040_cleanup_legacy_ptk_patterns_fetching'), '10.5.0' => array('wc_update_1050_migrate_brand_permalink_setting', 'wc_update_1050_enable_autoload_options', 'wc_update_1050_add_idx_user_email', 'wc_update_1050_remove_deprecated_marketplace_option'), '10.6.0' => array('wc_update_1060_add_woo_idx_comment_approved_type_index'), '10.7.0' => array('wc_update_1070_disable_hpos_sync_on_read'), '10.8.0' => array('wc_update_1080_migrate_analytics_import_option', 'wc_update_1080_backfill_email_template_sync_meta'), '10.8.0-2' => array('wc_update_10802_restore_orders_meta_key_value_index'), '10.9.0' => array('wc_update_1090_remove_task_list_reminder_bar_hidden_option'), '10.9.2' => array('wc_update_10902_remove_deprecated_push_notifications_option'), '11.0.0' => array('wc_update_1100_enable_point_of_sale_feature'), '11.1.0' => array('wc_update_1110_delete_dashboard_outofstock_count_transient', 'wc_update_1110_cleanup_block_email_posts', 'wc_update_1110_flush_product_count_cache'), '11.1.0-1' => array('wc_update_11101_remove_deprecated_variation_gallery_option'), '11.2.0' => array('wc_update_1120_remove_abandoned_cart_recovery', 'wc_update_1120_migrate_stock_notifications_alpha_constant', 'wc_update_1120_delete_surface_cart_checkout_note', 'wc_update_1120_cleanup_inherited_variation_images', 'wc_update_11201_migrate_tax_lookup_order_items', 'wc_update_11201_invalidate_analytics_reports_cache', 'wc_update_11202_reset_refund_returning_customer_markers', 'wc_update_11203_normalize_stock_notification_emails'), '11.2.0-1' => array(
+            // Run again to cancel all pattern fetch jobs now that scheduling is disabled.
+            'wc_update_1040_cleanup_legacy_ptk_patterns_fetching',
+        ));
         /**
          * Option name used to track new installations of WooCommerce.
          *
@@ -36661,27 +36670,7 @@ namespace {
         {
         }
         /**
-         * Number of likely-purchasable variations primed and scanned before the rest of the children.
-         *
-         * @var int
-         */
-        private const PURCHASABLE_SCAN_BATCH_SIZE = 50;
-        /**
-         * Request-scoped cache group holding the scan order for a product's children.
-         *
-         * @var string
-         */
-        private const PURCHASABLE_SCAN_CACHE_GROUP = 'wc_purchasable_scan_order';
-        /**
          * Check if there are variations that can be purchased for the current product.
-         *
-         * The children most likely to be purchasable on stored data (published, not out of stock, priced) are
-         * primed and checked first, so a product that has a purchasable variation usually hydrates one instead
-         * of all of them. With a bulk read, each batch is primed just before it is scanned, so nothing the scan
-         * does not reach is primed. Without one, all children are primed up front and then classified and tested
-         * in the same pass, so a product whose first child is purchasable reads one child's stored state rather
-         * than every child's. Every variation is still evaluated with is_purchasable() and is_in_stock() before
-         * returning false, so filters and overrides that widen purchasability keep working.
          *
          * @internal
          *
@@ -36689,74 +36678,6 @@ namespace {
          * @return bool
          */
         public function has_purchasable_variations()
-        {
-        }
-        /**
-         * Scan children with no bulk read available, reading stored state from the primed caches.
-         *
-         * Everything is primed up front here, so batching would buy nothing and each child is classified and
-         * tested in one pass instead. That keeps an early hit at one stored-state read: materialising the whole
-         * partition first would read every child's state to answer a question the first child already answers.
-         *
-         * @param int[] $variation_ids All children, cast to int, in children order.
-         * @return bool
-         */
-        private function scan_from_primed_caches(array $variation_ids): bool
-        {
-        }
-        /**
-         * Scan the candidates a bulk read identified, in batches, then everything it left out.
-         *
-         * @param int[] $variation_ids All children, cast to int, in children order.
-         * @param int[] $candidate_ids Children whose stored state leaves room for a purchase, in children order.
-         * @return bool
-         */
-        private function scan_candidate_batches(array $variation_ids, array $candidate_ids): bool
-        {
-        }
-        /**
-         * Ask the data store which children could be purchasable, judged on stored data alone.
-         *
-         * @param int[] $variation_ids All children, cast to int, in children order.
-         * @return int[]|null Candidate IDs, or null when no bulk read is available or worthwhile.
-         */
-        private function get_stored_state_candidates(array $variation_ids): ?array
-        {
-        }
-        /**
-         * Stored-state pre-check for one variation, read from primed post and meta caches.
-         *
-         * @param int $variation_id Variation ID.
-         * @return bool
-         */
-        private function variation_may_be_purchasable(int $variation_id): bool
-        {
-        }
-        /**
-         * Cast one stored post or meta value to the string the pre-check expects.
-         *
-         * @param mixed $value Stored value.
-         * @return string
-         */
-        private function stored_variation_value($value): string
-        {
-        }
-        /**
-         * Run the full purchasability checks on hydrated variations, stopping at the first hit.
-         *
-         * @param int[] $variation_ids Variation IDs whose caches are primed.
-         * @return bool
-         */
-        private function any_variation_is_purchasable(array $variation_ids): bool
-        {
-        }
-        /**
-         * Full purchasability check for one variation, on a hydrated product object.
-         *
-         * @param int $variation_id Variation ID.
-         * @return bool
-         */
-        private function variation_is_purchasable(int $variation_id): bool
         {
         }
         /**
@@ -42211,7 +42132,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.2.0-beta.1';
+        public $version = '11.2.0-beta.2';
         /**
          * WooCommerce Schema version.
          *
@@ -47911,50 +47832,6 @@ namespace {
          * @return boolean
          */
         public function child_has_stock_status($product, $status)
-        {
-        }
-        /**
-         * Decide whether stored variation data leaves room for the variation to be purchasable and in stock.
-         *
-         * This mirrors the filter-free core of WC_Product_Variation::is_purchasable() && is_in_stock(): published,
-         * not out of stock, and a regular or sale price present. It is a pre-check, not a verdict: filters,
-         * subclasses and custom data stores can still change the real answer either way. A missing stock status
-         * counts as in stock, matching the product object default.
-         *
-         * Called with `self::` here and by class name from WC_Product_Variable, on purpose. The two callers read
-         * the same state from different places (this query, and the primed caches), so they have to reach the
-         * same predicate; a subclass that redefined it for one path would silently reorder only the other.
-         *
-         * @internal
-         *
-         * @since 11.2.0
-         *
-         * @param string $status        Post status.
-         * @param string $stock_status  Stored `_stock_status` ('' when absent).
-         * @param string $regular_price Stored `_regular_price`.
-         * @param string $sale_price    Stored `_sale_price`.
-         * @return bool
-         */
-        public static function stored_state_allows_purchase(string $status, string $stock_status, string $regular_price, string $sale_price): bool
-        {
-        }
-        /**
-         * Narrow a list of variation IDs to those that could be purchasable and in stock, judged on stored data only.
-         *
-         * See stored_state_allows_purchase() for the predicate. Input order is preserved; duplicates and unknown
-         * IDs are dropped. Reads wp_posts and wp_postmeta directly, by primary key and post_id index only, in
-         * two unchunked IN() lookups sized by the caller's children count (measured linear: 8 ms at 500 IDs,
-         * 144 ms at 50,000 against a 16 MB max_allowed_packet).
-         *
-         * @internal
-         *
-         * @since 11.2.0
-         *
-         * @param WC_Product $product       Parent variable product, used for log context on a failed read.
-         * @param int[]      $variation_ids Variation IDs to narrow, typically `WC_Product_Variable::get_children()`.
-         * @return int[] Subset of `$variation_ids` that may be purchasable.
-         */
-        public function get_purchasable_variation_candidates($product, array $variation_ids): array
         {
         }
         /**
@@ -125115,6 +124992,10 @@ namespace Automattic\WooCommerce\Blocks {
     final class BlockTypesController
     {
         /**
+         * Priority of the add_data_attributes render_block filter.
+         */
+        private const DATA_ATTRIBUTES_PRIORITY = 10;
+        /**
          * Instance of the asset API.
          *
          * @var AssetApi
@@ -125177,6 +125058,35 @@ namespace Automattic\WooCommerce\Blocks {
          * Register blocks, hooking up assets and render functions as needed.
          */
         public function register_blocks()
+        {
+        }
+        /**
+         * Prepare block rendering for an email, and register the blocks if this request skipped that.
+         *
+         * Registration runs third-party code, and an error there must not stop the email from being sent.
+         *
+         * @internal
+         */
+        public function register_blocks_for_email(): void
+        {
+        }
+        /**
+         * Stop adding data- attributes to blocks until the email render ends.
+         *
+         * No block that can appear in an email reads the attributes back, so in email HTML they are only weight. A
+         * filter an extension removed is left alone.
+         */
+        private function suspend_data_attributes_for_email_render(): void
+        {
+        }
+        /**
+         * Add the data- attributes filter back once the email render has ended.
+         *
+         * Only a suspension hooks this, so a render whose end action never reached it is repaired by the next one.
+         *
+         * @internal
+         */
+        public function restore_data_attributes_after_email_render(): void
         {
         }
         /**
@@ -125861,6 +125771,17 @@ namespace Automattic\WooCommerce\Blocks\Domain {
          * @return string The unchanged content.
          */
         public function maybe_register_blocks_from_content($content)
+        {
+        }
+        /**
+         * Register WooCommerce block types on demand before an email is rendered by the email editor package.
+         *
+         * Emails are often sent from requests where eager block registration is skipped (cron, AJAX, Store API),
+         * and unregistered WooCommerce blocks, such as Product Collection, would render empty in the email.
+         *
+         * @internal
+         */
+        public function handle_woocommerce_email_editor_render_start(): void
         {
         }
         /**
@@ -128441,9 +128362,7 @@ namespace Automattic\WooCommerce\Blocks\Patterns {
         {
         }
         /**
-         * Resets the cached patterns when the `woocommerce_allow_tracking` option is disabled.
-         * Resets and fetch the patterns from the PTK when it is enabled (if the scheduler
-         * is initialized, it's done asynchronously via a scheduled action).
+         * Resets the cached patterns when tracking is disabled and cancels old fetch jobs otherwise.
          *
          * @return void
          */
@@ -128451,29 +128370,20 @@ namespace Automattic\WooCommerce\Blocks\Patterns {
         {
         }
         /**
-         * Schedule an async action to fetch the PTK patterns when the scheduler is initialized.
+         * Cancel old pattern fetch actions when Action Scheduler is initialized.
          *
          * @return void
          */
-        private function schedule_fetch_patterns()
+        private function cancel_fetch_patterns_when_ready()
         {
         }
         /**
-         * Ensure a recurring fetch patterns action is scheduled.
+         * Cancel old fetch pattern actions.
          * This is called by the `action_scheduler_ensure_recurring_actions` hook.
          *
          * @return void
          */
         public function ensure_recurring_fetch_patterns_if_enabled()
-        {
-        }
-        /**
-         * Schedule an action if it's not already pending.
-         *
-         * @param string $action The action name to schedule.
-         * @return void
-         */
-        private function schedule_action_if_not_pending($action)
         {
         }
         /**
@@ -128494,7 +128404,7 @@ namespace Automattic\WooCommerce\Blocks\Patterns {
         {
         }
         /**
-         * Re-fetch the patterns when the WooCommerce plugin is updated.
+         * Cancel old fetch jobs when the WooCommerce plugin is updated.
          *
          * @param WP_Upgrader $upgrader_object WP_Upgrader instance.
          * @param array       $options Array of bulk item update data.
@@ -173920,6 +173830,22 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
         {
         }
         /**
+         * Collapse line items to one per (product, variation) review slot.
+         *
+         * Reviews are stored per product/variation, but an order can carry the same
+         * product on several line items (add-ons, gift cards, bookings). Keep the
+         * first line item for each slot so the page renders one row per review
+         * instead of duplicate rows that all resolve to the same comment.
+         *
+         * @since 11.3.0
+         *
+         * @param array<int|string, mixed> $items Order line items.
+         * @return array<int, WC_Order_Item_Product> One line item per review slot.
+         */
+        public static function unique_slot_items(array $items): array
+        {
+        }
+        /**
          * Reset the per-request cache. Test helper.
          *
          * @since 10.8.0
@@ -174246,6 +174172,12 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
          */
         public const COMPLETED_META_KEY = '_wc_review_request_completed_at';
         /**
+         * Comment meta flag set on reviews the comment pipeline auto-rejected (spam or
+         * trash, e.g. a disallowed-keys hit), so a later resubmission is not treated as a
+         * moderator's final verdict by has_rejected_review().
+         */
+        private const AUTO_REJECTED_META_KEY = '_wc_auto_rejected';
+        /**
          * Wire the AJAX endpoints.
          *
          * Auto-called by the WC dependency container after instantiation.
@@ -174253,6 +174185,21 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
          * @internal
          */
         final public function init(): void
+        {
+        }
+        /**
+         * Drop the automatic-rejection tag when a tagged review's status later changes.
+         *
+         * A moderator confirming the rejection (or our own re-moderation approving a
+         * resubmission) is the final word, so the row should no longer be skipped by
+         * has_rejected_review(). Our own auto-rejection sets the tag after the status
+         * transition, so it is not affected.
+         *
+         * @param int|string  $new_status New comment status.
+         * @param int|string  $old_status Old comment status.
+         * @param \WP_Comment $comment    The comment whose status changed.
+         */
+        public function clear_auto_rejected_flag($new_status, $old_status, $comment): void
         {
         }
         /**
@@ -174274,21 +174221,50 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
         {
         }
         /**
-         * Decide whether a review should be auto-approved, via WordPress's own `check_comment()`.
+         * Update a review row in place: re-moderate changed content, write the rating,
+         * and move the row to the resulting status. Shared by the normal edit path and
+         * by resubmitting after an automatic rejection, so a rejected row is corrected
+         * rather than a new one stored.
          *
-         * @param string $author  Comment author name.
-         * @param string $email   Comment author email.
-         * @param string $content Comment content.
-         * @param string $ip      Comment author IP.
-         * @param string $agent   Comment author user agent.
-         * @return int 1 to auto-approve, 0 to hold for moderation.
+         * @param \WP_Comment $existing The review being updated.
+         * @param string      $content  The new content (already run through comment kses).
+         * @param int         $rating   Rating value 1-5.
+         * @param string      $ip       Comment author IP.
+         * @param string      $agent    Comment author user agent.
+         * @return array{comment_id?:int, status?:string, error?:string}
          */
-        private static function comment_approval_status(string $author, string $email, string $content, string $ip, string $agent): int
+        private static function update_review_in_place(\WP_Comment $existing, string $content, int $rating, string $ip, string $agent): array
+        {
+        }
+        /**
+         * Approval status for an edited review, run through the same moderation an insert
+         * gets: the disallowed-keys list, moderation keywords and link limit, and the
+         * `pre_comment_approved` filter. `wp_update_comment()` never runs these itself.
+         *
+         * @param \WP_Comment $existing The review being edited.
+         * @param string      $content  The new content.
+         * @param string      $ip       Comment author IP.
+         * @param string      $agent    Comment author user agent.
+         * @return int|string 1 or 0 to approve/hold, or 'spam'/'trash' to reject.
+         */
+        private static function moderate_edited_review(\WP_Comment $existing, string $content, string $ip, string $agent)
+        {
+        }
+        /**
+         * Insert a review through `wp_new_comment()`, so it gets the same filters,
+         * spam checks and notifications as a comment posted on the product page.
+         *
+         * @param array $comment_data Unslashed comment data.
+         * @return int|false|\WP_Error Comment ID, false on failure, or the error from the comment checks.
+         */
+        private static function insert_review(array $comment_data)
         {
         }
         /**
          * Whether a moderator already marked this exact order/product/variation
-         * review as spam or trash.
+         * review as spam or trash. Reviews the comment pipeline auto-rejected (tagged
+         * with AUTO_REJECTED_META_KEY) are excluded, so an automatic verdict does not
+         * lock the customer out of resubmitting a clean review.
          *
          * @param WC_Order $order        Order being reviewed.
          * @param int      $product_id   Parent product id.
@@ -174296,6 +174272,19 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
          * @return bool
          */
         private static function has_rejected_review(\WC_Order $order, int $product_id, int $variation_id): bool
+        {
+        }
+        /**
+         * The customer's own auto-rejected (spam/trash, tagged) review for this
+         * order/product/variation, if any, so a resubmission reuses that row instead
+         * of stacking a new one. Moderator verdicts (untagged) are not returned.
+         *
+         * @param WC_Order $order        Order being reviewed.
+         * @param int      $product_id   Parent product id.
+         * @param int      $variation_id Variation id (0 for simple products).
+         * @return \WP_Comment|null
+         */
+        private static function find_auto_rejected_review(\WC_Order $order, int $product_id, int $variation_id): ?\WP_Comment
         {
         }
         /**
@@ -191499,13 +191488,13 @@ namespace Automattic\WooCommerce\Internal\StockNotifications\Admin {
         /**
          * Save screen options.
          *
-         * @param int    $status The status of the screen option.
-         * @param string $option The option name.
-         * @param int    $value The value of the screen option.
+         * @param bool|int $status The status of the screen option.
+         * @param string   $option The option name.
+         * @param int      $value The value of the screen option.
          *
-         * @return int
+         * @return bool|int
          */
-        public function set_screen_option($status, $option, $value): int
+        public function set_screen_option($status, $option, $value)
         {
         }
         /**
@@ -213083,7 +213072,7 @@ namespace {
      *
      * @param WC_Product $product   Product being rendered.
      * @param mixed      $image_ids Image IDs to substitute. Will be normalized.
-     * @return string
+     * @return string Rendered gallery HTML, or an empty string for a re-entrant render of the same product.
      */
     function wc_render_product_image_template_for_image_ids(\WC_Product $product, $image_ids): string
     {
@@ -214771,5 +214760,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.2.0-beta.1');
+    define('WC_VERSION', '11.2.0-beta.2');
 }
