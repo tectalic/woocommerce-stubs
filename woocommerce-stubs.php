@@ -25355,7 +25355,7 @@ namespace {
          * guard still applies.  When neither is supplied, this delegates entirely
          * to the parent.
          *
-         * @since 11.1.0
+         * @since 11.2.0
          * @param array  $props   Key/value pairs of properties to set.
          * @param string $context Operation context ('set', 'edit', 'view').
          * @return bool|WP_Error True on success, WP_Error on failure.
@@ -42132,7 +42132,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.2.0-beta.2';
+        public $version = '11.2.0-rc.1';
         /**
          * WooCommerce Schema version.
          *
@@ -133570,6 +133570,18 @@ namespace Automattic\WooCommerce\Caches {
         /**
          * Update the cache whenever a product status changes.
          *
+         * @param string       $new_status The new post status.
+         * @param string       $old_status The previous post status.
+         * @param null|WP_Post $post       The post object (may be null during autosaves/revisions).
+         *
+         * @return void
+         */
+        public function update_on_product_status_changed_skip_autosave(string $new_status, string $old_status, $post): void
+        {
+        }
+        /**
+         * Update the cache whenever a product status changes.
+         *
          * @param string  $new_status The new post status.
          * @param string  $old_status The previous post status.
          * @param WP_Post $post       The post object.
@@ -195899,6 +195911,15 @@ namespace Automattic\WooCommerce\Internal\Utilities {
         public static function get_thousand(): string
         {
         }
+        /**
+         * Decode HTML entities in a separator. Separators are plain text, so markup characters are dropped.
+         *
+         * @param string $separator The stored separator.
+         * @return string
+         */
+        private static function to_plain_text(string $separator): string
+        {
+        }
     }
     /**
      * Class with general utility methods related to products.
@@ -214760,5 +214781,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.2.0-beta.2');
+    define('WC_VERSION', '11.2.0-rc.1');
 }
