@@ -42132,7 +42132,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.2.0-rc.1';
+        public $version = '11.2.0';
         /**
          * WooCommerce Schema version.
          *
@@ -48820,6 +48820,17 @@ namespace {
          */
         public $block_email_editor_enabled;
         /**
+         * Whether Cc/Bcc recipients can be configured for this email.
+         *
+         * False for emails that carry a credential such as a password reset key.
+         * The Cc/Bcc settings are then hidden and stored values are ignored.
+         * The Cc/Bcc recipient filters still apply.
+         *
+         * @since 11.2.0
+         * @var bool
+         */
+        protected $supports_cc_bcc = \true;
+        /**
          * Personalizer instance for converting Personalization tags.
          *
          * @var TransactionalEmailPersonalizer
@@ -48953,6 +48964,16 @@ namespace {
          * @return string
          */
         public function get_recipient()
+        {
+        }
+        /**
+         * Whether Cc/Bcc recipients can be configured for this email.
+         *
+         * @since 11.2.0
+         *
+         * @return bool
+         */
+        public function supports_cc_bcc()
         {
         }
         /**
@@ -157499,6 +157520,13 @@ namespace Automattic\WooCommerce\Internal\BatchProcessing {
          */
         private $logger;
         /**
+         * Action Scheduler functions that report a pending or in-progress action, preferred first.
+         * `as_has_scheduled_action` only exists since Action Scheduler 3.3.0, and another plugin can load an older copy.
+         *
+         * @var string[]
+         */
+        private $scheduled_action_lookups = array('as_has_scheduled_action', 'as_next_scheduled_action');
+        /**
          * BatchProcessingController constructor.
          *
          * Schedules the necessary actions to process batches.
@@ -157690,13 +157718,33 @@ namespace Automattic\WooCommerce\Internal\BatchProcessing {
         }
         /**
          * Check if a batch processing action is already scheduled for a given processor.
-         * Differs from `as_has_scheduled_action` in that this excludes actions in progress.
+         * Pending and in-progress actions both count as scheduled.
          *
          * @param string $processor_class_name Fully qualified class name of the batch processor.
          *
          * @return bool True if a batch processing action is already scheduled for the processor.
          */
         public function is_scheduled(string $processor_class_name): bool
+        {
+        }
+        /**
+         * Check for a pending or in-progress action, falling back to `as_next_scheduled_action` on Action Scheduler < 3.3.0.
+         * Returns false if Action Scheduler is not loaded at all.
+         *
+         * @param string     $hook The hook of the action.
+         * @param array|null $args The action args, null matches any args.
+         *
+         * @return bool True if a matching action is scheduled.
+         */
+        private function has_scheduled_action(string $hook, ?array $args = null): bool
+        {
+        }
+        /**
+         * Whether has_scheduled_action() can query Action Scheduler, rather than answering false because it is not loaded.
+         *
+         * @return bool True if at least one lookup function exists.
+         */
+        private function can_check_scheduled_actions(): bool
         {
         }
         /**
@@ -199283,7 +199331,7 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * Returns a document object from a REST request.
          *
          * @param \WP_REST_Request $request The REST request.
-         * @return DocumentObject The document object.
+         * @return DocumentObject The document object or null if experimental blocks are not enabled.
          */
         public function get_document_object_from_rest_request(\WP_REST_Request $request)
         {
@@ -199640,7 +199688,7 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         /**
          * Holds the current order being processed.
          *
-         * @var \WC_Order|null
+         * @var \WC_Order
          */
         private $order = null;
         /**
@@ -214781,5 +214829,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.2.0-rc.1');
+    define('WC_VERSION', '11.2.0');
 }
