@@ -42132,7 +42132,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.2.0';
+        public $version = '11.2.1';
         /**
          * WooCommerce Schema version.
          *
@@ -214829,5 +214829,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.2.0');
+    define('WC_VERSION', '11.2.1');
 }
