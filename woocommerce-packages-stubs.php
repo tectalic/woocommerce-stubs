@@ -13084,10 +13084,13 @@ namespace Automattic\WooCommerce\EmailEditor\Engine\Renderer\ContentRenderer {
         {
         }
         /**
-         * Translate color slug to color.
+         * Translate a color slug to the color the palette gives it.
          *
-         * @param string $color_slug Color slug.
-         * @return string
+         * A slug can be missing from the palette because the post was written under a different theme,
+         * or came from a palette the email does not carry. {@see Styles_Helper::resolve_color_from_palette()}.
+         *
+         * @param string $color_slug Color slug, or a literal color.
+         * @return string The color value, or an empty string for a slug the palette does not define.
          */
         public function translate_slug_to_color(string $color_slug): string
         {
@@ -14665,10 +14668,12 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
-         * Translate slug to color.
+         * Translate a color slug to the color the palette gives it.
          *
-         * @param string $color_slug Color slug.
-         * @return string
+         * {@see Theme_Controller::translate_slug_to_color()}.
+         *
+         * @param string $color_slug Color slug, or a literal color.
+         * @return string The color value, or an empty string for a slug the palette does not define.
          */
         public function translate_slug_to_color(string $color_slug): string
         {
@@ -15047,10 +15052,13 @@ namespace Automattic\WooCommerce\EmailEditor\Engine {
         {
         }
         /**
-         * Translate color slug to color.
+         * Translate a color slug to the color the palette gives it.
          *
-         * @param string $color_slug Color slug.
-         * @return string
+         * A slug can be missing from the palette because the post was written under a different theme,
+         * or came from a palette the email does not carry. {@see Styles_Helper::resolve_color_from_palette()}.
+         *
+         * @param string $color_slug Color slug, or a literal color.
+         * @return string The color value, or an empty string for a slug the palette does not define.
          */
         public function translate_slug_to_color(string $color_slug): string
         {
@@ -17468,6 +17476,49 @@ namespace Automattic\WooCommerce\EmailEditor\Integrations\Utils {
          * @return array
          */
         public static function parse_styles_to_array(string $styles): array
+        {
+        }
+        /**
+         * Whether a value is a literal color rather than a palette slug.
+         *
+         * Only a value a slug could never be counts: a complete hex value, or functional notation of any
+         * name, since a slug contains neither `#` nor a bracket. A bare word is a slug, including one
+         * that names a CSS color -- classic themes register those, and the email cannot see their color.
+         *
+         * @param string $value Value of a color block attribute.
+         * @return bool
+         */
+        public static function is_color_literal(string $value): bool
+        {
+        }
+        /**
+         * Every color the palette defines, one entry per slug, highest priority origin first.
+         *
+         * `WP_Theme_JSON` layers origins so a later one wins, so they are read in reverse of that order.
+         * One entry per slug matters because a lookup reads the first and the stylesheet's cascade reads
+         * the last, which would give a block a different color by route. An entry needs a usable slug
+         * and color to be kept, and an incomplete one does not claim its slug.
+         *
+         * @param array $settings Theme settings array, as `WP_Theme_JSON::get_settings()` returns it.
+         * @return array Flat list of color definitions, one per slug, each with a usable slug and color.
+         */
+        public static function palette_definitions(array $settings): array
+        {
+        }
+        /**
+         * Resolve a color slug against the palette.
+         *
+         * Searches every origin, highest priority first: a slug the user defined in the email's own
+         * global styles (`custom`) beats the theme's, which beats core's.
+         *
+         * A slug no origin defines returns an empty string, so callers omit the declaration and the
+         * block keeps the surrounding color. A literal color passes through.
+         *
+         * @param array  $settings   Theme settings array, as `WP_Theme_JSON::get_settings()` returns it.
+         * @param string $color_slug Color slug, or a literal color.
+         * @return string The color value, or an empty string for a slug the palette does not define.
+         */
+        public static function resolve_color_from_palette(array $settings, string $color_slug): string
         {
         }
         /**
