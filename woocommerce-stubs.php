@@ -42512,7 +42512,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.3.0-beta.1';
+        public $version = '11.3.0-beta.2';
         /**
          * WooCommerce Schema version.
          *
@@ -170301,15 +170301,6 @@ namespace Automattic\WooCommerce\Internal\DataStores\StockNotifications {
         {
         }
         /**
-         * Perform after meta change operations.
-         *
-         * @param Notification $notification The notification object.
-         * @return bool True if changes were applied, false otherwise.
-         */
-        private function after_meta_change(&$notification): bool
-        {
-        }
-        /**
          * Query the stock notifications.
          *
          * @param array $args The arguments.
@@ -184938,6 +184929,15 @@ namespace Automattic\WooCommerce\Internal\ProductFilters {
         {
         }
         /**
+         * Make default visibility explicit before generating SQL or shared cache keys.
+         *
+         * @param array $query_vars The WP_Query arguments.
+         * @return array Query arguments with an explicit post status.
+         */
+        private function get_query_vars_with_default_post_status(array $query_vars): array
+        {
+        }
+        /**
          * Get filter data transient key.
          *
          * @param array  $query_vars   The query arguments to calculate the filter data.
@@ -198755,6 +198755,12 @@ namespace Automattic\WooCommerce\Internal\StockNotifications\Emails {
     class CustomerStockNotificationEmail extends \WC_Email
     {
         /**
+         * Unsubscribe key for the email being sent. The caller's save persists its hash.
+         *
+         * @var string
+         */
+        private $unsubscribe_key = '';
+        /**
          * Constructor.
          */
         public function __construct()
@@ -200769,6 +200775,19 @@ namespace Automattic\WooCommerce\Internal\StockNotifications {
          * @return string The generated unsubscribe key.
          */
         public function get_unsubscribe_key(bool $persist): string
+        {
+        }
+        /**
+         * Whether any meta changes are pending a save.
+         *
+         * Mirrors the checks in `save_meta_data()`, so meta marked for deletion counts,
+         * unlike `get_meta_data()`.
+         *
+         * @since 11.4.0
+         *
+         * @return bool
+         */
+        public function has_meta_changes(): bool
         {
         }
     }
@@ -211725,6 +211744,16 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
     class OrderController
     {
         /**
+         * Address fields that can change the price. Shipping zones match on country, state and postcode, and tax rates
+         * also match on city. Other fields, like name or street, do not change the price.
+         *
+         * @see \WC_Shipping_Zones::get_zone_matching_package()
+         * @see \WC_Tax::find_rates()
+         *
+         * @var string[]
+         */
+        private const LOCATION_FIELDS = ['country', 'state', 'postcode', 'city'];
+        /**
          * Checkout fields controller.
          *
          * @var CheckoutFields
@@ -211797,6 +211826,81 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * @param \WC_Order $order Order object.
          */
         public function validate_existing_order_before_update(\WC_Order $order): void
+        {
+        }
+        /**
+         * Sets new addresses on an existing order and validates them, without saving the order.
+         *
+         * Rejects a location change that would change the shipping cost or tax. The request recalculates
+         * tax but not shipping, and the total should stay what the order was priced at.
+         *
+         * @since 11.3.0
+         *
+         * @throws RouteException When an address is not valid or its location cannot change.
+         * @param \WC_Order  $order    Existing order.
+         * @param array      $billing  New billing address.
+         * @param array|null $shipping New shipping address, or null to keep the order's.
+         * @return array|null Shipping address set on the order, or null if the order kept its own.
+         */
+        public function update_existing_order_addresses(\WC_Order $order, array $billing, ?array $shipping): ?array
+        {
+        }
+        /**
+         * Gets the location an order ships to.
+         *
+         * An order with no shipping address, e.g. one created in the admin, ships to its billing address.
+         * WC_Abstract_Order::get_tax_location() uses the same fallback.
+         *
+         * @param \WC_Order $order Order to read.
+         * @return array
+         */
+        private static function get_shipping_location(\WC_Order $order): array
+        {
+        }
+        /**
+         * Keeps a state the order stores as a name, e.g. "New York", when the request sends its code, e.g. "NY".
+         *
+         * This is because some edge cases would have an order with a state name (New York) instead of NY.
+         * Switching from New York to NY might trigger new totals so we avoid that by keeping the full name.
+         *
+         * @param \WC_Order $order      Order with the new addresses set.
+         * @param string[]  $old_states State per address type before the new addresses were set.
+         */
+        private function restore_state_names(\WC_Order $order, array $old_states): void
+        {
+        }
+        /**
+         * Rejects a location change that would change the order's shipping cost or tax.
+         *
+         * @throws RouteException When the shipping or tax location changed.
+         * @param \WC_Order $order                 Order with the new addresses set.
+         * @param array     $old_shipping_location Location the order shipped to before the change.
+         * @param array     $old_tax_location      Location the order was taxed on before the change.
+         * @param bool      $needs_shipping        Whether the order needs shipping.
+         */
+        private function validate_location_change(\WC_Order $order, array $old_shipping_location, array $old_tax_location, bool $needs_shipping): void
+        {
+        }
+        /**
+         * Checks whether two locations match a different shipping zone or tax rate.
+         *
+         * Shipping zones and tax rates ignore case and postcode spacing, so a change in only those does not count.
+         *
+         * @param array $old_location Location before the change.
+         * @param array $new_location Location after the change.
+         * @return bool
+         */
+        private static function locations_differ(array $old_location, array $new_location): bool
+        {
+        }
+        /**
+         * Normalizes a location field the way shipping zones and tax rates match it.
+         *
+         * @param string $field    Field name.
+         * @param array  $location Location the field belongs to.
+         * @return string
+         */
+        private static function normalize_location_field(string $field, array $location): string
         {
         }
         /**
@@ -222432,5 +222536,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.3.0-beta.1');
+    define('WC_VERSION', '11.3.0-beta.2');
 }
