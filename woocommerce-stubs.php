@@ -42578,7 +42578,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.3.0-rc.1';
+        public $version = '11.3.0-rc.2';
         /**
          * WooCommerce Schema version.
          *
@@ -165781,10 +165781,10 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
          * @since 11.0.0
          *
          * @param int         $user_id        WordPress user ID.
-         * @param string|null $expected_email Email address proven by the verification flow.
+         * @param string|null $expected_email Email address proven by the verification flow. If omitted or null, no verification is performed.
          * @return void
          */
-        public function mark_verified(int $user_id, ?string $expected_email): void
+        public function mark_verified(int $user_id, ?string $expected_email = null): void
         {
         }
         /**
@@ -182818,6 +182818,13 @@ namespace Automattic\WooCommerce\Internal\ProductDownloads {
          * Start of the `_wp_attached_file` path, relative to the uploads directory, for downloadable product files.
          */
         private const DIRECTORY = 'woocommerce_uploads/';
+        /**
+         * True while is_downloadable_file() reads an attachment's file path. Checks that the read triggers again return
+         * false instead of recursing, so every attachment counts as visible during that read.
+         *
+         * @var bool
+         */
+        private bool $in_progress = false;
         /**
          * Register hooks and filters.
          */
@@ -222818,5 +222825,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.3.0-rc.1');
+    define('WC_VERSION', '11.3.0-rc.2');
 }
