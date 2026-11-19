@@ -2641,6 +2641,9 @@ namespace {
         /**
          * Helper method to get all aliases and IDs for current user and provided billing email.
          *
+         * A logged in customer's uses and holds are recorded under their user ID, so the list includes the current
+         * user's ID and the ID of the account that owns each email.
+         *
          * @param string $billing_email Billing email to look up for.
          *
          * @return array     Array of all aliases and IDs.
@@ -2715,6 +2718,27 @@ namespace {
          * @return bool TRUE if coupon was removed, FALSE otherwise.
          */
         public function remove_coupon($code)
+        {
+        }
+        /**
+         * Delete the coupon line of an order that counted its use, and tell whether this call should give the use back.
+         *
+         * Only the call that deleted the line gives the use back, and only while the stored order is still counted, so
+         * parallel removals and a parallel cancellation give it back at most once.
+         * If a cancellation runs at the same moment, both can skip it and the count stays one too high.
+         *
+         * @param WC_Order_Item|false $stored_item Removed coupon line, as stored in this order.
+         * @return bool|null True if this call should give the coupon's use back, false if not, null if another call deleted the line or the delete failed.
+         */
+        private function delete_counted_coupon_line($stored_item): ?bool
+        {
+        }
+        /**
+         * Whether the stored order has its coupon usage recorded.
+         *
+         * @return bool
+         */
+        private function has_recorded_coupon_usage(): bool
         {
         }
         /**
@@ -11938,6 +11962,8 @@ namespace {
         /**
          * Pushes settings onto the WooCommerce Admin global settings object (wcSettings).
          *
+         * Users who can't manage WooCommerce get only the defaults the marketplace client needs.
+         *
          * @param mixed $settings The settings object we're amending.
          *
          * @return mixed $settings
@@ -12491,6 +12517,15 @@ namespace {
          * capability. So the API mimics that behavior.
          */
         public static function get_permission()
+        {
+        }
+        /**
+         * Install links are only for users who can install plugins.
+         *
+         * @since 11.3.1
+         * @return bool
+         */
+        public static function get_install_permission()
         {
         }
         /**
@@ -19234,6 +19269,16 @@ namespace {
         {
         }
         /**
+         * Check whether the current user can edit each variation.
+         *
+         * @param int[]    $variation_ids Variation IDs.
+         * @param int|null $product_id Expected parent product ID, or null to allow any editable parent.
+         * @return bool
+         */
+        private static function can_edit_variations($variation_ids, $product_id = \null)
+        {
+        }
+        /**
          * Delete variations via ajax function.
          *
          * @return void
@@ -21988,7 +22033,7 @@ namespace {
          *
          * @since  3.2.0
          * @param  object $item_key Item to get the price of.
-         * @return int
+         * @return int|float
          */
         protected function get_discounted_price_in_cents($item_key)
         {
@@ -23850,6 +23895,7 @@ namespace {
          * Process an order that does require payment.
          *
          * @since 3.0.0
+         * @throws Exception When another request owns the order lock.
          * @param int    $order_id       Order ID.
          * @param string $payment_method Payment method.
          */
@@ -23860,7 +23906,7 @@ namespace {
          * Process an order that doesn't require payment.
          *
          * @since 3.0.0
-         * @throws Exception If the order is missing or a cancelled unpaid order would be marked paid.
+         * @throws Exception If another request owns the order lock, the order is missing, or a cancelled unpaid order would be marked paid.
          * @param int $order_id Order ID.
          */
         protected function process_order_without_payment($order_id)
@@ -27294,8 +27340,10 @@ namespace {
          * Delete an object from the data store.
          *
          * @since 3.0.0
+         * @since 11.3.1 Returns what the data store returns.
          * @param WC_Data $data WooCommerce data instance.
          * @param array   $args Array of args to pass to the delete method.
+         * @return mixed What the data store returns, if anything.
          */
         public function delete(&$data, $args = array())
         {
@@ -27755,6 +27803,20 @@ namespace {
          * @return int Total discounted.
          */
         protected function apply_coupon_remainder($coupon, $items_to_apply, $amount)
+        {
+        }
+        /**
+         * Ensure coupons are enabled for the store when validating a cart, or throw exception.
+         *
+         * Coupons applied to a cart before coupons were disabled are kept in the session, so they are rejected here.
+         * A `woocommerce_coupons_enabled` callback that returns true keeps them valid, as on the apply paths. One that
+         * returns false while the setting is on (e.g. to hide the coupon form on a page) doesn't remove applied coupons.
+         *
+         * @since  11.4.0
+         * @throws Exception Error message.
+         * @return bool
+         */
+        protected function validate_coupons_enabled()
         {
         }
         /**
@@ -29752,7 +29814,7 @@ namespace {
         ), '11.2.2' => array('wc_update_1122_remove_objects_from_default_attributes'), '11.3.0' => array('wc_update_1130_set_legacy_variation_price_hash_option', 'wc_update_1130_delete_unpublished_variation_lookup_rows', 'wc_update_1130_split_tax_lookup_taxable_amount', 'wc_update_1130_delete_stock_notification_sync_notice_option', 'wc_update_1130_backfill_order_stats_payment_method'), '11.3.0-1' => array(
             // Run again for stores whose database was already at 11.3.0 or later, as they skip the 11.2.2 key.
             'wc_update_1122_remove_objects_from_default_attributes',
-        ));
+        ), '11.3.1' => array('wc_update_1131_redact_deferred_customer_passwords', 'wc_update_1131_invalidate_postcode_match_caches'));
         /**
          * Option name used to track new installations of WooCommerce.
          *
@@ -38663,6 +38725,19 @@ namespace {
         {
         }
         /**
+         * Whether a route is in the Store API namespace, which API keys may not authenticate.
+         *
+         * WordPress matches routes case-insensitively and decodes the route it dispatches, so this does too.
+         *
+         * @since 11.3.1
+         *
+         * @param string $route Route without the REST prefix.
+         * @return bool
+         */
+        private function is_store_api_route(string $route): bool
+        {
+        }
+        /**
          * The route WordPress resolved for this request, trimmed of surrounding slashes.
          *
          * Null when WordPress has not parsed the request yet, which is not the same as an empty route.
@@ -38745,7 +38820,7 @@ namespace {
          *
          * @since 11.1.0
          *
-         * @return bool False only when the resolved route is not ours and the request URI never named it.
+         * @return bool False when the resolved route is the Store API, or is not ours and the request URI never named it.
          */
         private function is_resolved_route_in_scope()
         {
@@ -38995,6 +39070,15 @@ namespace {
         protected $_table = '';
         // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
         /**
+         * Whether the current core session read should bypass and refresh the object cache.
+         *
+         * This is enabled temporarily by get_session_data_from_storage() for checkout concurrency validation. Normal
+         * session initialization and other reads continue using the cache.
+         *
+         * @var bool
+         */
+        private bool $bypass_session_cache = \false;
+        /**
          * Constructor for the session class.
          */
         public function __construct()
@@ -39042,7 +39126,9 @@ namespace {
         {
         }
         /**
-         * Clones a session to the current session. Exclude customer details for privacy reasons.
+         * Clones the cart and applied coupons from a shared session into the current session.
+         *
+         * Other keys stay with the sharer: they can hold customer details, order IDs whose keys the sharer knows, or extension data.
          *
          * @param string $clone_from_customer_id The customer ID to clone from.
          */
@@ -39180,14 +39266,26 @@ namespace {
         {
         }
         /**
-         * Get session data fresh from storage.
+         * Get persisted session data through the normal cache-aware read path.
          *
-         * This re-reads session data from the database rather than returning
-         * in-memory data, ensuring the latest persisted state is returned.
+         * The core handler may satisfy this read from the object cache. This is the normal path used when initializing
+         * cookie sessions and by callers that do not require a fresh database value.
          *
          * @return array
          */
         public function get_session_data()
+        {
+        }
+        /**
+         * Get the latest persisted session data for checkout concurrency validation.
+         *
+         * Core reads temporarily bypass and refresh the object cache for this call. Normal method dispatch is preserved,
+         * so custom handlers continue using their own storage implementation.
+         *
+         * @since 11.3.0
+         * @return array
+         */
+        public function get_session_data_from_storage(): array
         {
         }
         /**
@@ -41577,6 +41675,14 @@ namespace {
         {
         }
         /**
+         * Count current customers with at least one stored Application Password.
+         *
+         * @return int
+         */
+        private static function get_customer_application_password_user_count(): int
+        {
+        }
+        /**
          * Get product totals based on product type.
          *
          * @return array
@@ -42578,7 +42684,7 @@ namespace {
          *
          * @var string
          */
-        public $version = '11.3.0';
+        public $version = '11.3.1';
         /**
          * WooCommerce Schema version.
          *
@@ -44927,6 +45033,9 @@ namespace {
          * @param WC_Order_Item $item Order item object.
          * @param array         $args Array of args to pass to the delete method.
          * @since 3.0.0
+         * @since 11.3.1 Returns the number of item rows deleted.
+         *
+         * @return int|false Number of item rows this call deleted (0 when another call already deleted the row), or false on a database error.
          */
         public function delete(&$item, $args = array())
         {
@@ -45042,7 +45151,7 @@ namespace {
          * @since 3.0.0
          * @var array
          */
-        protected $internal_meta_keys = array('discount_type', 'coupon_amount', 'expiry_date', 'date_expires', 'usage_count', 'individual_use', 'product_ids', 'exclude_product_ids', 'usage_limit', 'usage_limit_per_user', 'limit_usage_to_x_items', 'free_shipping', 'product_categories', 'exclude_product_categories', 'exclude_sale_items', 'minimum_amount', 'maximum_amount', 'customer_email', '_used_by', '_edit_lock', '_edit_last');
+        protected $internal_meta_keys = array('discount_type', 'coupon_amount', 'expiry_date', 'date_expires', 'usage_count', 'individual_use', 'product_ids', 'exclude_product_ids', 'usage_limit', 'usage_limit_per_user', 'limit_usage_to_x_items', 'free_shipping', 'product_categories', 'exclude_product_categories', 'exclude_sale_items', 'minimum_amount', 'maximum_amount', 'customer_email', '_used_by', '_used_by_email', '_edit_lock', '_edit_last');
         /**
          * The updated coupon properties.
          *
@@ -45141,6 +45250,68 @@ namespace {
          * @param string    $coupon_held_key (Optional) Update meta key to `_used_by` instead of adding a new record.
          */
         private function add_coupon_used_by($coupon, $used_by, $coupon_held_key)
+        {
+        }
+        /**
+         * Record the emails behind a use counted under a user ID, as `<user id>:<email>` rows.
+         *
+         * A use by a logged in customer is stored as their user ID only. Recording the account email and the
+         * order's billing email at the time of the use lets per-user limits still find it after the customer
+         * edits either one.
+         *
+         * @param WC_Coupon     $coupon  Coupon object.
+         * @param string|int    $used_by User ID or billing email the use was counted under.
+         * @param WC_Order|null $order   Order the use belongs to, if known.
+         * @return void
+         */
+        private function add_used_by_emails($coupon, $used_by, $order = \null)
+        {
+        }
+        /**
+         * Remove the email records of a user once none of their uses remain on the coupon.
+         *
+         * @param WC_Coupon  $coupon  Coupon object.
+         * @param string|int $used_by User ID or billing email the use was counted under.
+         * @return void
+         */
+        private function maybe_remove_used_by_emails($coupon, $used_by)
+        {
+        }
+        /**
+         * Add the user IDs whose recorded uses of the coupon were tied to any of the emails in a list of aliases.
+         *
+         * @since 11.3.1
+         * @param WC_Coupon $coupon  Coupon object.
+         * @param array     $aliases User IDs and emails.
+         * @return array The aliases plus any recorded user IDs, without duplicates.
+         */
+        public function add_recorded_user_ids_to_aliases($coupon, array $aliases): array
+        {
+        }
+        /**
+         * Remove the email records of a person from all coupons.
+         *
+         * Removes records holding the email, and all records of the user ID when one is given.
+         *
+         * @since 11.3.1
+         * @param string $email   Email address.
+         * @param int    $user_id User ID, or 0 when the email has no account.
+         * @return int Number of records removed.
+         */
+        public function remove_used_by_email_records(string $email, int $user_id = 0): int
+        {
+        }
+        /**
+         * Get the number of uses and current holds of a coupon by a list of user IDs and emails.
+         *
+         * Emails also match uses counted under a user ID when that use was recorded with the email.
+         *
+         * @since 11.3.1
+         * @param WC_Coupon $coupon  Coupon object.
+         * @param array     $aliases User IDs and emails.
+         * @return int
+         */
+        public function get_usage_by_aliases($coupon, array $aliases): int
         {
         }
         /**
@@ -46276,6 +46447,34 @@ namespace {
          * @param bool         $set True or false.
          */
         public function set_recorded_coupon_usage_counts($order, $set)
+        {
+        }
+        /**
+         * Clears the "coupon usage counted" flag, if it is still set and the stored order status still matches the order object.
+         *
+         * The check and the write are one database update, so the flag is cleared by at most one call.
+         *
+         * @since 11.3.1
+         *
+         * @internal For use by wc_update_coupon_usage_counts() only.
+         *
+         * @param WC_Order $order Order object.
+         * @return bool True if this call cleared the flag.
+         */
+        public function clear_recorded_coupon_usage_counts($order): bool
+        {
+        }
+        /**
+         * Reads the "coupon usage counted" flag straight from the database, skipping the meta cache.
+         *
+         * @since 11.3.1
+         *
+         * @internal For use by WC_Abstract_Order::remove_coupon() only.
+         *
+         * @param WC_Order $order Order object.
+         * @return bool
+         */
+        public function get_stored_recorded_coupon_usage_counts($order): bool
         {
         }
         /**
@@ -58553,6 +58752,12 @@ namespace {
     class WC_REST_Orders_V1_Controller extends \WC_REST_Posts_Controller
     {
         /**
+         * Maps each order line request argument to the order_item_type stored for it.
+         *
+         * @var array<string, string>
+         */
+        protected const STORED_ITEM_TYPES = array('line_items' => 'line_item', 'shipping_lines' => 'shipping', 'fee_lines' => 'fee', 'coupon_lines' => 'coupon');
+        /**
          * Endpoint namespace.
          *
          * @var string
@@ -58751,7 +58956,7 @@ namespace {
         /**
          * Wrapper method to create/update order items.
          * When updating, the item ID provided is checked to ensure it is associated
-         * with the order.
+         * with the order and it's of the correct type.
          *
          * @param WC_Order $order order
          * @param string $item_type
@@ -62046,6 +62251,17 @@ namespace {
          * @param WP_REST_Request $request  Request data.
          */
         protected function update_customer_meta_fields($customer, $request)
+        {
+        }
+        /**
+         * Check whether a meta key stores user roles, user levels, or authentication sessions.
+         *
+         * The key is trimmed and compared case-insensitively as a precaution, since MySQL's default collation matches keys that way.
+         *
+         * @param mixed $meta_key Meta key from the request.
+         * @return bool
+         */
+        private function is_sensitive_meta_key($meta_key): bool
         {
         }
         /**
@@ -71496,20 +71712,22 @@ namespace {
         {
         }
         /**
-         * Authenticate WooCommerce.com request.
+         * Authenticate a WooCommerce.com request to the wccom-site REST API.
+         *
+         * Called from authentication_fallback() once WordPress has resolved the route. Returns the connected user,
+         * or false with the reason added to the wccom_auth_error filter.
          *
          * @since 3.7.0
-         * @param int|false $user_id User ID.
+         * @param int|false $user_id Current user id if already set; always false from the only caller.
          * @return int|WP_User|false
          */
         public static function authenticate_wccom($user_id)
         {
         }
         /**
-         * Authenticate a WooCommerce.com request that carries `rest_route`.
+         * Authenticate a WooCommerce.com request once WordPress has resolved its REST route.
          *
-         * WordPress determines the current user before it parses the request, so `authenticate_wccom()` leaves
-         * these requests alone during `determine_current_user` and they are authenticated here instead.
+         * Only requests WordPress dispatches to the wccom-site namespace are authenticated, whatever the URL looked like.
          *
          * @since 11.3.0
          * @param WP_Error|null|bool $error Error from another authentication handler, null if none.
@@ -71535,8 +71753,7 @@ namespace {
         /**
          * Check if this is a request to WCCOM Site REST API.
          *
-         * Before WordPress parses the request only the URL path is checked. Requests carrying `rest_route`
-         * return false until then, and `authentication_fallback()` authenticates them once the route is resolved.
+         * Only the route WordPress resolved counts, so this is false until WordPress is dispatching the request as REST.
          *
          * @since 3.7.0
          * @return bool
@@ -71546,6 +71763,8 @@ namespace {
         }
         /**
          * Verify WooCommerce.com request from a given body and signature request.
+         *
+         * Only what follows the first "?" of the request URI is treated as its query string.
          *
          * @since 3.7.0
          * @param string $body                Request body.
@@ -89166,8 +89385,7 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Customers {
         /**
          * Sync customers data after an order was deleted.
          *
-         * When an order is deleted, the customer record is deleted from the
-         * table if the customer has no other orders.
+         * Remove unused guest rows while retaining registered customer profiles.
          *
          * @param int $order_id Order ID.
          * @param int $customer_id Customer ID.
@@ -89181,7 +89399,7 @@ namespace Automattic\WooCommerce\Admin\API\Reports\Customers {
          * Only updates customer if it is the customers last order.
          *
          * @param int $post_id of order.
-         * @return true|-1
+         * @return bool|-1
          */
         public static function sync_order_customer($post_id)
         {
@@ -98429,6 +98647,34 @@ namespace Automattic\WooCommerce\Internal {
          * @return bool|WP_Error True if the current user has the capability, otherwise an "Unauthorized" error or False if no error is available for the request method.
          */
         protected function check_permission(\WP_REST_Request $request, string $required_capability_name, ...$extra_args)
+        {
+        }
+        /**
+         * Permission check for REST API endpoints that act on a post type object.
+         *
+         * Resolves the capability through wc_rest_check_post_permissions(), so the endpoint
+         * uses the same rules and filters as the post type's own REST API controller.
+         *
+         * @since 11.3.1
+         *
+         * @param WP_REST_Request $request   The request for which the permission is checked.
+         * @param string          $post_type The post type the endpoint acts on.
+         * @param string          $context   The request context, one of the contexts accepted by wc_rest_check_post_permissions().
+         * @param int             $object_id The ID of the object the endpoint acts on.
+         * @phpstan-param WP_REST_Request<array<string, mixed>> $request
+         * @return bool|WP_Error True if the current user has the required permission, otherwise a WP_Error object.
+         */
+        protected function check_post_type_permission(\WP_REST_Request $request, string $post_type, string $context, int $object_id = 0)
+        {
+        }
+        /**
+         * Build the error returned when a permission check fails.
+         *
+         * @param WP_REST_Request $request The request that failed the permission check.
+         * @phpstan-param WP_REST_Request<array<string, mixed>> $request
+         * @return bool|WP_Error A WP_Error object, or false if the request method has no registered error message.
+         */
+        private function get_permission_denied_error(\WP_REST_Request $request)
         {
         }
         /**
@@ -121841,6 +122087,15 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes\ProductCollection {
         private function get_cart_product_ids($request = null)
         {
         }
+        /**
+         * Get the referenced products that the current user can view.
+         *
+         * @param array $product_references The product IDs.
+         * @return \WC_Product[] The products that exist and that the current user can view.
+         */
+        private function get_viewable_products($product_references)
+        {
+        }
     }
     /**
      * NoResults class.
@@ -129172,7 +129427,7 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services {
         {
         }
         /**
-         * Process the query params and return the checkout link to redirect to complete with session token.
+         * Process the query params and return the checkout link to redirect to complete with a cart link token.
          *
          * @return string The checkout link.
          */
@@ -135661,6 +135916,19 @@ namespace Automattic\WooCommerce\Checkout\Helpers {
          */
         private const MAX_OWN_ORDERS = 10;
         /**
+         * Internal statuses whose holds have always counted as held stock.
+         *
+         * The reserved stock query keeps them as a literal pair. See get_status_clause().
+         */
+        private const LEGACY_COUNTED_ORDER_STATUSES = array('wc-' . \Automattic\WooCommerce\Enums\OrderStatus::CHECKOUT_DRAFT, \Automattic\WooCommerce\Enums\OrderInternalStatus::PENDING);
+        /**
+         * Internal statuses an order can still be resumed and paid from.
+         *
+         * Only holds on these orders are ever excluded as the shopper's own. A paid
+         * order's hold keeps counting until wc_reduce_stock_levels() releases it.
+         */
+        private const UNPAID_ORDER_STATUSES = array(...self::LEGACY_COUNTED_ORDER_STATUSES, \Automattic\WooCommerce\Enums\OrderInternalStatus::FAILED);
+        /**
          * Is stock reservation enabled?
          *
          * @var boolean
@@ -135720,6 +135988,21 @@ namespace Automattic\WooCommerce\Checkout\Helpers {
         {
         }
         /**
+         * Lower an order's hold on one product by the quantity just taken from stock.
+         *
+         * Must run right after the decrement so the units are not counted twice.
+         *
+         * @internal
+         * @since 11.3.1
+         *
+         * @param int       $order_id   Order holding the stock.
+         * @param int       $product_id Stock-managed product ID.
+         * @param int|float $quantity   Quantity that was taken from stock.
+         */
+        public function lower_held_stock_for_product(int $order_id, int $product_id, $quantity): void
+        {
+        }
+        /**
          * Reserve stock for a product by inserting rows into the DB.
          *
          * @throws ReserveStockException If a row cannot be inserted.
@@ -135743,13 +136026,50 @@ namespace Automattic\WooCommerce\Checkout\Helpers {
         {
         }
         /**
+         * Builds the status condition of the reserved stock query.
+         *
+         * The two statuses counted before 11.3.1 are kept as the literal
+         * `IN ( 'wc-checkout-draft', 'wc-pending' )`, with any further statuses in a
+         * second IN list, because woocommerce_query_for_reserved_stock callbacks are
+         * known to string-replace that literal to add their own statuses.
+         *
+         * @param string   $status_column Status column of the joined order table.
+         * @param string[] $statuses      Internal order statuses to count.
+         * @return string SQL condition.
+         */
+        private function get_status_clause(string $status_column, array $statuses): string
+        {
+        }
+        /**
+         * Quotes and escapes a list of statuses for use inside an SQL IN list.
+         *
+         * @param string[] $statuses Statuses.
+         * @return string Comma-separated quoted statuses.
+         */
+        private function quote_status_list(array $statuses): string
+        {
+        }
+        /**
+         * Returns the internal order statuses whose stock holds count as held stock.
+         *
+         * Payment writes the new status before stock is reduced, so holds on paid statuses
+         * stay counted until wc_reduce_stock_levels() releases them. Failed is counted because
+         * checkout resumes a failed order and reserves again without changing its status.
+         *
+         * @return string[] Internal (prefixed) order statuses.
+         */
+        private function get_counted_order_statuses(): array
+        {
+        }
+        /**
          * Builds a SQL clause excluding the current shopper's stale stock holds.
          *
-         * @param int $product_id       Product whose reserved stock is being counted.
-         * @param int $exclude_order_id Order already excluded by the caller.
+         * @param int    $product_id       Product whose reserved stock is being counted.
+         * @param int    $exclude_order_id Order already excluded by the caller.
+         * @param string $status_column    Status column of the order table joined by the caller.
          * @return string SQL clause, or an empty string when no holds qualify.
          */
-        private function get_stale_own_holds_exclusion_clause($product_id, $exclude_order_id): string
+        private function get_stale_own_holds_exclusion_clause($product_id, $exclude_order_id, string $status_column): string
         {
         }
         /**
@@ -135791,8 +136111,8 @@ namespace Automattic\WooCommerce\Checkout\Helpers {
          * Returns order ids of a signed-in customer that could be holding stock, newest first.
          *
          * Covers a shopper whose session pointers were lost (new device, cleared
-         * cookies, lapsed session). The statuses match the ones the reserved stock
-         * query counts.
+         * cookies, lapsed session). Only unpaid statuses are listed to keep the lookup
+         * small; get_stale_own_holds_exclusion_clause() enforces the same rule in SQL.
          *
          * @param int $customer_id Customer ID.
          * @return int[]
@@ -138715,6 +139035,27 @@ namespace Automattic\WooCommerce\Gateways\PayPal {
          * @since 10.5.0
          */
         public const PAYPAL_ORDER_META_SHIPPING_CALLBACK_TOKEN = '_paypal_shipping_callback_token';
+        /**
+         * Address policy and priced destination for the current PayPal attempt.
+         *
+         * @since 11.4.0
+         * @var string
+         */
+        public const PAYPAL_ORDER_META_ADDRESS_CONTEXT = '_paypal_address_context';
+        /**
+         * Whether the PayPal destination requires merchant review.
+         *
+         * @since 11.4.0
+         * @var string
+         */
+        public const PAYPAL_ORDER_META_ADDRESS_REVIEW = '_paypal_address_review';
+        /**
+         * Whether an automatic capture hold awaits address confirmation.
+         *
+         * @since 11.4.0
+         * @var string
+         */
+        public const PAYPAL_ORDER_META_CAPTURE_AWAITING_ADDRESS = '_paypal_capture_awaiting_address';
     }
     /**
      * PayPal Helper Class
@@ -138789,6 +139130,35 @@ namespace Automattic\WooCommerce\Gateways\PayPal {
          * @return void
          */
         public static function update_addresses_in_order(?\WC_Order $order, array $paypal_order_details): void
+        {
+        }
+        /**
+         * Mark a captured order paid after its approved address is saved.
+         *
+         * @param WC_Order $order The order object.
+         * @return void
+         */
+        private static function complete_order_after_address_confirmation(\WC_Order $order): void
+        {
+        }
+        /**
+         * Check the final destination against the address used to price this attempt.
+         *
+         * @param WC_Order $order The order object.
+         * @param array    $details The PayPal order details.
+         * @param bool     $confirmed Whether an earlier approval already confirmed this attempt's addresses.
+         * @return bool Whether the destination is safe to use.
+         */
+        private static function validate_shipping_address(\WC_Order $order, array $details, bool $confirmed = false): bool
+        {
+        }
+        /**
+         * Normalize harmless case and surrounding whitespace differences in addresses.
+         *
+         * @param mixed $value Address field.
+         * @return string Normalized value.
+         */
+        private static function normalize_address_field($value): string
         {
         }
     }
@@ -156390,16 +156760,18 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\WooPa
         /**
          * Get the onboarding details for the Payments settings page.
          *
-         * @param string      $location  The location for which we are onboarding.
-         *                               This is an ISO 3166-1 alpha-2 country code.
-         * @param string      $rest_path The REST API path to use for constructing REST API URLs.
-         * @param string|null $source    Optional. The source for the onboarding flow.
+         * @param string      $location                        The location for which we are onboarding.
+         *                                                     This is an ISO 3166-1 alpha-2 country code.
+         * @param string      $rest_path                       The REST API path to use for constructing REST API URLs.
+         * @param string|null $source                          Optional. The source for the onboarding flow.
+         * @param bool        $include_wpcom_authorization_url Optional. Whether to include the WPCOM connection authorization URL.
+         *                                                     Only pass true for the current user's interactive admin session.
          *
          * @return array The onboarding details.
          * @throws ApiException If the onboarding action can not be performed due to the current state of the site.
          * @throws Exception If there were errors when generating the onboarding details.
          */
-        public function get_onboarding_details(string $location, string $rest_path, ?string $source = null): array
+        public function get_onboarding_details(string $location, string $rest_path, ?string $source = null, bool $include_wpcom_authorization_url = false): array
         {
         }
         /**
@@ -156982,15 +157354,16 @@ namespace Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\WooPa
         /**
          * Get the onboarding details for each step.
          *
-         * @param string      $location  The location for which we are onboarding.
-         *                               This is an ISO 3166-1 alpha-2 country code.
-         * @param string      $rest_path The REST API path to use for constructing REST API URLs.
-         * @param string|null $source    Optional. The source for the onboarding flow.
+         * @param string      $location                        The location for which we are onboarding.
+         *                                                     This is an ISO 3166-1 alpha-2 country code.
+         * @param string      $rest_path                       The REST API path to use for constructing REST API URLs.
+         * @param string|null $source                          Optional. The source for the onboarding flow.
+         * @param bool        $include_wpcom_authorization_url Optional. Whether to include the WPCOM connection authorization URL.
          *
          * @return array[] The list of onboarding steps details.
          * @throws Exception If there was an error generating the onboarding steps details.
          */
-        private function get_onboarding_steps(string $location, string $rest_path, ?string $source = self::SESSION_ENTRY_DEFAULT): array
+        private function get_onboarding_steps(string $location, string $rest_path, ?string $source = self::SESSION_ENTRY_DEFAULT, bool $include_wpcom_authorization_url = false): array
         {
         }
         /**
@@ -165715,8 +166088,8 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
      * short-lived, single-use verification key carried by the emailed verify-link, together
      * with the helpers consumed by the rest of the email-verification feature.
      *
-     * The verify-link is only ever *completed* by a request authenticated as the link's target
-     * user (see {@see VerificationController::handle_confirm_submission()}), so the key needs no
+     * The verify-link is only ever *completed* with the target user's password (see
+     * {@see VerificationController::handle_confirm_form()}), so the key needs no
      * brute-force protection: it is high-entropy ({@see self::KEY_LENGTH} chars), single-use, and
      * expires after {@see self::KEY_TTL}.
      *
@@ -166005,35 +166378,20 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification\Emails {
 }
 namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
     /**
-     * Drives the customer email-verification UI on My Account and processes its verify-links.
+     * Drives the customer email-verification UI on My Account and processes its confirmation links.
      *
-     * Verification uses a one-time link emailed to the customer. Opening the link verifies the address
-     * directly — but ONLY when the request is authenticated as the link's target user. The login gate is
-     * the control, not the HTTP verb.
+     * The verification link (from the My Account prompt) confirms an address. Opening the link never confirms anything on
+     * its own, because the browser's login session cannot prove who opened it: a cross-site login form can sign a browser in
+     * to someone else's account.
+     * Instead, the link shows one form on its own, without the account navigation. The link's key and the account password
+     * must arrive in the same request:
      *
-     * This intentionally mirrors WordPress core's own email-change confirmation links, which likewise
-     * complete a sensitive change on an authenticated GET carrying an unguessable secret — no interstitial,
-     * form, or nonce — relying on the auth gate plus the secret:
+     * - Logged in as the link's account: the form asks for the password.
+     * - Logged out: the form asks for the password, and logs the customer in. The page does not show the email address.
+     * - Logged in as another account: refused.
      *
-     * - Administration email change: wp-admin/options.php (`adminhash`) —
-     *   https://github.com/WordPress/WordPress/blob/master/wp-admin/options.php
-     * - Profile email change: wp-admin/user-edit.php (`newuseremail`) —
-     *   https://github.com/WordPress/WordPress/blob/master/wp-admin/user-edit.php
-     *
-     * What makes the link safe:
-     *
-     * - A prefetch (email client or security scanner) is never logged in as the customer, so it can never
-     *   reach the verify branch — it only ever sees the My Account login. It cannot consume the key.
-     * - The key is a one-time, time-limited secret bound by hash to the account's current email, so it is
-     *   inert without an authenticated session as the target: a leaked key cannot be spent by anyone who is
-     *   not already that user (which is also why, like core, it is safe to carry the key in the URL).
-     * - An attacker who registered an account with someone else's email can't read the victim's inbox, so
-     *   never receives the link; and the victim can only reach a logged-in-as-target state by resetting the
-     *   password, which invalidates the attacker's session.
-     *
-     * No auth cookie is ever minted by the link (that would be exploitable as login CSRF): a logged-out
-     * visitor is shown the My Account login on the link itself, and signing in returns them to the link
-     * (the verify params are preserved in its URL) to complete it as themselves.
+     * Prefetchers and mail scanners only ever open links, so they cannot confirm one. The form only shows for a valid key,
+     * password attempts are rate limited, and the key stays in the URL only (never in a Referer header).
      *
      * @since 11.0.0
      */
@@ -166064,6 +166422,28 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
          */
         private const SEND_RATE_LIMIT = 60;
         /**
+         * Nonce action used to protect the password confirmation form.
+         */
+        private const CONFIRM_NONCE_ACTION = 'woocommerce-confirm-email';
+        /**
+         * Password attempts allowed on the confirmation form before the delay applies.
+         */
+        private const CONFIRM_FREE_ATTEMPTS = 3;
+        /**
+         * Seconds after the last attempt before the attempt count resets.
+         */
+        private const CONFIRM_ATTEMPT_WINDOW = 15 * MINUTE_IN_SECONDS;
+        /**
+         * Seconds a customer waits between password attempts once the free attempts are used.
+         */
+        private const CONFIRM_RETRY_DELAY = 5;
+        /**
+         * The account whose confirmation form this request shows, or null when there is no form to show.
+         *
+         * @var \WP_User|null
+         */
+        private $confirm_form_user = null;
+        /**
          * Verification service.
          *
          * @var EmailVerificationService
@@ -166085,11 +166465,7 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
         {
         }
         /**
-         * Route an incoming request: a send request or an opened verify-link.
-         *
-         * Opening the emailed link is a GET, which email clients and security scanners routinely prefetch.
-         * Verification is gated on authentication ({@see self::handle_verify_link()}), so a prefetch — always
-         * logged out — only ever reaches the My Account login and can never consume the key.
+         * Route an incoming request: a send request, a submitted password form, or an opened confirmation link.
          *
          * @since 11.0.0
          */
@@ -166097,22 +166473,57 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
         {
         }
         /**
-         * Verify the address from an opened verify-link — gated on being logged in as the link's target user.
+         * Read the confirmation link from the request URL.
          *
-         * The login gate is the control: verification, and key consumption, happen ONLY on the path where the
-         * request is authenticated as $user_id. A prefetch or any logged-out visit is shown the My Account
-         * login and never touches the key; a visitor logged in as a different account is refused without
-         * consuming it. This is the same shape as WordPress core's email-change confirmation links
-         * (wp-admin/options.php `adminhash`, wp-admin/user-edit.php `newuseremail`): a sensitive change
-         * completed on an authenticated GET carrying an unguessable secret.
+         * @return array{user_id: int, key: string}|null The link, or null when the URL has none.
+         */
+        private function get_link_from_request(): ?array
+        {
+        }
+        /**
+         * Handle an opened confirmation link. Opening a link never confirms it.
          *
-         * @since 11.0.0
+         * A valid link shows the confirmation form, for logged out visitors and for the link's account. Anyone else is
+         * refused. The key is checked first, so nobody without it can reach the password check.
          *
-         * @param int    $user_id Target user ID from the link.
-         * @param string $key     Plaintext verification key from the link.
+         * @param array{user_id: int, key: string} $link Confirmation link.
          * @return void
          */
-        private function handle_verify_link(int $user_id, string $key): void
+        private function handle_link(array $link): void
+        {
+        }
+        /**
+         * Check the submitted confirmation form, then confirm the link.
+         *
+         * Returns without redirecting when the form cannot be accepted, so the form shows again with an error.
+         *
+         * @param array{user_id: int, key: string} $link Confirmation link.
+         * @param \WP_User                         $user The link's account.
+         * @return void
+         */
+        private function handle_confirm_form(array $link, \WP_User $user): void
+        {
+        }
+        /**
+         * Check the credentials posted with the confirmation form.
+         *
+         * Logged out customers go through wp_authenticate(), so that lockout plugins count their attempts.
+         *
+         * @param \WP_User $user     The link's account.
+         * @param string   $password Password as entered.
+         * @return bool
+         */
+        private function check_credentials(\WP_User $user, string $password): bool
+        {
+        }
+        /**
+         * Render the confirmation form in place of the My Account page, when this request has a form to show.
+         *
+         * @internal
+         *
+         * @return bool Whether the form was rendered.
+         */
+        public function render_confirm_form(): bool
         {
         }
         /**
@@ -166205,45 +166616,80 @@ namespace Automattic\WooCommerce\Internal\CustomerEmailVerification {
         }
     }
     /**
-     * Listens for account events that should change a customer's email-verification status.
-     *
-     * Completing a password reset proves the customer controls their inbox, so it marks the
-     * email verified. This fires for both WordPress core resets (wp-login.php) and WooCommerce
-     * resets (lost-password and the new-account set-password link), all of which are email-based
-     * and dispatch the core `after_password_reset` action.
+     * Verify only the recipient of a validated, emailed password credential.
      *
      * @since 11.0.0
      */
     class VerificationEventListener
     {
+        private const PROOF_META = '_wc_email_verification_reset_proof';
         /**
          * Verification service.
          *
          * @var EmailVerificationService
          */
         private $service;
-        /**
-         * Constructor. Registers hooks.
-         */
+        /** Register credential delivery and completion hooks. */
         public function __construct()
         {
         }
         /**
-         * Inject dependencies.
+         * Initialize dependencies.
          *
          * @internal
-         *
          * @param EmailVerificationService $service Verification service.
          */
         final public function init(\Automattic\WooCommerce\Internal\CustomerEmailVerification\EmailVerificationService $service): void
         {
         }
         /**
-         * Mark the user's email verified after a completed password reset.
+         * Bind WooCommerce password emails to their final recipient.
          *
-         * @param WP_User|mixed $user The user whose password was reset.
+         * @param mixed $recipient Filtered recipient.
+         * @param mixed $user Email customer.
+         * @param mixed $email Email instance.
+         * @return mixed Unchanged recipient.
+         */
+        public function on_wc_email($recipient, $user, $email)
+        {
+        }
+        /**
+         * Bind a WordPress reset notification to its recipient.
+         *
+         * @param mixed $email Notification arguments.
+         * @param mixed $key Reset credential.
+         * @param mixed $login Account login.
+         * @param mixed $user Account object.
+         * @return mixed Unchanged notification.
+         */
+        public function on_core_email($email, $key, $login, $user)
+        {
+        }
+        /**
+         * Store fingerprints, never the emailed credential or recipient.
+         *
+         * @param mixed $user Account object.
+         * @param mixed $key Reset credential.
+         * @param mixed $recipient Recipient address.
+         */
+        private function bind_credential($user, $key, $recipient): void
+        {
+        }
+        /**
+         * Consume proof only for the credential validated by the reset flow.
+         *
+         * @param mixed $user Account passed to reset_password before its key is cleared.
          */
         public function on_password_reset($user): void
+        {
+        }
+        /**
+         * Fingerprint a normalized recipient with the site's secret salt.
+         *
+         * @param string $email Recipient address.
+         * @return string Fingerprint.
+         */
+        private function email_fingerprint(string $email): string
         {
         }
     }
@@ -168041,6 +168487,34 @@ namespace Automattic\WooCommerce\Internal\DataStores\Orders {
          * @param bool      $set True or false.
          */
         public function set_recorded_coupon_usage_counts($order, $set)
+        {
+        }
+        /**
+         * Clears the "coupon usage counted" flag, if it is still set and the stored order status still matches the order object.
+         *
+         * The check and the write are one database update, so the flag is cleared by at most one call.
+         *
+         * @since 11.3.1
+         *
+         * @internal For use by wc_update_coupon_usage_counts() only.
+         *
+         * @param \WC_Order $order Order object.
+         * @return bool True if this call cleared the flag.
+         */
+        public function clear_recorded_coupon_usage_counts($order): bool
+        {
+        }
+        /**
+         * Reads the "coupon usage counted" flag straight from the database, skipping the order cache.
+         *
+         * @since 11.3.1
+         *
+         * @internal For use by WC_Abstract_Order::remove_coupon() only.
+         *
+         * @param \WC_Order $order Order object.
+         * @return bool
+         */
+        public function get_stored_recorded_coupon_usage_counts($order): bool
         {
         }
         /**
@@ -170822,6 +171296,10 @@ namespace Automattic\WooCommerce\Internal\Email {
          */
         private const QUEUED_OBJECT_KEY = '__woocommerce_deferred_email_object';
         /**
+         * Argument keys whose values must never be persisted in the email queue.
+         */
+        private const SENSITIVE_ARG_KEYS = array('user_pass');
+        /**
          * Queue of email callbacks collected during the current request.
          *
          * @var array<int, array{filter: string, args: array, locale: string}>
@@ -170933,6 +171411,15 @@ namespace Automattic\WooCommerce\Internal\Email {
          * @throws \UnexpectedValueException When a queued object argument cannot be prepared.
          */
         private function prepare_arg_for_queue($arg)
+        {
+        }
+        /**
+         * Remove known sensitive fields before persisting email arguments.
+         *
+         * @param array $args Arguments at the current array depth.
+         * @return array
+         */
+        private function sanitize_args_for_queue(array $args): array
         {
         }
         /**
@@ -177706,8 +178193,8 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
          */
         public const VARIATION_SUMMARY_META_KEY = '_review_variation_summary';
         /**
-         * Per-request cache for the "did this email review this product (and this
-         * variation) on this order" lookup, keyed by
+         * Per-request cache for the "does this order already have a review for this
+         * product (and this variation)" lookup, keyed by
          * `order_id|product_id|variation_id|email`. Value is a `WP_Comment` when
          * one matches, or `null` when the slot has been checked and nothing
          * matches (so a second call doesn't re-query).
@@ -177914,12 +178401,28 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
     {
         /**
          * Build the meta-line parts shown above the heading on both the form and
-         * empty-state views (customer name, billing email, order #/date).
+         * empty-state views: the order number and date, preceded by the customer's name
+         * and billing email only when the viewer is signed in as that customer.
          *
          * @param WC_Order $order Order being reviewed.
          * @return array<int, string> Non-empty parts ready to be joined with a separator.
          */
         public static function parts_for_order(\WC_Order $order): array
+        {
+        }
+        /**
+         * Whether the viewer is signed in as the customer who owns the order.
+         *
+         * The billing email is the second proof the Store API order route and the
+         * order-received page ask for on top of the key, so the page must not print it to
+         * everyone holding one.
+         *
+         * @since 11.4.0
+         *
+         * @param WC_Order $order Order being reviewed.
+         * @return bool
+         */
+        private static function viewer_is_signed_in_owner(\WC_Order $order): bool
         {
         }
     }
@@ -178113,6 +178616,21 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
          */
         private const AUTO_REJECTED_META_KEY = '_wc_auto_rejected';
         /**
+         * Marks a review held by someone other than this handler, so a later edit cannot
+         * approve it. An untagged hold came from the moderation checks and an edit may lift it.
+         *
+         * @since 11.4.0
+         */
+        private const MODERATOR_HELD_META_KEY = '_wc_moderator_held';
+        /**
+         * The review whose status this handler is changing, so the transition it causes is not
+         * mistaken for a moderator's. Zero when idle. Scoped to one id so a callback that holds
+         * a different review during the same call is still recorded.
+         *
+         * @var int
+         */
+        private static int $changing_status_for = 0;
+        /**
          * Wire the AJAX endpoints.
          *
          * Auto-called by the WC dependency container after instantiation.
@@ -178135,6 +178653,22 @@ namespace Automattic\WooCommerce\Internal\OrderReviews {
          * @param \WP_Comment $comment    The comment whose status changed.
          */
         public function clear_auto_rejected_flag($new_status, $old_status, $comment): void
+        {
+        }
+        /**
+         * Record a hold this handler did not apply, so a resubmission cannot approve it.
+         *
+         * Approving a pending review is a staff action. Holds the moderation checks applied
+         * carry no tag and an edit may still lift them, which also leaves reviews held before
+         * this tag existed working as they did.
+         *
+         * @since 11.4.0
+         *
+         * @param int|string  $new_status New comment status.
+         * @param int|string  $old_status Old comment status.
+         * @param \WP_Comment $comment    The comment whose status changed.
+         */
+        public function record_moderator_hold($new_status, $old_status, $comment): void
         {
         }
         /**
@@ -179243,12 +179777,13 @@ namespace Automattic\WooCommerce\Internal\Orders {
         {
         }
         /**
-         * Permission check for REST API endpoint.
+         * Permission check for an order action endpoint.
          *
          * @param WP_REST_Request $request The request for which the permission is checked.
-         * @return bool|WP_Error True if the current user has the capability, otherwise a WP_Error object.
+         * @param string          $context The request context ('read' or 'edit'), as accepted by wc_rest_check_post_permissions().
+         * @return bool|WP_Error True if the current user has the required permission, otherwise a WP_Error object.
          */
-        private function check_permissions(\WP_REST_Request $request)
+        private function check_permissions(\WP_REST_Request $request, string $context)
         {
         }
         /**
@@ -191188,7 +191723,7 @@ namespace Automattic\WooCommerce\Internal\ReceiptRendering {
     }
     /**
      * Controller for the REST endpoints associated to the receipt rendering engine.
-     * The endpoints require the read_shop_order capability for the order at hand.
+     * The endpoints require the same permission as reading an order through the REST API.
      */
     class ReceiptRenderingRestController extends \Automattic\WooCommerce\Internal\RestApiControllerBase
     {
@@ -203035,6 +203570,20 @@ namespace Automattic\WooCommerce\Internal\Utilities {
         public static function validate(string $postcode, string $country): ?bool
         {
         }
+        /**
+         * Get the 5-digit ZIP code of a ZIP+4 postcode.
+         *
+         * Covers the countries wc_format_postcode() formats as ZIP+4.
+         *
+         * @since 11.4.0
+         *
+         * @param string $postcode Postcode, with or without the hyphen.
+         * @param string $country  Country code.
+         * @return string The 5-digit ZIP code, or an empty string if the postcode is not a ZIP+4 code.
+         */
+        public static function get_zip_code_from_zip_plus_four(string $postcode, string $country): string
+        {
+        }
     }
     /**
      * Provides the price separators decoded for non-HTML consumers (client settings payloads, APIs).
@@ -204239,6 +204788,23 @@ namespace Automattic\WooCommerce\StoreApi {
         {
         }
         /**
+         * Stop batch requests from passing untrusted nonces to Store API routes.
+         *
+         * Core's /batch/v1 can't run Store API requests. The Store API batch keeps sub-request nonces, which come from
+         * request data, only when it was sent as JSON or with its own Nonce header. A link or cross-site form can't do either.
+         *
+         * @since 11.4.0
+         * @param mixed            $result  Response to replace the requested version with.
+         * @param array            $handler Route handler used for the request.
+         * @param \WP_REST_Request $request Request used to generate the response.
+         * @phpstan-param mixed            $handler
+         * @phpstan-param mixed            $request
+         * @return mixed
+         */
+        public function sanitize_batch_request($result, $handler, $request)
+        {
+        }
+        /**
          * Add allowed cors headers for store API headers.
          *
          * @param array $allowed_headers Allowed headers.
@@ -204276,7 +204842,7 @@ namespace Automattic\WooCommerce\StoreApi {
          * Allowed origins can be changed using the WordPress `allowed_http_origins` or `allowed_http_origin` filters if
          * access needs to be granted to other domains.
          *
-         * Users of valid Cart Tokens are also allowed access from any origin.
+         * Users of valid Cart Tokens are also allowed access from any origin, without browser credentials unless the origin is allowed.
          *
          * @param bool              $served Whether the request has already been served.
          * @param \WP_REST_Response $result The response object.
@@ -205292,13 +205858,107 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         {
         }
         /**
-         * Whether the passed argument is a draft order or an order that is
-         * pending/failed and the cart hasn't changed.
+         * Whether the argument can serve as the session's draft order: a checkout-draft, or a pending/failed order
+         * the shopper can still pay as placed (its cart hash matches, the cart keeps its counted coupons, a priced order
+         * that needs shipping still ships to the customer's destination, and its tax location has not moved).
          *
          * @param \WC_Order $order_object Order object to check.
          * @return boolean Whether the order is valid as a draft order.
          */
         protected function is_valid_draft_order($order_object)
+        {
+        }
+        /**
+         * Whether the order's shipping lines are still rated for the session customer's destination, which the cart
+         * hash does not cover. Compared through the pay-for-order guard's helper, reading a state the session filled
+         * in by default as empty; the taxable location is checked by order_taxed_at_customer_location().
+         *
+         * @since 11.3.1
+         *
+         * @param \WC_Order $order_object Order object to check.
+         * @return boolean True when the destinations match or the cart needs no shipping; false without a customer,
+         *                 or when only one of the order and the customer has a shipping country.
+         */
+        protected function order_ships_to_customer_destination(\WC_Order $order_object)
+        {
+        }
+        /**
+         * Whether the order would still be taxed for the same location once it takes the session customer's addresses,
+         * which the cart hash does not cover either. The sync re-prices tax from the order's own addresses, so the old
+         * tax is never charged, but the new address skips the checks checkout makes (allowed countries, state codes).
+         * Refusing reuse sends the change through checkout instead. Same before-and-after comparison as the
+         * pay-for-order guard, OrderController::validate_location_change(), except that a state the session filled in
+         * by default is read as empty; its exemption for an order awaiting its first address is applied by
+         * is_valid_draft_order().
+         *
+         * @since 11.3.1
+         *
+         * @param \WC_Order $order_object Order object to check.
+         * @return boolean True when the tax location is unchanged or the store collects no tax; false without a customer,
+         *                 or when either filtered tax location is not an array.
+         */
+        protected function order_taxed_at_customer_location(\WC_Order $order_object)
+        {
+        }
+        /**
+         * Whether two locations match, reading a state the customer session filled in by default as empty.
+         *
+         * @param array $order_location    Location the order was priced for.
+         * @param array $customer_location Location the session customer would give it.
+         * @return bool
+         */
+        private function locations_match(array $order_location, array $customer_location): bool
+        {
+        }
+        /**
+         * Returns a location without the state the customer session fills in by default.
+         *
+         * The session gives a customer with no billing state the default customer location's state, whatever their
+         * country (WC_Customer_Data_Store_Session::set_defaults()), and saves it. A shopper who left an optional state
+         * empty has it on later requests while the order they placed has none. On another country, where it is not
+         * one of that country's states, such a state is read as empty so the same address still compares as equal.
+         *
+         * @param array $location Location with country and state keys.
+         * @return array
+         */
+        private function without_default_state(array $location): array
+        {
+        }
+        /**
+         * Whether a sync from the cart would keep the coupons the order counted. The cart hash does not cover coupons, and
+         * a sync that swapped or dropped a counted coupon would leave it counted with no order carrying it. An order that
+         * counted nothing, e.g. a failed one, may follow the cart. When the cart holds a coupon an extension supplies
+         * without a stored record, such as the one WooCommerce Subscriptions puts in place of a parent order's coupons, the
+         * order may follow the cart as long as the cart adds no stored coupon the order lacks. Compares formatted codes,
+         * not `_coupons_hash`, which only the Store API sync writes. The flag is read through the data store, because
+         * the order object may be one held since before its usage was counted.
+         *
+         * @param \WC_Order $order_object Order object to check.
+         * @return bool
+         */
+        private function cart_keeps_counted_coupons(\WC_Order $order_object): bool
+        {
+        }
+        /**
+         * Whether a coupon with this code is stored: one wc_get_coupon_id_by_code() finds, or a coupon post with the code
+         * in any status. wc_get_coupon_id_by_code() only finds published coupons, so a coupon trashed after the order was
+         * placed would otherwise pass for an extension's code.
+         *
+         * @param string $code Coupon code as applied to the cart.
+         * @return bool
+         */
+        private function is_stored_coupon_code(string $code): bool
+        {
+        }
+        /**
+         * Whether the order has no address yet and was not created through the Store API, e.g. one a merchant made for
+         * the shopper to fill in. It is taxed at the shop's base address and has no shipping zone yet, so, as in
+         * OrderController::validate_location_change(), its first address is allowed.
+         *
+         * @param \WC_Order $order_object Order object to check.
+         * @return bool
+         */
+        private function order_awaits_first_address(\WC_Order $order_object): bool
         {
         }
     }
@@ -205450,8 +206110,10 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
-         * Triggered after an update to cart data. Re-calculates totals and updates draft orders (if they already exist) to
-         * keep all data in sync.
+         * Triggered after a successful update to cart data.
+         *
+         * Cart routes no longer synchronize draft orders. The method remains so route subclasses can react to updates.
+         * Checkout synchronizes the authoritative cart state immediately before placing an order.
          *
          * @param \WP_REST_Request $request Request object.
          */
@@ -206619,6 +207281,7 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          *
          * @param \WP_REST_Request $request Request object.
          *
+         * @throws RouteException If the persisted session changed after this request loaded it.
          * @return \WP_REST_Response
          */
         public function get_response(\WP_REST_Request $request)
@@ -206791,6 +207454,38 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Gets the country, state and postcode the address will end up with, then sanitizes and validates them.
+         *
+         * A partial address can leave out any of the three, so the ones it leaves out come from the session and all of them
+         * are checked together, against the final country. Other fields keep the request's own validation.
+         *
+         * @throws RouteException When the state or postcode is not valid for the country.
+         * @param \WP_REST_Request $request Full details about the request.
+         * @param string           $param   Request parameter the address came from: billing_address or shipping_address.
+         * @param array            $posted  Address fields from the request.
+         * @param array            $stored  Address the session customer holds.
+         * @return array The country, state and postcode, sanitized.
+         *
+         * @phpstan-param \WP_REST_Request<array<string, mixed>> $request
+         */
+        private function get_validated_address(\WP_REST_Request $request, string $param, array $posted, array $stored): array
+        {
+        }
+        /**
+         * Gets the customer's billing address with the request's billing address applied on top.
+         *
+         * Used as the shipping address when the order ships to billing, so no shipping value left in the session reaches the order.
+         *
+         * @param \WC_Customer     $customer Customer object.
+         * @param \WP_REST_Request $request  Full details about the request.
+         * @return array
+         *
+         * @phpstan-param \WP_REST_Request<array<string, mixed>> $request
+         */
+        private function get_full_billing_address(\WC_Customer $customer, \WP_REST_Request $request): array
+        {
+        }
+        /**
          * Gets the chosen payment method from the request.
          *
          * @throws RouteException On error.
@@ -206836,6 +207531,30 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          * @throws RouteException When the recalculated total is higher. Returns HTTP 409 with the refreshed cart so the client can display the updated total.
          */
         private function validate_order_totals(\WP_REST_Request $request): void
+        {
+        }
+        /**
+         * Refuse to use a session that another request changed after this request loaded it.
+         *
+         * Mutations made by this request are allowed because the session handler compares the latest persisted data with
+         * the persisted data that initialized this request, not with its current in-memory data.
+         *
+         * @throws RouteException If another request changed the persisted session.
+         */
+        private function throw_if_persisted_session_changed(): void
+        {
+        }
+        /**
+         * Give this request exclusive use of an order, or confirm that it still has it, and refuse the request otherwise.
+         *
+         * Checkout and other order writers must hold the same lock so an order cannot change between validation and placement.
+         *
+         * @see OrderController::lock_order()
+         *
+         * @throws RouteException If another request is using the order. Returns HTTP 409 with the cart so the client can refresh.
+         * @param int $order_id Order ID.
+         */
+        private function lock_order_or_throw(int $order_id): void
         {
         }
         /**
@@ -206931,6 +207650,24 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
         {
         }
         /**
+         * Process an order as a request to its order-pay endpoint.
+         *
+         * Gateways decide whether they can pay an order from the order-pay endpoint, e.g. the shipping
+         * method restrictions of offline gateways, and fall back to the cart otherwise. This request
+         * pays an order and not the cart, so the endpoint is set for the order while it is processed.
+         * It is restored afterwards because batched requests share it.
+         *
+         * @throws RouteException On error.
+         * @throws InvalidStockLevelsInCartException On error.
+         *
+         * @param \WP_REST_Request $request Request object.
+         *
+         * @return \WP_REST_Response
+         */
+        protected function get_route_post_response(\WP_REST_Request $request)
+        {
+        }
+        /**
          * Process an order.
          *
          * 1. Process Request
@@ -206945,7 +207682,7 @@ namespace Automattic\WooCommerce\StoreApi\Routes\V1 {
          *
          * @return \WP_REST_Response
          */
-        protected function get_route_post_response(\WP_REST_Request $request)
+        private function pay_for_order(\WP_REST_Request $request)
         {
         }
         /**
@@ -211641,7 +212378,7 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         {
         }
         /**
-         * Get product name, hiding it for draft and private products.
+         * Get product name, hiding it for products the current user cannot view (unpublished products, or variations of one).
          *
          * @param \WC_Product $product Product instance.
          * @return string
@@ -211732,6 +212469,31 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         {
         }
         /**
+         * Generate a cart link token.
+         *
+         * Unlike a cart token, a link token can't be used as a Store API `Cart-Token`. It only lets another browser copy the
+         * cart through the `session` query arg, without the customer's details.
+         *
+         * @since 11.4.0
+         * @param string $customer_id The customer ID.
+         * @return string
+         */
+        public static function get_cart_link_token(string $customer_id): string
+        {
+        }
+        /**
+         * Get the customer ID from a token passed in the `session` query arg.
+         *
+         * Accepts cart link tokens and cart tokens, so integrations that pass a cart token in the query arg keep working.
+         *
+         * @since 11.4.0
+         * @param string $token The cart link token or cart token.
+         * @return string The customer ID, or an empty string if the token is not valid.
+         */
+        public static function get_cart_link_customer_id(string $token): string
+        {
+        }
+        /**
          * Get the cart token sent with the current HTTP request.
          *
          * @since 11.1.0
@@ -211743,10 +212505,21 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         /**
          * Validate the cart token.
          *
+         * @since 11.4.0 Rejects tokens not issued by the Store API, such as cart link tokens.
          * @param string $cart_token The cart token.
          * @return bool
          */
         public static function validate_cart_token(string $cart_token): bool
+        {
+        }
+        /**
+         * Validate a token's signature and check it was issued by one of the given issuers.
+         *
+         * @param string   $token   The token.
+         * @param string[] $issuers Accepted `iss` claims.
+         * @return bool
+         */
+        private static function validate_token(string $token, array $issuers): bool
         {
         }
         /**
@@ -212007,6 +212780,43 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          */
         private const LOCATION_FIELDS = ['country', 'state', 'postcode', 'city'];
         /**
+         * Prefix of the option name used as a self-expiring mutex around an order. The order ID is appended.
+         *
+         * The row holds the lock's release time (a microtime float); its mere existence is the lock. It lives in the
+         * options table for the reasons given on BatchProcessingController::ENQUEUED_PROCESSORS_LOCK_OPTION.
+         *
+         * @since 11.3.0
+         */
+        const ORDER_LOCK_OPTION_PREFIX = 'wc_store_api_order_lock_';
+        /**
+         * How long (in seconds) a held order lock stays valid before it is considered stale and can be taken over.
+         *
+         * Locks are released when the request ends, so this only bounds how long a lock left behind by a request that
+         * died without running its shutdown hooks keeps the order out of reach. A request that may have outlived its
+         * lock confirms it with lock_order() before relying on it.
+         *
+         * @since 11.3.0
+         */
+        const ORDER_LOCK_TTL = 60;
+        /**
+         * How long (in seconds) lock_order() waits by default for a lock held by another request.
+         *
+         * @since 11.3.0
+         */
+        const ORDER_LOCK_TIMEOUT = 10;
+        /**
+         * Orders locked by the current request, as order ID => stored release time.
+         *
+         * @var array<int, string>
+         */
+        private static array $order_locks = array();
+        /**
+         * Shutdown callback that releases locks held by this request.
+         *
+         * @var \Closure|null
+         */
+        private static ?\Closure $unlock_orders_on_shutdown = null;
+        /**
          * Checkout fields controller.
          *
          * @var CheckoutFields
@@ -212043,6 +212853,39 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * @param \WC_Order $order Order object.
          */
         public function sync_customer_data_with_order(\WC_Order $order)
+        {
+        }
+        /**
+         * Get the shopper-facing message used when another request holds an order lock.
+         *
+         * @since 11.3.0
+         *
+         * @return string
+         */
+        public static function get_order_lock_error_message(): string
+        {
+        }
+        /**
+         * Give the current request exclusive use of an order until the request ends, or confirm that it still has it.
+         *
+         * Checkout flows use this lock to serialize reads and mutations of a shared order. Cart routes may also use it
+         * for order-specific side effects, such as releasing reserved stock. Callers acquire the lock before relying on
+         * order state so that another request cannot change the order after validation and before placement or payment.
+         *
+         * The claim is an atomic INSERT of an options row (which fails if the row already exists, making it a mutex);
+         * if the row exists but its stored release time has already passed, a conditional UPDATE takes the stale lock
+         * over. Modeled on BatchProcessingController::acquire_enqueued_processors_lock(). A request that already holds
+         * the lock atomically renews the row only while its ownership value still matches, so the call is safe to repeat,
+         * for instance from every part of a batch request.
+         *
+         * @since 11.3.0
+         *
+         * @param int $order_id Order ID. There is nothing to lock when this is 0.
+         * @param int $timeout  How long (in seconds) to wait for a lock held by another request.
+         * @return bool True if the lock is held by this request. False if another request holds it, or took it over
+         *              from this request after the lock went stale.
+         */
+        public static function lock_order(int $order_id, int $timeout = self::ORDER_LOCK_TIMEOUT): bool
         {
         }
         /**
@@ -212138,12 +212981,16 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * Checks whether two locations match a different shipping zone or tax rate.
          *
          * Shipping zones and tax rates ignore case and postcode spacing, so a change in only those does not count.
+         * Shared with DraftOrderTrait so both re-pricing guards agree on what counts as a destination change.
+         *
+         * @since 11.3.0
+         * @since 11.3.1 Made public.
          *
          * @param array $old_location Location before the change.
          * @param array $new_location Location after the change.
          * @return bool
          */
-        private static function locations_differ(array $old_location, array $new_location): bool
+        public static function locations_differ(array $old_location, array $new_location): bool
         {
         }
         /**
@@ -212285,6 +213132,23 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * @param array   $chosen_shipping_methods Array of shipping methods.
          */
         public function validate_selected_shipping_methods($needs_shipping, $chosen_shipping_methods = array())
+        {
+        }
+        /**
+         * Check shipping was not withheld because "Hide shipping costs until an address is entered"
+         * judged the address incomplete.
+         *
+         * Without this, no packages are calculated, so validate_selected_shipping_methods() has nothing
+         * to reject and the order is placed with no shipping line. Mirrors the classic checkout's
+         * WC_Checkout::is_shipping_withheld_for_missing_address(), including its exemption for stores
+         * that switch shipping calculation off through the filter.
+         *
+         * @since 11.4.0
+         *
+         * @throws RouteException If shipping was withheld.
+         * @param bool $needs_shipping Whether the order needs shipping.
+         */
+        private function validate_shipping_was_not_skipped_for_missing_address(bool $needs_shipping): void
         {
         }
         /**
@@ -212892,6 +213756,55 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
         }
     }
     /**
+     * Retains persisted session state most recently loaded or saved by each handler.
+     *
+     * @internal
+     */
+    final class SessionConcurrencyGuard
+    {
+        /**
+         * Persisted session hashes keyed by session-handler object.
+         *
+         * @var \SplObjectStorage<WC_Session, string>|null
+         */
+        private static $baseline_hashes;
+        /**
+         * Capture persisted session data loaded or saved by a handler.
+         *
+         * @param WC_Session $session Session handler.
+         * @param array      $data Persisted session data that was loaded or saved.
+         */
+        public static function capture(\WC_Session $session, array $data): void
+        {
+        }
+        /**
+         * Check whether persisted data changed after it was last loaded or saved by this handler.
+         *
+         * @param WC_Session $session Session handler.
+         * @return bool
+         */
+        public static function has_changed(\WC_Session $session): bool
+        {
+        }
+        /**
+         * Get the persisted session hash registry.
+         *
+         * @return \SplObjectStorage<WC_Session, string>
+         */
+        private static function get_baseline_hashes(): \SplObjectStorage
+        {
+        }
+        /**
+         * Get a stable hash for persisted session data.
+         *
+         * @param array $data Session data to hash.
+         * @return string
+         */
+        private static function hash(array $data): string
+        {
+        }
+    }
+    /**
      * Shared helpers for the UCP (Universal Commerce Protocol) routes.
      */
     class UcpUtils
@@ -212973,6 +213886,15 @@ namespace Automattic\WooCommerce\StoreApi\Utilities {
          * @return WP_Error
          */
         public static function create(\Throwable $error, string $failure_context, ?string $public_message = null): \WP_Error
+        {
+        }
+        /**
+         * Format the original call sites without exposing argument values.
+         *
+         * @param \Throwable $error Caught failure.
+         * @return string[]
+         */
+        private static function get_backtrace(\Throwable $error): array
         {
         }
         /**
@@ -213220,6 +214142,17 @@ namespace Automattic\WooCommerce\Utilities {
          * @return bool true if all items pass the callback, false otherwise.
          */
         public static function array_all(array $items, callable $callback): bool
+        {
+        }
+        /**
+         * Check whether a value is an array whose direct values are all scalars.
+         *
+         * @since 11.3.1
+         *
+         * @param mixed $value Value to check.
+         * @return bool
+         */
+        public static function is_flat_scalar_array($value): bool
         {
         }
         /**
@@ -213540,7 +214473,7 @@ namespace Automattic\WooCommerce\Utilities {
         }
     }
     /**
-     * Utility methods for handling meta data in REST API requests.
+     * Utility methods for handling order item meta data.
      *
      * @since 10.8.0
      */
@@ -213576,6 +214509,17 @@ namespace Automattic\WooCommerce\Utilities {
          * @return array[] Normalized meta data entries.
          */
         public static function normalize(array $meta_data, $default_id = ''): array
+        {
+        }
+        /**
+         * Unserialize a meta value, if it is serialized, without instantiating any object it may contain.
+         *
+         * @since 11.3.1
+         *
+         * @param mixed $value Raw meta value, maybe serialized.
+         * @return mixed Unserialized value.
+         */
+        public static function maybe_unserialize_no_classes($value)
         {
         }
     }
@@ -215182,7 +216126,7 @@ namespace {
      *     Array of attribute parameters.
      *
      *     @type int    $id           Unique identifier, used to update an attribute.
-     *     @type string $name         Attribute name. Always required.
+     *     @type string $name         Attribute name. Always required. Stored as plain text (sanitize_text_field()).
      *     @type string $slug         Attribute alphanumeric identifier.
      *     @type string $type         Type of attribute.
      *                                Core by default accepts: 'select' and
@@ -220390,9 +221334,11 @@ namespace {
     {
     }
     /**
-     * See how much stock is being held in pending orders.
+     * See how much stock is held by orders that have not yet reduced it.
      *
      * @since 3.5.0
+     * @since 11.3.1 Also counts holds for failed, processing, on-hold and completed orders until the
+     *               hold is released or expires. See the woocommerce_reserved_stock_order_statuses filter.
      * @param WC_Product $product Product to check.
      * @param integer    $exclude_order_id Order ID to exclude.
      * @return int
@@ -220414,7 +221360,11 @@ namespace {
     /**
      * Release held stock for an order.
      *
+     * Not subject to woocommerce_hold_stock_for_checkout: a hold counts against stock until it is
+     * released or expires, so a release must never be skipped because of the context it runs in.
+     *
      * @since 4.3.0
+     * @since 11.3.1 No longer skipped when woocommerce_hold_stock_for_checkout returns false.
      * @param \WC_Order|int $order Order ID or instance.
      */
     function wc_release_stock_for_order($order)
@@ -222825,5 +223775,5 @@ namespace {
     }
 }
 namespace {
-    define('WC_VERSION', '11.3.0');
+    define('WC_VERSION', '11.3.1');
 }
